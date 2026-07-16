@@ -7,6 +7,7 @@ import { defineConfig, fontProviders } from 'astro/config';
 // https://astro.build/config
 export default defineConfig({
 	site: 'https://wlsgur11.dev',
+	devToolbar: { enabled: false },
 	i18n: {
 		defaultLocale: 'ko',
 		locales: ['ko', 'en'],

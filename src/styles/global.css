@@ -18,6 +18,8 @@
 	--font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', SFMono-Regular, Menlo, Consolas,
 		monospace;
 	--gray-gradient: rgba(var(--gray-light), 50%), var(--bg);
+	--radius: 8px;
+	--radius-sm: 4px;
 	--box-shadow:
 		0 2px 6px rgba(var(--gray), 25%), 0 8px 24px rgba(var(--gray), 33%),
 		0 16px 32px rgba(var(--gray), 33%);
@@ -116,16 +118,16 @@ table {
 img {
 	max-width: 100%;
 	height: auto;
-	border-radius: 8px;
+	border-radius: var(--radius);
 }
 code {
 	padding: 2px 5px;
 	background-color: rgb(var(--gray-light));
-	border-radius: 2px;
+	border-radius: var(--radius-sm);
 }
 pre {
 	padding: 1.5em;
-	border-radius: 8px;
+	border-radius: var(--radius);
 }
 pre > code {
 	all: unset;
@@ -184,7 +186,7 @@ a.tag:hover {
 	display: block;
 	padding: 1.4em 1.5em;
 	border: 1px solid rgba(var(--gray), 0.18);
-	border-radius: 12px;
+	border-radius: var(--radius);
 	background: rgba(var(--gray-light), 0.25);
 	text-decoration: none;
 	color: inherit;
@@ -315,7 +317,7 @@ th {
 	background: rgba(var(--gray-light), 0.4);
 	padding: 0.6em 1em;
 	margin: 1.4em 0;
-	border-radius: 0 8px 8px 0;
+	border-radius: 0 var(--radius) var(--radius) 0;
 }
 .prose blockquote p:last-child {
 	margin-bottom: 0;
@@ -324,14 +326,14 @@ th {
 	font-size: 0.82em;
 	line-height: 1.55;
 	padding: 1.05em 1.2em;
-	border-radius: 10px;
+	border-radius: var(--radius);
 	margin: 1.4em 0;
 	overflow-x: auto;
 }
 .prose :not(pre) > code {
 	font-size: 0.85em;
 	padding: 0.12em 0.42em;
-	border-radius: 4px;
+	border-radius: var(--radius-sm);
 	background: rgba(var(--gray), 0.16);
 }
 .prose table {
@@ -342,7 +344,7 @@ th {
 .prose img {
 	display: block;
 	margin: 1.6em auto;
-	border-radius: 10px;
+	border-radius: var(--radius);
 	border: 1px solid rgba(var(--gray), 0.15);
 }
 .prose img + em,

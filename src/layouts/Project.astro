@@ -46,12 +46,12 @@ const pick = (ko: string, en?: string) => (lang === 'en' && en ? en : ko);
 							<p class="links">
 								{links.live && (
 									<a href={links.live} target="_blank" rel="noopener">
-										🔗 Live
+										Live ↗
 									</a>
 								)}
 								{links.repo && (
 									<a href={links.repo} target="_blank" rel="noopener">
-										↗ Repository
+										Repository ↗
 									</a>
 								)}
 							</p>
@@ -80,7 +80,7 @@ const pick = (ko: string, en?: string) => (lang === 'en' && en ? en : ko);
 	.proj-logo {
 		width: 56px;
 		height: 56px;
-		border-radius: 13px;
+		border-radius: var(--radius);
 		padding: 8px;
 		background: #fff;
 		border: 1px solid rgba(var(--gray), 0.18);

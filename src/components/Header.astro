@@ -88,7 +88,7 @@ const altLabel = lang === 'ko' ? languages.en : languages.ko;
 		place-items: center;
 		width: 1.7em;
 		height: 1.7em;
-		border-radius: 7px;
+		border-radius: var(--radius);
 		background: var(--accent);
 		color: #fff;
 		font-family: var(--font-mono);
@@ -132,7 +132,7 @@ const altLabel = lang === 'ko' ? languages.en : languages.ko;
 		text-decoration: none;
 		padding: 0.3em 0.5em;
 		border: 1px solid rgba(var(--gray), 0.3);
-		border-radius: 6px;
+		border-radius: var(--radius);
 	}
 	.lang:hover {
 		border-color: var(--accent);
@@ -145,7 +145,7 @@ const altLabel = lang === 'ko' ? languages.en : languages.ko;
 		font-size: 1.1em;
 		line-height: 1;
 		padding: 0.3em;
-		border-radius: 6px;
+		border-radius: var(--radius);
 	}
 	.theme-toggle:hover {
 		background: rgba(var(--gray), 0.15);

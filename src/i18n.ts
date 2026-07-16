@@ -34,7 +34,7 @@ export const ui = {
 		majorProjects: 'Featured projects',
 		moreProjects: 'More projects',
 		aboutTitle: 'About',
-		koreanNotice: '🇰🇷 This article is written in Korean.',
+		koreanNotice: 'This article is written in Korean.',
 	},
 } as const;
 
