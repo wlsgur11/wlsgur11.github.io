@@ -1,0 +1,51 @@
+---
+title: 'SimLog (심로그) — AI 감정 분석 일기 앱'
+titleEn: 'SimLog — an AI emotion-analysis journaling app'
+description: '대학생 정신건강을 위한 AI 일기 앱. 일기를 감정 분석하고, 부정 감정이 오래 지속되면 교내 상담 연계를 제안합니다. 제6회 PNU 창의융합SW해커톤 장려상.'
+descriptionEn: 'A mental-health journaling app for students. It analyzes emotions in each entry and, when negative feelings persist, suggests connecting to campus counseling. Encouragement Award at the 6th PNU SW Hackathon.'
+role: '개발 (백엔드·앱·배포)'
+roleEn: 'Development (backend, app, deployment)'
+period: '2025.05 ~ 2025.08'
+logo: '/images/logos/simlog.png'
+cover: '/images/logos/simlog.png'
+badge: '해커톤'
+badgeEn: 'Hackathon'
+summary:
+  - '일기를 GPT로 감정 분석(플루치크 감정 바퀴)하고, 7일간 부정 감정이 지속되면 교내 상담을 연계하는 정신건강 앱. 제6회 PNU 창의융합SW해커톤 장려상.'
+  - '처음 도전한 앱 개발 — FastAPI·MySQL 백엔드와 Flutter 크로스플랫폼 앱을 개발하고 배포까지 맡았습니다.'
+  - '7일 일기 요약을 동의 기반으로 안전하게 공유하는 토큰 스냅샷 방식과, 마음정원의 요소 배치를 위한 레이어 렌더링을 직접 설계했습니다.'
+summaryEn:
+  - 'A mental-health app that analyzes journal emotions with GPT (Plutchik’s wheel) and links students to campus counseling when negative emotions persist for 7 days. Encouragement Award, 6th PNU SW Hackathon.'
+  - 'My first app project — built and deployed a FastAPI/MySQL backend and a Flutter cross-platform app.'
+  - 'Designed a consent-based token-snapshot scheme for safely sharing 7-day journal summaries, and a layer-based rendering system for placing items in the "mind garden".'
+stack:
+  - Flutter
+  - Dart
+  - FastAPI
+  - Python
+  - MySQL
+  - SQLAlchemy
+  - OpenAI GPT-4o
+links:
+  repo: 'https://github.com/wlsgur11/SimLog'
+featured: false
+group: 'major'
+order: 4
+draft: false
+---
+
+## 개요
+
+대학생의 정신건강을 돕는 AI 일기 앱입니다. 사용자가 하루의 경험을 기록하면 AI가 감정을 분석해 패턴을 보여주고, 부정적인 감정이 일정 기간 지속되면 교내 상담 연계를 제안합니다. 부산대학교의 낮은 상담센터 이용률과 높은 위기 신호 비율에서 출발한 서비스로, **제6회 PNU 창의융합SW해커톤에서 장려상**을 받았습니다.
+
+- **역할**: 백엔드(FastAPI·MySQL)·Flutter 앱 개발·배포
+- **팀**: 4인 (기획 2 · 개발 1 · 리서치 1)
+- **핵심**: GPT 기반 감정 분석(플루치크 감정 바퀴), 7일 위기 감지·상담 연계, 마음정원 게이미피케이션
+
+## 특히 어려웠던 것
+
+- **첫 앱 개발** — 웹만 하다 처음 크로스플랫폼 앱(Flutter)에 도전해, 학습과 개발을 병행하느라 일정 관리가 특히 어려웠습니다. 초반에 이를 파악하고 회의·기능 개발 일정에 여유를 뒀습니다.
+- **7일 요약 링크의 보안** — 요약 POST 시 무작위 토큰을 발급하고 만료·취소 정보와 함께 일기를 스냅샷으로 저장해, 이후 정확히 일치하는 토큰으로만 요약을 제공하도록 설계했습니다.
+- **마음정원 레이어 시스템** — 흙 위의 꽃·울타리·연못 속 물고기처럼 요소가 겹치는 화면을, 각 요소에 정수 레이어를 부여하고 정렬해 쌓는 방식으로 렌더링했습니다.
+
+> 상세 케이스스터디는 정리해 이어서 작성할 예정입니다.

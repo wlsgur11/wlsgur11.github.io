@@ -1,0 +1,739 @@
+---
+import { getCollection } from 'astro:content';
+import BaseHead from './BaseHead.astro';
+import Footer from './Footer.astro';
+import FormattedDate from './FormattedDate.astro';
+import Header from './Header.astro';
+import { PROFILE, SITE_DESCRIPTION, SITE_TITLE } from '../consts';
+import { type Lang, localize, useTranslations } from '../i18n';
+import { techBadgeStyle } from '../techBadge';
+
+interface Props {
+	lang: Lang;
+}
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+const en = lang === 'en';
+const pick = (ko: string, e?: string) => (en && e ? e : ko);
+const L = (o: { ko: string; en: string }) => (en ? o.en : o.ko);
+
+const introParas = [
+	{
+		ko: '부산대학교 정보컴퓨터공학부를 졸업하고, 백엔드와 인프라를 중심으로 개발합니다. 단순 구현보다 서비스가 실제 환경에서 어떻게 동작하고 유지되는지에 관심이 많습니다.',
+		en: 'I graduated in Computer Science at Pusan National University and work mainly on backend and infrastructure. I care less about just making things work and more about how a service behaves and holds up in production.',
+	},
+	{
+		ko: '부산대 AI융합교육원에서 실서비스 OJ "Code Place"의 기능 개발과 인프라 운영을 맡고 있습니다. K3s 환경의 운영 문제와 vLLM 기반 AI 조교를 다루며, 문제는 증상이 아니라 근본 원인까지 추적합니다.',
+		en: 'At PNU’s AI Convergence Education Institute I develop features and run the infrastructure for "Code Place", a production Online Judge. I handle operational issues on k3s and a vLLM-based AI tutor, and I chase problems down to the root cause, not the symptom.',
+	},
+];
+
+const highlights = [
+	{ ko: '부산대 AI융합교육원 · SW조교', en: 'PNU AI Institute · SW Assistant' },
+	{ ko: 'K3s 실서비스 운영 · 백엔드', en: 'Backend · running K3s in production' },
+	{ ko: '수상 3회 · 정보처리기사 · SQLD', en: '3 awards · Info-Processing Engineer · SQLD' },
+];
+
+const projects = (await getCollection('projects', (p) => !p.data.draft))
+	.filter((p) => p.data.featured)
+	.sort((a, b) => a.data.order - b.data.order);
+
+// 프로젝트 slug -> 로고/모노그램 매핑 (정사각 로고 없으면 mark로 폴백)
+const projMark: Record<string, string> = { 'code-place': 'CP' };
+
+const posts = (await getCollection('blog', (p) => !p.data.draft))
+	.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
+	.slice(0, 5);
+
+const experience = [
+	{
+		mark: 'AI',
+		logo: '/images/logos/pnu.png',
+		org: { ko: '부산대학교 AI융합교육원', en: 'PNU AI Convergence Education Institute' },
+		badge: { ko: '운영', en: 'Ops' },
+		meta: { ko: '2026.02 - 현재 · SW조교', en: '2026.02 - present · SW Assistant' },
+		desc: {
+			ko: '실서비스 온라인 저지 "Code Place"의 기능 개발과 인프라 운영을 담당. 3인 개발팀을 리딩하고, 멀티 노드 K3s 환경의 운영 문제를 해결하며 로컬 LLM 기반 AI 조교를 기획·개발했습니다.',
+			en: 'Own feature development and infrastructure for "Code Place", a production Online Judge. Lead a 3-person team, resolve operational issues on a multi-node K3s cluster, and built a local-LLM AI teaching assistant.',
+		},
+	},
+	{
+		mark: 'LL',
+		logo: '/images/logos/likelion.png',
+		org: { ko: 'PNU Mini Bootcamp (멋쟁이사자처럼)', en: 'PNU Mini Bootcamp (LikeLion)' },
+		badge: { ko: '부트캠프', en: 'Bootcamp' },
+		meta: { ko: '2024 - 2025 · 수료 (BE / FE)', en: '2024 - 2025 · Completed (BE / FE)' },
+		desc: {
+			ko: 'FastAPI·Redis·Spring Boot·Docker 기반 백엔드·인프라를 실습하며 총 230시간을 이수했습니다.',
+			en: 'Practiced backend and infra with FastAPI, Redis, Spring Boot, and Docker across 230 hours.',
+		},
+	},
+];
+
+const education = [
+	{
+		mark: 'PNU',
+		logo: '/images/logos/pnu.png',
+		school: { ko: '부산대학교 정보컴퓨터공학부', en: 'Pusan National University — Computer Science' },
+		meta: { ko: '2023.03 - 2026.02 · 졸업', en: '2023.03 - 2026.02 · B.S.' },
+	},
+];
+
+const stack = [
+	{ group: 'Back-end', items: ['Python', 'Java', 'FastAPI', 'Spring Boot', 'Django / DRF', 'Node.js'] },
+	{ group: 'Front-end', items: ['JavaScript', 'TypeScript', 'Dart', 'React', 'Vue', 'Flutter'] },
+	{ group: 'Database & Cache', items: ['PostgreSQL', 'Redis', 'MySQL', 'SQLite'] },
+	{ group: 'Infrastructure', items: ['Kubernetes (K3s)', 'Longhorn', 'Harbor', 'Docker', 'GitHub Actions'] },
+	{ group: 'AI / LLM', items: ['vLLM', 'Ollama', 'Qwen', 'Locust'] },
+];
+
+const awards = [
+	{
+		title: { ko: '제6회 PNU 창의융합SW해커톤', en: '6th PNU SW Hackathon' },
+		meta: { ko: '2025.08 · 팀', en: '2025.08 · Team' },
+		result: { ko: '장려상 / 소프트웨어융합교육원장상', en: 'Encouragement Award' },
+	},
+	{
+		title: { ko: 'PNU 정보컴퓨터공학부 아이디어톤', en: 'PNU CSE Ideathon' },
+		meta: { ko: '2024.12 · 팀', en: '2024.12 · Team' },
+		result: { ko: '3등 / 학과장상', en: '3rd Place' },
+	},
+	{
+		title: { ko: '제3회 PNU 메디컬 해커톤', en: '3rd PNU Medical Hackathon' },
+		meta: { ko: '2024.11 · 팀', en: '2024.11 · Team' },
+		result: { ko: '우수상 / 산학협력본부장상', en: 'Excellence Award' },
+	},
+];
+
+const certs = en
+	? [
+			['Engineer Information Processing', '2025.09'],
+			['SQLD', '2024.06'],
+			['Network Administrator Lv.2', '2022.10'],
+			['Computer Specialist Lv.2', '2022.06'],
+			['OPIc IM2', '2025.02'],
+			['Korean History Lv.3', '2025.10'],
+		]
+	: [
+			['정보처리기사', '2025.09'],
+			['SQLD', '2024.06'],
+			['네트워크관리사 2급', '2022.10'],
+			['컴퓨터활용능력 2급', '2022.06'],
+			['OPIc IM2', '2025.02'],
+			['한국사능력검정 3급', '2025.10'],
+		];
+---
+
+<!doctype html>
+<html lang={lang}>
+	<head>
+		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+	</head>
+	<body>
+		<Header />
+		<main>
+			<!-- HERO -->
+			<section class="hero">
+				<div class="hero-row">
+					<div class="hero-text">
+						<p class="eyebrow">{t('role')}</p>
+						<h1>{PROFILE.name} <span class="name-en">{PROFILE.nameEn}</span></h1>
+						{introParas.map((p) => <p class="intro">{L(p)}</p>)}
+						<nav class="contact">
+							<a href={PROFILE.github} target="_blank" rel="noopener">GitHub</a>
+							<a href={`mailto:${PROFILE.email}`}>Email</a>
+							<a href={localize('/blog', lang)}>Blog</a>
+						</nav>
+					</div>
+					<img class="portrait" src="/images/profile.png" alt={PROFILE.name} width="132" height="132" />
+				</div>
+				<ul class="highlights">
+					{highlights.map((h, i) => <li style={`--i:${i}`}>{L(h)}</li>)}
+				</ul>
+			</section>
+
+			<!-- EXPERIENCE -->
+			<section class="reveal">
+				<div class="sec-head"><h2>{en ? 'Experience' : '경험'}</h2></div>
+				<div class="grid">
+					{
+						experience.map((e) => (
+							<article class="card">
+								{
+									e.logo ? (
+										<img class="logo-img" src={e.logo} alt="" width="46" height="46" />
+									) : (
+										<div class="logo mono">{e.mark}</div>
+									)
+								}
+								<div class="card-body">
+									<div class="card-top">
+										<h3>{L(e.org)}</h3>
+										<span class="badge">{L(e.badge)}</span>
+									</div>
+									<span class="meta">{L(e.meta)}</span>
+									<p>{L(e.desc)}</p>
+								</div>
+							</article>
+						))
+					}
+				</div>
+			</section>
+
+			<!-- FEATURED PROJECTS -->
+			<section class="reveal">
+				<div class="sec-head">
+					<h2>{en ? 'Featured projects' : '대표 프로젝트'}</h2>
+					<a href={localize('/projects', lang)}>{t('viewAll')}</a>
+				</div>
+				<div class="grid">
+					{
+						projects.map((p) => (
+							<a class="card link" href={localize(`/projects/${p.id}/`, lang)}>
+								{
+									p.data.logo ? (
+										<img class="logo-img" src={p.data.logo} alt="" width="46" height="46" />
+									) : (
+										<div class="logo mono">{projMark[p.id] ?? p.data.title.slice(0, 2)}</div>
+									)
+								}
+								<div class="card-body">
+									<div class="card-top">
+										<h3>{pick(p.data.title, p.data.titleEn)}</h3>
+										<span class="badge">
+											{pick(p.data.badge ?? '', p.data.badgeEn) || (en ? 'Production' : '실서비스')}
+										</span>
+									</div>
+									<span class="meta">{p.data.period}</span>
+									<p>{pick(p.data.description, p.data.descriptionEn)}</p>
+									<span class="more">{t('viewDetail')}</span>
+								</div>
+							</a>
+						))
+					}
+				</div>
+			</section>
+
+			<!-- TECH STACK -->
+			<section class="reveal">
+				<div class="sec-head"><h2>Tech Stack</h2></div>
+				<div class="stack">
+					{
+						stack.map((s) => (
+							<div class="stack-group">
+								<h3>{s.group}</h3>
+								<ul>
+									{s.items.map((it) => (
+										<li class="pill" style={techBadgeStyle(it)}>{it}</li>
+									))}
+								</ul>
+							</div>
+						))
+					}
+				</div>
+			</section>
+
+			<!-- AWARDS -->
+			<section class="reveal">
+				<div class="sec-head"><h2>{en ? 'Awards' : '수상'}</h2></div>
+				<div class="rows">
+					{
+						awards.map((a) => (
+							<div class="row">
+								<div>
+									<span class="row-title">{L(a.title)}</span>
+									<span class="row-sub">{L(a.result)}</span>
+								</div>
+								<span class="meta">{L(a.meta)}</span>
+							</div>
+						))
+					}
+				</div>
+			</section>
+
+			<!-- EDUCATION -->
+			<section class="reveal">
+				<div class="sec-head"><h2>{en ? 'Education' : '학력'}</h2></div>
+				<div class="grid">
+					{
+						education.map((e) => (
+							<article class="card">
+								{
+									e.logo ? (
+										<img class="logo-img" src={e.logo} alt="" width="46" height="46" />
+									) : (
+										<div class="logo mono">{e.mark}</div>
+									)
+								}
+								<div class="card-body">
+									<div class="card-top"><h3>{L(e.school)}</h3></div>
+									<span class="meta">{L(e.meta)}</span>
+								</div>
+							</article>
+						))
+					}
+				</div>
+			</section>
+
+			<!-- CERTIFICATES -->
+			<section class="reveal">
+				<div class="sec-head"><h2>{en ? 'Certificates' : '자격증'}</h2></div>
+				<ul class="certs">
+					{
+						certs.map(([name, date]) => (
+							<li>
+								<span>{name}</span>
+								<span class="meta">{date}</span>
+							</li>
+						))
+					}
+				</ul>
+			</section>
+
+			<!-- WRITING -->
+			<section class="reveal">
+				<div class="sec-head">
+					<h2>{t('writing')}</h2>
+					<a href={localize('/blog', lang)}>{t('viewAll')}</a>
+				</div>
+				<ul class="posts">
+					{
+						posts.map((post) => (
+							<li>
+								<a href={localize(`/blog/${post.id}/`, lang)}>
+									<span class="post-title">{pick(post.data.title, post.data.titleEn)}</span>
+									<FormattedDate date={post.data.pubDate} />
+								</a>
+							</li>
+						))
+					}
+				</ul>
+			</section>
+		</main>
+		<Footer />
+	</body>
+</html>
+
+<style>
+	main {
+		width: 940px;
+		max-width: calc(100% - 2em);
+	}
+	h1,
+	h2,
+	h3 {
+		font-weight: 800;
+	}
+
+	/* hero */
+	.hero {
+		padding: 2.5em 0 3em;
+		position: relative;
+	}
+	/* 은은한 배경 글로우 (reactbits 느낌의 앰비언트 모션) */
+	.hero::before {
+		content: '';
+		position: absolute;
+		z-index: -1;
+		top: -30%;
+		left: -15%;
+		width: 60%;
+		height: 380px;
+		background: radial-gradient(50% 60% at 40% 30%, rgba(var(--accent-rgb), 0.16), transparent 70%);
+		filter: blur(30px);
+		pointer-events: none;
+	}
+	@media (prefers-reduced-motion: no-preference) {
+		.hero::before {
+			animation: glow-drift 16s ease-in-out infinite alternate;
+		}
+		/* 로드 시 히어로 요소가 순차로 떠오른다 */
+		.hero-text > * {
+			animation: rise 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+		}
+		.hero-text > *:nth-child(1) {
+			animation-delay: 0.03s;
+		}
+		.hero-text > *:nth-child(2) {
+			animation-delay: 0.1s;
+		}
+		.hero-text > *:nth-child(3) {
+			animation-delay: 0.17s;
+		}
+		.hero-text > *:nth-child(4) {
+			animation-delay: 0.24s;
+		}
+		.hero-text > *:nth-child(5) {
+			animation-delay: 0.31s;
+		}
+		.portrait {
+			animation: fade-in 0.9s ease 0.15s both;
+		}
+		.highlights li {
+			animation: rise 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+			animation-delay: calc(0.36s + var(--i, 0) * 0.06s);
+		}
+	}
+	@keyframes rise {
+		from {
+			opacity: 0;
+			transform: translateY(14px);
+		}
+		to {
+			opacity: 1;
+			transform: none;
+		}
+	}
+	@keyframes fade-in {
+		from {
+			opacity: 0;
+		}
+		to {
+			opacity: 1;
+		}
+	}
+	@keyframes glow-drift {
+		from {
+			transform: translate(-4%, 0) scale(1);
+			opacity: 0.7;
+		}
+		to {
+			transform: translate(8%, 4%) scale(1.15);
+			opacity: 1;
+		}
+	}
+	.hero-row {
+		display: flex;
+		align-items: flex-start;
+		justify-content: space-between;
+		gap: 2em;
+	}
+	.hero-text {
+		flex: 1;
+		min-width: 0;
+	}
+	.eyebrow {
+		font-size: 0.9em;
+		color: var(--accent);
+		margin: 0 0 0.5em;
+		font-weight: 700;
+	}
+	.hero h1 {
+		font-size: 3em;
+		font-weight: 800;
+		letter-spacing: -0.025em;
+		line-height: 1.1;
+		margin: 0 0 0.6em;
+	}
+	.name-en {
+		color: rgb(var(--gray));
+		font-weight: 700;
+		font-size: 0.45em;
+		letter-spacing: 0;
+		margin-left: 0.4em;
+	}
+	.intro {
+		color: rgb(var(--gray-dark));
+		max-width: 60ch;
+		margin: 0 0 0.8em;
+	}
+	.contact {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 1.2em;
+		margin-top: 1.2em;
+		font-size: 0.92em;
+	}
+	.contact a {
+		color: rgb(var(--gray-dark));
+		text-decoration: none;
+		border-bottom: 1px solid rgba(var(--gray), 0.4);
+		padding-bottom: 2px;
+	}
+	.contact a:hover {
+		color: var(--accent);
+		border-color: var(--accent);
+	}
+	.portrait {
+		flex: none;
+		width: 132px;
+		height: 132px;
+		border-radius: 50%;
+		object-fit: cover;
+		background: #fff;
+		border: 1px solid rgba(var(--gray), 0.2);
+	}
+	.highlights {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.6em;
+		list-style: none;
+		padding: 0;
+		margin: 2em 0 0;
+	}
+	.highlights li {
+		font-size: 0.85em;
+		color: rgb(var(--gray-dark));
+		padding: 0.4em 0.85em;
+		border: 1px solid rgba(var(--gray), 0.2);
+		border-radius: 8px;
+		background: rgba(var(--gray-light), 0.3);
+	}
+
+	/* section heads */
+	section {
+		padding: 2.4em 0;
+		border-top: 1px solid rgba(var(--gray), 0.15);
+	}
+	.hero {
+		border-top: none;
+	}
+	.sec-head {
+		display: flex;
+		align-items: baseline;
+		justify-content: space-between;
+		margin-bottom: 1.3em;
+	}
+	.sec-head h2 {
+		font-size: 1.3em;
+		margin: 0;
+	}
+	.sec-head a {
+		font-size: 0.88em;
+		text-decoration: none;
+		color: rgb(var(--gray));
+	}
+	.sec-head a:hover {
+		color: var(--accent);
+	}
+
+	/* card grid (experience, projects, education) */
+	.grid {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 0.9em;
+	}
+	.card {
+		display: flex;
+		gap: 1em;
+		padding: 1.2em 1.3em;
+		border: 1px solid rgba(var(--gray), 0.18);
+		border-radius: 14px;
+		background: rgba(var(--gray-light), 0.22);
+		text-decoration: none;
+		color: inherit;
+		transition:
+			border-color 0.2s ease,
+			background-color 0.3s ease,
+			transform 0.25s ease,
+			box-shadow 0.25s ease;
+	}
+	.card:hover {
+		transform: translateY(-2px);
+		box-shadow: 0 8px 24px rgba(var(--black), 0.06);
+	}
+	.card.link:hover {
+		border-color: var(--accent);
+	}
+	.logo {
+		flex: none;
+		width: 46px;
+		height: 46px;
+		border-radius: 11px;
+		display: grid;
+		place-items: center;
+		font-weight: 800;
+		font-size: 0.9em;
+		color: var(--accent);
+		background: rgba(var(--gray), 0.12);
+		border: 1px solid rgba(var(--gray), 0.18);
+	}
+	.logo.mono {
+		font-family: var(--font-mono);
+		letter-spacing: -0.03em;
+	}
+	.logo-img {
+		flex: none;
+		width: 46px;
+		height: 46px;
+		border-radius: 11px;
+		padding: 6px;
+		background: #fff;
+		border: 1px solid rgba(var(--gray), 0.18);
+		object-fit: contain;
+	}
+	.card-body {
+		min-width: 0;
+	}
+	.card-top {
+		display: flex;
+		align-items: center;
+		gap: 0.6em;
+		flex-wrap: wrap;
+	}
+	.card-top h3 {
+		font-size: 1.1em;
+		margin: 0;
+	}
+	.badge {
+		font-family: var(--font-mono);
+		font-size: 0.72em;
+		font-weight: 700;
+		padding: 0.28em 0.7em;
+		border-radius: 999px;
+		background: rgba(var(--accent-rgb), 0.16);
+		border: 1px solid rgba(var(--accent-rgb), 0.4);
+		color: var(--accent);
+		white-space: nowrap;
+	}
+	.card-body .meta {
+		display: block;
+		margin: 0.3em 0;
+	}
+	.card-body p {
+		margin: 0.4em 0 0;
+		color: rgb(var(--gray-dark));
+		font-size: 0.94em;
+	}
+	.stack-line {
+		font-size: 0.83em !important;
+		color: rgb(var(--gray)) !important;
+	}
+	.more {
+		display: inline-block;
+		margin-top: 0.7em;
+		font-size: 0.85em;
+		color: var(--accent);
+	}
+	.meta {
+		font-size: 0.82em;
+		color: rgb(var(--gray));
+		white-space: nowrap;
+	}
+
+	/* tech stack pills */
+	.stack {
+		display: flex;
+		flex-direction: column;
+		gap: 1.1em;
+	}
+	.stack-group {
+		display: grid;
+		grid-template-columns: 10em 1fr;
+		gap: 1em;
+		align-items: start;
+	}
+	.stack-group h3 {
+		font-size: 0.95em;
+		margin: 0.2em 0 0;
+		color: rgb(var(--gray-dark));
+	}
+	.stack-group ul {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.45em;
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+	.pill {
+		font-size: 0.82em;
+		padding: 0.35em 0.75em;
+		border-radius: 8px;
+		background: rgba(var(--gray), 0.14);
+		color: rgb(var(--gray-dark));
+	}
+
+	/* awards rows */
+	.rows {
+		display: flex;
+		flex-direction: column;
+	}
+	.row {
+		display: flex;
+		justify-content: space-between;
+		align-items: baseline;
+		gap: 1em;
+		padding: 0.8em 0;
+		border-bottom: 1px solid rgba(var(--gray), 0.12);
+	}
+	.row:last-child {
+		border-bottom: none;
+	}
+	.row-title {
+		display: block;
+	}
+	.row-sub {
+		display: block;
+		font-size: 0.86em;
+		color: rgb(var(--gray));
+		margin-top: 0.15em;
+	}
+
+	/* certs */
+	.certs {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 0.3em 2em;
+		list-style: none;
+		padding: 0;
+		margin: 0;
+	}
+	.certs li {
+		display: flex;
+		justify-content: space-between;
+		align-items: baseline;
+		gap: 1em;
+		padding: 0.55em 0;
+		border-bottom: 1px solid rgba(var(--gray), 0.12);
+	}
+
+	/* posts */
+	.posts {
+		list-style: none;
+		padding: 0;
+		margin: 0;
+	}
+	.posts li a {
+		display: flex;
+		justify-content: space-between;
+		align-items: baseline;
+		gap: 1em;
+		padding: 0.7em 0;
+		border-bottom: 1px solid rgba(var(--gray), 0.12);
+		text-decoration: none;
+		color: inherit;
+	}
+	.posts li:last-child a {
+		border-bottom: none;
+	}
+	.post-title {
+		color: rgb(var(--black));
+	}
+	.posts li a:hover .post-title {
+		color: var(--accent);
+	}
+	.posts :global(time) {
+		font-size: 0.82em;
+		color: rgb(var(--gray));
+		white-space: nowrap;
+	}
+
+	@media (max-width: 720px) {
+		.hero h1 {
+			font-size: 2.3em;
+		}
+		.portrait {
+			width: 96px;
+			height: 96px;
+		}
+		.grid,
+		.stack-group,
+		.certs {
+			grid-template-columns: 1fr;
+		}
+		.stack-group {
+			gap: 0.4em;
+		}
+	}
+</style>

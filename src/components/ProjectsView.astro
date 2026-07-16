@@ -1,0 +1,343 @@
+---
+import { getCollection } from 'astro:content';
+import BaseHead from './BaseHead.astro';
+import Footer from './Footer.astro';
+import Header from './Header.astro';
+import { SITE_TITLE } from '../consts';
+import { type Lang, localize, useTranslations } from '../i18n';
+
+interface Props {
+	lang: Lang;
+}
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+const pick = (ko: string, en?: string) => (lang === 'en' && en ? en : ko);
+
+const projects = (await getCollection('projects', (p) => !p.data.draft)).sort(
+	(a, b) => a.data.order - b.data.order,
+);
+const byGroup = (g: string) => projects.filter((p) => p.data.group === g);
+const groups = [
+	{ title: t('majorActivities'), variant: 'row', items: byGroup('activity') },
+	{ title: t('majorProjects'), variant: 'cover', items: byGroup('major') },
+	{ title: t('moreProjects'), variant: 'cover', items: byGroup('more') },
+].filter((g) => g.items.length > 0);
+
+const githubPath =
+	'M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z';
+---
+
+<!doctype html>
+<html lang={lang}>
+	<head>
+		<BaseHead title={`${t('projectsTitle')} · ${SITE_TITLE}`} description={t('projectsSubtitle')} />
+	</head>
+	<body>
+		<Header />
+		<main>
+			<h1>{t('projectsTitle')}</h1>
+			<p class="meta">{t('projectsSubtitle')}</p>
+
+			{
+				groups.map((g) => (
+					<section class="group">
+						<h2 class="group-title">{g.title}</h2>
+						<div class={`list ${g.variant}`}>
+							{g.items.map((p) => {
+								const href = localize(`/projects/${p.id}/`, lang);
+								const bullets =
+									lang === 'en' && p.data.summaryEn.length ? p.data.summaryEn : p.data.summary;
+								return (
+									<article class={`card ${g.variant}`}>
+										{g.variant === 'cover' ? (
+											<a class="cover-link" href={href} aria-label={p.data.title}>
+												<div class="cover">
+													{p.data.cover ? (
+														<img src={p.data.cover} alt="" />
+													) : (
+														<div class="cover-fallback">
+															{p.data.logo ? (
+																<img class="mark" src={p.data.logo} alt="" />
+															) : (
+																<span class="mono">{p.data.title.slice(0, 2)}</span>
+															)}
+														</div>
+													)}
+												</div>
+											</a>
+										) : (
+											<a class="logo-link" href={href} aria-label={p.data.title}>
+												{p.data.logo ? (
+													<img class="logo-img" src={p.data.logo} alt="" />
+												) : (
+													<div class="logo-mono">{p.data.title.slice(0, 2)}</div>
+												)}
+											</a>
+										)}
+										<div class="body">
+											<div class="top">
+												<a class="title-link" href={href}>
+													<h3>{pick(p.data.title, p.data.titleEn)}</h3>
+												</a>
+												{(p.data.badge || p.data.badgeEn) && (
+													<span class="cat">{pick(p.data.badge ?? '', p.data.badgeEn)}</span>
+												)}
+											</div>
+											<p class="role">{pick(p.data.role, p.data.roleEn)} · {p.data.period}</p>
+											<ul class="bullets">
+												{bullets.map((b) => (
+													<li>{b}</li>
+												))}
+											</ul>
+											<div class="foot">
+												{p.data.links.repo && (
+													<a class="ext" href={p.data.links.repo} target="_blank" rel="noopener">
+														<svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true">
+															<path fill="currentColor" d={githubPath} />
+														</svg>
+														GitHub
+													</a>
+												)}
+												<a class="more" href={href}>{t('viewDetail')}</a>
+											</div>
+										</div>
+									</article>
+								);
+							})}
+						</div>
+					</section>
+				))
+			}
+		</main>
+		<Footer />
+	</body>
+</html>
+
+<style>
+	main {
+		width: 940px;
+		max-width: calc(100% - 2em);
+	}
+	.group {
+		margin-top: 2.4em;
+	}
+	.group-title {
+		font-size: 1.05em;
+		font-weight: 800;
+		margin: 0 0 1.1em;
+		padding-bottom: 0.5em;
+		border-bottom: 1px solid rgba(var(--gray), 0.16);
+	}
+	.list {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 1.1em;
+		align-items: start;
+	}
+
+	/* base card */
+	.card {
+		border: 1px solid rgba(var(--gray), 0.18);
+		border-radius: 14px;
+		background: rgba(var(--gray-light), 0.22);
+		overflow: hidden;
+		transition:
+			border-color 0.2s ease,
+			background-color 0.3s ease,
+			transform 0.25s ease,
+			box-shadow 0.25s ease;
+	}
+	.card:hover {
+		border-color: var(--accent);
+		transform: translateY(-2px);
+		box-shadow: 0 8px 24px rgba(var(--black), 0.06);
+	}
+
+	/* row variant (activity) */
+	.card.row {
+		display: flex;
+		gap: 1.1em;
+		padding: 1.4em 1.5em;
+	}
+	.logo-link {
+		flex: none;
+	}
+	.logo-img {
+		width: 54px;
+		height: 54px;
+		border-radius: 13px;
+		padding: 7px;
+		background: #fff;
+		border: 1px solid rgba(var(--gray), 0.18);
+		object-fit: contain;
+		display: block;
+		margin: 0;
+	}
+	.logo-mono {
+		width: 54px;
+		height: 54px;
+		border-radius: 13px;
+		display: grid;
+		place-items: center;
+		font-family: var(--font-mono);
+		font-weight: 800;
+		color: var(--accent);
+		background: rgba(var(--gray), 0.12);
+		border: 1px solid rgba(var(--gray), 0.18);
+	}
+
+	/* cover variant (projects) */
+	.card.cover {
+		display: flex;
+		flex-direction: column;
+	}
+	.cover-link {
+		display: block;
+	}
+	.cover {
+		aspect-ratio: 16 / 9;
+		overflow: hidden;
+		background: rgba(var(--gray), 0.1);
+		border-bottom: 1px solid rgba(var(--gray), 0.12);
+	}
+	.cover img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		display: block;
+		border-radius: 0;
+		border: none;
+		margin: 0;
+	}
+	.cover-fallback {
+		width: 100%;
+		height: 100%;
+		display: grid;
+		place-items: center;
+		background:
+			radial-gradient(120% 120% at 30% 20%, rgba(var(--accent-rgb), 0.16), transparent 60%),
+			rgba(var(--gray-light), 0.5);
+	}
+	.cover-fallback .mark {
+		width: 66px;
+		height: 66px;
+		object-fit: contain;
+		background: #fff;
+		border-radius: 15px;
+		padding: 10px;
+		border: 1px solid rgba(var(--gray), 0.15);
+		margin: 0;
+	}
+	.cover-fallback .mono {
+		font-family: var(--font-mono);
+		font-weight: 800;
+		font-size: 2em;
+		color: var(--accent);
+	}
+	.card.cover .body {
+		padding: 1.2em 1.3em 1.1em;
+	}
+
+	/* body (shared) */
+	.body {
+		min-width: 0;
+		display: flex;
+		flex-direction: column;
+		flex: 1;
+	}
+	.top {
+		display: flex;
+		align-items: center;
+		gap: 0.55em;
+		flex-wrap: wrap;
+	}
+	.title-link {
+		text-decoration: none;
+		color: inherit;
+	}
+	.title-link h3 {
+		font-size: 1.2em;
+		font-weight: 800;
+		margin: 0;
+	}
+	.card:hover .title-link h3 {
+		color: var(--accent);
+	}
+	.cat {
+		font-family: var(--font-mono);
+		font-size: 0.72em;
+		font-weight: 700;
+		padding: 0.28em 0.7em;
+		border-radius: 999px;
+		background: rgba(var(--accent-rgb), 0.16);
+		border: 1px solid rgba(var(--accent-rgb), 0.4);
+		color: var(--accent);
+		white-space: nowrap;
+	}
+	.role {
+		font-size: 0.82em;
+		color: rgb(var(--gray));
+		margin: 0.4em 0 0.7em;
+	}
+	.bullets {
+		margin: 0 0 1em;
+		padding-left: 1.1em;
+		display: flex;
+		flex-direction: column;
+		gap: 0.35em;
+	}
+	.bullets li {
+		font-size: 0.92em;
+		color: rgb(var(--gray-dark));
+		line-height: 1.6;
+	}
+	.foot {
+		display: flex;
+		align-items: center;
+		gap: 1.1em;
+		margin-top: auto;
+	}
+	.ext,
+	.more {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.35em;
+		font-size: 0.85em;
+		font-weight: 700;
+		text-decoration: none;
+	}
+	.ext {
+		color: rgb(var(--gray-dark));
+	}
+	.ext:hover {
+		color: var(--accent);
+	}
+	.more {
+		color: var(--accent);
+		margin-left: auto;
+	}
+
+	@media (prefers-reduced-motion: no-preference) {
+		main > h1,
+		main > .meta,
+		.group-title,
+		.list > .card {
+			animation: text-rise 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+		}
+		.list > .card:nth-child(2) {
+			animation-delay: 0.08s;
+		}
+		.list > .card:nth-child(3) {
+			animation-delay: 0.14s;
+		}
+		.list > .card:nth-child(n + 4) {
+			animation-delay: 0.2s;
+		}
+	}
+
+	@media (max-width: 720px) {
+		.list {
+			grid-template-columns: 1fr;
+		}
+	}
+</style>

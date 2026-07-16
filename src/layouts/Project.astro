@@ -1,0 +1,111 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import { type Lang, useTranslations } from '../i18n';
+import { techBadgeStyle } from '../techBadge';
+
+type Props = CollectionEntry<'projects'>['data'] & { lang?: Lang };
+
+const {
+	title,
+	titleEn,
+	description,
+	descriptionEn,
+	role,
+	roleEn,
+	period,
+	stack,
+	links,
+	logo,
+	lang = 'ko',
+} = Astro.props;
+const t = useTranslations(lang);
+const pick = (ko: string, en?: string) => (lang === 'en' && en ? en : ko);
+---
+
+<html lang={lang}>
+	<head>
+		<BaseHead title={pick(title, titleEn)} description={pick(description, descriptionEn)} />
+	</head>
+	<body>
+		<Header />
+		<main>
+			<article class="prose">
+				<header class="project-head">
+					{logo && <img class="proj-logo" src={logo} alt="" width="56" height="56" />}
+					<p class="meta">{pick(role, roleEn)} · {period}</p>
+					<h1>{pick(title, titleEn)}</h1>
+					<p class="lead">{pick(description, descriptionEn)}</p>
+					<ul class="tags">
+						{stack.map((s) => <li class="tag" style={techBadgeStyle(s)}>{s}</li>)}
+					</ul>
+					{
+						(links.repo || links.live) && (
+							<p class="links">
+								{links.live && (
+									<a href={links.live} target="_blank" rel="noopener">
+										🔗 Live
+									</a>
+								)}
+								{links.repo && (
+									<a href={links.repo} target="_blank" rel="noopener">
+										↗ Repository
+									</a>
+								)}
+							</p>
+						)
+					}
+					{lang === 'en' && t('koreanNotice') && <p class="notice">{t('koreanNotice')}</p>}
+					<hr />
+				</header>
+				<slot />
+			</article>
+		</main>
+		<Footer />
+	</body>
+</html>
+
+<style>
+	.prose {
+		width: 760px;
+		max-width: calc(100% - 2em);
+		margin: auto;
+		padding: 1em;
+	}
+	.project-head {
+		padding: 1.5em 0 0.5em;
+	}
+	.proj-logo {
+		width: 56px;
+		height: 56px;
+		border-radius: 13px;
+		padding: 8px;
+		background: #fff;
+		border: 1px solid rgba(var(--gray), 0.18);
+		object-fit: contain;
+		margin-bottom: 0.8em;
+	}
+	.project-head h1 {
+		margin: 0.1em 0 0.3em;
+	}
+	.lead {
+		font-size: 1.15em;
+		color: rgb(var(--gray-dark));
+	}
+	.links {
+		display: flex;
+		gap: 1.2em;
+		margin-top: 1em;
+	}
+	.links a {
+		text-decoration: none;
+		font-weight: 700;
+	}
+	.notice {
+		font-size: 0.85em;
+		color: rgb(var(--gray));
+		margin: 0.8em 0 0;
+	}
+</style>

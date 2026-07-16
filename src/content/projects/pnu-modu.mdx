@@ -1,0 +1,49 @@
+---
+title: 'PNU-Modu — 서버 없는 Git 기반 협업 CMS'
+titleEn: 'PNU-Modu — a serverless, Git-based collaborative CMS'
+description: '비전공 교직원이 마크다운 한 줄로 인쇄물 수준의 디지털 브로슈어를 만들고, 저장 한 번이면 자동 배포되는 무설치형 CMS. GitHub API와 git 커밋만으로 인증·협업 잠금·CI/CD를 구현했으며, 단독으로 설계·개발했습니다.'
+descriptionEn: 'A zero-install CMS where non-developer staff build print-grade digital brochures with one line of Markdown, and a single save auto-deploys. Auth, collaboration locking, and CI/CD were built on GitHub API and git commits alone. Designed and developed solo.'
+role: '단독 설계·개발 (아키텍트 + 풀 개발)'
+roleEn: 'Solo architect & full-stack developer'
+period: '2026.05 ~'
+logo: '/images/logos/pnu.png'
+badge: '서버리스 CMS'
+badgeEn: 'Serverless CMS'
+summary:
+  - '비전공 교직원이 마크다운 한 줄로 인쇄물 수준의 브로슈어를 만들고, 저장 한 번이면 자동 배포되는 무설치 협업 CMS를 단독 설계·개발했습니다.'
+  - '백엔드·DB 없이 GitHub API와 git 커밋만으로 인증·협업 잠금·CI/CD를 구현했습니다.'
+  - '.locks 커밋 기반 분산 Soft Lock으로 다중 사용자 동시 편집 충돌을 막았습니다.'
+summaryEn:
+  - 'Designed and built solo a zero-install CMS where non-developer staff create print-grade brochures with one line of Markdown, auto-deployed on save.'
+  - 'Implemented auth, collaboration locking, and CI/CD using only the GitHub API and git commits — no backend, no DB.'
+  - 'Prevented concurrent-edit conflicts with a distributed Soft Lock built on .locks commits.'
+stack:
+  - React 19
+  - Docusaurus 3
+  - MDX
+  - Vanilla JS
+  - GitHub REST API
+  - GitHub Actions
+  - GitHub Pages
+links:
+  live: 'https://pnuai.github.io'
+  repo: 'https://github.com/pnuai/PNU-Modu'
+featured: true
+group: 'major'
+order: 3
+draft: false
+---
+
+## 개요
+
+부산대 AI융합교육원의 온라인 디지털 브로슈어를, **비전공 교직원이 코드를 몰라도 직접 제작·배포**할 수 있게 만든 무설치형 협업 CMS입니다. 원장님의 "교직원 모두가 마크다운과 GitHub를 다룰 수 있어야 한다"는 방침에서 출발했지만, "개발자인 나조차 어려운데 비전공자는?"이라는 관점에서 문제를 다시 정의해, **복잡한 기술을 사용자가 체감하지 않도록 완전히 숨기는** 방향으로 설계했습니다. 지시받은 과업이 아니라 스스로 판단해 만들어 공개했고, 도입 직전 단계까지 추진됐습니다.
+
+## 핵심
+
+- **서버리스 Git 기반 CMS** — 백엔드·DB 없이 브라우저에서 GitHub REST API를 직접 호출. 저장 버튼 한 번이 곧 git 커밋 → CI/CD → 정적 배포.
+- **Soft Lock 분산 협업 잠금** — `.locks/*.json` 커밋으로 다중 사용자 동시 편집 충돌을 방지. heartbeat/TTL 크래시 복구, `[skip ci]`로 컨트롤/데이터 플레인 분리.
+- **`:::` 디렉티브 DSL** — 마크다운 한 줄을 디자인된 React 브로슈어 컴포넌트로 변환(디렉티브 15종). 콘텐츠와 디자인을 분리해 비전공자도 안전하게 저작.
+
+기술 스택: React 19 · Docusaurus 3 · MDX · Vanilla JS(CMS) · GitHub REST/Actions/Pages.
+
+> 상세 케이스스터디(Soft Lock 프로토콜, DSL 파이프라인, 인쇄 CSS 등)는 정리해 이어서 작성할 예정입니다.

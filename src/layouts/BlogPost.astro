@@ -1,0 +1,105 @@
+---
+import { Image } from 'astro:assets';
+import type { CollectionEntry } from 'astro:content';
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import FormattedDate from '../components/FormattedDate.astro';
+import Header from '../components/Header.astro';
+import { type Lang, useTranslations } from '../i18n';
+
+type Props = CollectionEntry<'blog'>['data'] & { lang?: Lang };
+
+const {
+	title,
+	titleEn,
+	description,
+	descriptionEn,
+	pubDate,
+	updatedDate,
+	heroImage,
+	lang = 'ko',
+} = Astro.props;
+const t = useTranslations(lang);
+const displayTitle = lang === 'en' && titleEn ? titleEn : title;
+const displayDesc = lang === 'en' && descriptionEn ? descriptionEn : description;
+---
+
+<html lang={lang}>
+	<head>
+		<BaseHead title={displayTitle} description={displayDesc} />
+		<style>
+			main {
+				width: calc(100% - 2em);
+				max-width: 100%;
+				margin: 0;
+			}
+			.hero-image {
+				width: 100%;
+			}
+			.hero-image img {
+				display: block;
+				margin: 0 auto;
+				border-radius: 12px;
+				box-shadow: var(--box-shadow);
+			}
+			.prose {
+				width: 720px;
+				max-width: calc(100% - 2em);
+				margin: auto;
+				padding: 1em;
+			}
+			.title {
+				margin-bottom: 1.6em;
+				padding: 1.5em 0 1em;
+				text-align: left;
+			}
+			.date {
+				font-family: var(--font-mono);
+				font-size: 0.8em;
+				margin-bottom: 0.6em;
+				color: rgb(var(--gray));
+			}
+			.last-updated-on {
+				font-style: italic;
+			}
+			.notice {
+				font-size: 0.85em;
+				color: rgb(var(--gray));
+				margin: 0.6em 0 0;
+			}
+			.title hr {
+				margin: 1em 0 0;
+			}
+		</style>
+	</head>
+
+	<body>
+		<Header />
+		<main>
+			<article>
+				<div class="hero-image">
+					{heroImage && <Image width={1020} height={510} src={heroImage} alt="" />}
+				</div>
+				<div class="prose">
+					<div class="title">
+						<div class="date">
+							<FormattedDate date={pubDate} />
+							{
+								updatedDate && (
+									<div class="last-updated-on">
+										Last updated on <FormattedDate date={updatedDate} />
+									</div>
+								)
+							}
+						</div>
+						<h1>{displayTitle}</h1>
+						{lang === 'en' && t('koreanNotice') && <p class="notice">{t('koreanNotice')}</p>}
+						<hr />
+					</div>
+					<slot />
+				</div>
+			</article>
+		</main>
+		<Footer />
+	</body>
+</html>

@@ -1,0 +1,95 @@
+---
+title: 'Code Place — 부산대 온라인 저지 플랫폼'
+titleEn: 'Code Place — PNU Online Judge Platform'
+description: '부산대학교 교양필수 기초컴퓨터프로그래밍 수업에 실제로 사용되는 온라인 저지(OJ). Django·Vue·Kubernetes(K3s) 위에서 인프라·백엔드를 맡고, 로컬 LLM 기반 AI 조교를 기획·개발했습니다.'
+descriptionEn: 'A production Online Judge used in PNU''s mandatory intro-to-programming course. Owned infra & backend on Django·Vue·Kubernetes(K3s) and built a local-LLM AI teaching assistant.'
+role: 'Backend / Infra (3인 개발팀 리딩)'
+roleEn: 'Backend / Infra (led a 3-person team)'
+period: '2026.02 ~ 진행 중'
+logo: '/images/logos/code-place.svg'
+badge: '실서비스'
+badgeEn: 'Production'
+summary:
+  - '부산대 교양필수 수업에 실제 쓰이는 온라인 저지(OJ), 실사용자 약 800명. 인프라·백엔드를 맡아 3인 팀을 리딩했습니다.'
+  - '로컬 LLM(vLLM) 기반 AI 조교를 기획·개발하고, Locust 부하 테스트로 동접 30명을 3초 안에 처리하도록 서빙을 최적화했습니다.'
+  - 'K3s 클러스터를 직접 운영하며 크래시루프·CNPG WAL 폭주 같은 실서비스 장애를 근본 원인까지 진단·복구했습니다.'
+summaryEn:
+  - 'A production Online Judge used in PNU’s mandatory course (~800 users). Owned infra & backend and led a 3-person team.'
+  - 'Designed and built a local-LLM (vLLM) AI tutor, tuned via Locust load tests to serve 30 concurrent users within 3 seconds.'
+  - 'Ran the K3s cluster directly, diagnosing production incidents (crash-loops, a CNPG WAL runaway) down to root cause.'
+stack:
+  - Django 3.2→5.2
+  - DRF
+  - Vue 2
+  - PostgreSQL
+  - Redis
+  - Kubernetes(K3s)
+  - Longhorn
+  - Harbor
+  - GitHub Actions
+  - vLLM
+links:
+  live: 'https://code.pusan.ac.kr/'
+  repo: 'https://github.com/pnu-code-place/code-place'
+featured: true
+group: 'activity'
+order: 1
+draft: false
+---
+
+## 플랫폼 소개
+
+**Code Place**는 부산대학교의 공식 온라인 저지(Online Judge) 플랫폼으로, 약 **800명의 실사용자**가 프로그래밍 실습과 수업 과제에 사용하고 있습니다. 교양필수 과목 **기초컴퓨터프로그래밍**의 실습 환경으로 실제 운영되며, 오픈소스 [QingdaoU OJ](https://github.com/QingdaoU/OnlineJudge)를 기반으로 부산대 환경에 맞춰 재구축했습니다.
+
+부산대 AI융합교육원 **학생연구원(SW조교)**으로서, 플랫폼 유지보수·기능 개발·운영 트러블슈팅, 그리고 AI 조교 개발에 참여했습니다. 팀은 8명, 그중 **3인 개발팀을 리딩**하며 인프라/DevOps와 백엔드 주요 기능을 맡았습니다.
+
+## 주요 기여
+
+- 실사용자 약 800명이 쓰는 부산대 공식 OJ의 유지보수·기능 개발·운영 이슈 대응
+- k3s 기반 멀티 노드 환경에서 배포·런타임 이슈 진단
+- 서비스 안정성에 영향을 주는 Longhorn 스토리지·컨테이너 오케스트레이션 문제 조사
+- 로그·쿠버네티스 리소스·서비스 동작을 함께 분석하며 안정적인 운영 지원
+- vLLM 기반 AI 조교를 기획·개발해 프로그래밍 학습을 지원
+
+## 시스템 아키텍처
+
+온프레미스 **K3s** 클러스터 위에서 전 구성요소를 컨테이너로 운영합니다.
+
+**서비스 아키텍처**
+
+![Code Place 서비스 아키텍처](/images/code-place/arch/service.png)
+
+**인프라 아키텍처**
+
+![Code Place 인프라 아키텍처 — K3s + Longhorn + Harbor + kube-vip](/images/code-place/arch/infra.png)
+
+## 인프라 들여다보기
+
+### k9s로 본 클러스터
+
+운영 상태는 `k9s`로 훑어봅니다. 파드별 상태·재시작 횟수·리소스 사용량이 한 화면에 드러나, "괜찮아 보이는데 안 괜찮은" 신호(예: RESTARTS 컬럼의 세 자리 숫자)를 빠르게 잡아냅니다.
+
+![k9s로 본 code-place-prod 파드들](/images/code-place/k9s-crashloop.webp)
+
+### Longhorn 스토리지
+
+영속 스토리지는 Longhorn을 씁니다. 노드별 스토리지 할당·사용량과 볼륨 상태를 대시보드로 확인하며, 마운트 문제나 replica 스케줄링 이슈를 여기서부터 좁혀 갑니다.
+
+![Longhorn 대시보드 — 노드별 스토리지와 Ready 상태](/images/code-place/longhorn-nodes.png)
+
+## 기술적 도전
+
+운영 중에는 애플리케이션 코드만 봐서는 원인을 알 수 없는 문제가 많았습니다. 장애의 근본 원인을 이해하려면 쿠버네티스 리소스, 배포 상태, Longhorn 스토리지 동작, 서비스 로그, 런타임 상태를 함께 들여다봐야 했습니다. 특히 k3s 환경에서 스토리지와 노드 수준의 문제가 서비스 가용성에 직접 영향을 준다는 걸 몸으로 겪으며, **백엔드 개발은 API를 구현하는 데 그치지 않고 그 서비스가 실제로 돌아가는 인프라·스토리지·런타임까지 이해하는 일**이라는 걸 배웠습니다.
+
+각 사건은 따라 하며 재현할 수 있게 블로그 글로 정리했습니다.
+
+- **[동접 2명에서 30명으로 — 로컬 LLM AI 조교 서빙 최적화](/blog/code-place-ai-tutor-load-test/)** — Ollama에서 vLLM까지, Locust 실측으로 서빙을 최적화한 전 과정과 모델 선택.
+- **[백업 없는 HA는 HA가 아니었다 — CNPG WAL 폭주 복구기](/blog/code-place-cnpg-wal-data-loss/)** — 죽은 standby의 replication slot이 WAL로 디스크를 채운 장애를 계층별로 복구.
+- **[운영 백엔드가 398번 재시작한 이유](/blog/code-place-crashloop-398/)** — probe와 이미지의 릴리즈 스큐를 산술로 검증하며 근본 원인까지.
+- **[CI가 레포에 자동 커밋할 때 생기는 레이스 컨디션](/blog/code-place-ci-race-condition/)** — concurrency 직렬화와 idempotent 재적용으로 해결.
+
+## 배운 점
+
+이 경험은 **실사용자가 있는 서비스를 맡는다는 것의 책임감**을 알게 해주었습니다. 서버나 인프라 문제로 플랫폼이 멈추면 약 800명의 학생이 즉시 실습과 과제에 영향을 받습니다. 그래서 안정적인 배포, 인프라 트러블슈팅, 관측성(observability), 스토리지 신뢰성, 그리고 프로덕션 환경에서의 신중한 기능 개발이 왜 중요한지를 현장에서 익혔습니다.
+
+관련 트러블슈팅과 운영 기록은 [블로그](/blog/)에 정리해 두었습니다.

@@ -1,0 +1,119 @@
+---
+import { getCollection } from 'astro:content';
+import BaseHead from './BaseHead.astro';
+import Footer from './Footer.astro';
+import FormattedDate from './FormattedDate.astro';
+import Header from './Header.astro';
+import { SITE_TITLE } from '../consts';
+import { type Lang, localize, useTranslations } from '../i18n';
+
+interface Props {
+	lang: Lang;
+}
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+const pick = (ko: string, en?: string) => (lang === 'en' && en ? en : ko);
+
+const posts = (await getCollection('blog', (p) => !p.data.draft)).sort(
+	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+);
+---
+
+<!doctype html>
+<html lang={lang}>
+	<head>
+		<BaseHead title={`${t('writing')} · ${SITE_TITLE}`} description="Troubleshooting, retrospectives, learning notes." />
+	</head>
+	<body>
+		<Header />
+		<main>
+			<h1>{t('writing')}</h1>
+			{lang === 'en' && <p class="meta">{t('koreanNotice')}</p>}
+			<ul class="post-list">
+				{
+					posts.map((post) => (
+						<li>
+							<a href={localize(`/blog/${post.id}/`, lang)}>
+								<span class="post-title">{pick(post.data.title, post.data.titleEn)}</span>
+								<FormattedDate date={post.data.pubDate} />
+							</a>
+							{post.data.tags.length > 0 && (
+								<ul class="tags">
+									{post.data.tags.map((tag) => (
+										<li class="tag">{tag}</li>
+									))}
+								</ul>
+							)}
+						</li>
+					))
+				}
+			</ul>
+		</main>
+		<Footer />
+	</body>
+</html>
+
+<style>
+	.post-list {
+		list-style: none;
+		padding: 0;
+		margin: 1.5em 0 0;
+	}
+	.post-list > li {
+		padding: 0.9em 0;
+		border-bottom: 1px solid rgba(var(--gray), 0.12);
+	}
+	.post-list > li > a {
+		display: flex;
+		justify-content: space-between;
+		align-items: baseline;
+		gap: 1em;
+		text-decoration: none;
+		color: inherit;
+	}
+	.post-list .post-title {
+		color: rgb(var(--black));
+		font-size: 1.1em;
+		font-weight: 700;
+	}
+	.post-list li a:hover .post-title {
+		color: var(--accent);
+	}
+	.post-list :global(time) {
+		color: rgb(var(--gray));
+		font-size: 0.82em;
+		white-space: nowrap;
+	}
+	.post-list .tags {
+		margin-top: 0.5em;
+	}
+	/* 순차 등장 (reactbits text 느낌) */
+	@media (prefers-reduced-motion: no-preference) {
+		main > h1,
+		main > .meta,
+		.post-list > li {
+			animation: text-rise 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+		}
+		main > .meta {
+			animation-delay: 0.05s;
+		}
+		.post-list > li:nth-child(1) {
+			animation-delay: 0.1s;
+		}
+		.post-list > li:nth-child(2) {
+			animation-delay: 0.16s;
+		}
+		.post-list > li:nth-child(3) {
+			animation-delay: 0.22s;
+		}
+		.post-list > li:nth-child(4) {
+			animation-delay: 0.28s;
+		}
+		.post-list > li:nth-child(5) {
+			animation-delay: 0.34s;
+		}
+		.post-list > li:nth-child(n + 6) {
+			animation-delay: 0.4s;
+		}
+	}
+</style>

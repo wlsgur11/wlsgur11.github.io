@@ -1,0 +1,49 @@
+---
+title: 'PNUAICMS — 부울경 AI기업 관리 통합 시스템'
+titleEn: 'PNUAICMS — Integrated AI-industry management system'
+description: '부산대 AI융합교육원이 부울경 지역 AI기업의 인턴십·취업연계·산학협력 성과를 관리하던, 여러 엑셀로 흩어진 업무를 하나의 웹 시스템으로 통합했습니다. 현재 실무에서 운영 중입니다.'
+descriptionEn: 'Consolidated PNU AI Institute’s scattered spreadsheet workflows — internships, job placement, and industry-academia outcomes for regional AI companies — into one web system. Currently in production use.'
+role: 'Full-stack (기획·개발·운영)'
+roleEn: 'Full-stack (planning, development, operations)'
+period: '2026.02 ~ 진행 중'
+logo: '/images/logos/pnu.png'
+badge: '실서비스 운영'
+badgeEn: 'In production'
+summary:
+  - '여러 엑셀로 흩어져 있던 AI기업 정보·인턴십·산학협력 성과를 하나의 웹 시스템으로 통합했습니다. 교수님이 실제로 사용 중입니다(aicms.pusan.ac.kr).'
+  - 'Next.js·PostgreSQL로 데이터 모델 설계부터 기능 개발, 배포까지 단독으로 수행했습니다.'
+  - '클라우드(Vercel+Supabase)에서 교내 자체 서버로 직접 이전하고, Caddy HTTPS·GitHub Actions 자동 배포를 구성해 무중단으로 운영합니다.'
+summaryEn:
+  - 'Consolidated scattered spreadsheets — company data, internships, industry outcomes — into one web system, now used in production (aicms.pusan.ac.kr).'
+  - 'Built solo end to end on Next.js and PostgreSQL: data modeling, features, and deployment.'
+  - 'Migrated from cloud (Vercel + Supabase) to an on-campus self-hosted server with Caddy HTTPS and GitHub Actions auto-deploy.'
+stack:
+  - Next.js 14
+  - TypeScript
+  - PostgreSQL
+  - Prisma
+  - Docker
+  - Caddy
+links:
+  live: 'https://aicms.pusan.ac.kr'
+  repo: 'https://github.com/wlsgur11/PNUAICMS'
+featured: true
+group: 'major'
+order: 2
+draft: false
+---
+
+## 개요
+
+여러 개의 엑셀로 흩어져 관리되던 부울경 지역 AI기업 정보, 학생 인턴십 매칭, 기업–졸업과제 연계, 산학협력 성과를 **하나의 웹 시스템으로 통합**한 관리 시스템입니다. 현재 부산대학교 AI융합교육원에서 실제로 운영되고 있으며, 교수님이 직접 사용하고 계십니다.
+
+- **운영 주소**: [aicms.pusan.ac.kr](https://aicms.pusan.ac.kr)
+- **역할**: 데이터 모델 설계, 기능 개발, 배포·운영
+- **스택**: Next.js 14 · TypeScript · PostgreSQL · Prisma · Docker
+- **인프라**: 클라우드(Vercel + Supabase)에서 **교내 자체 서버로 직접 이전**. Docker 이미지 빌드·GitHub Actions 자동 배포, Caddy 기반 HTTPS 자동 인증서까지 구성해 안정적으로 운영 중.
+
+## 장기 비전 — 하나로 이어지는 통합 시스템
+
+이 프로젝트의 방향은 단순한 기업 DB가 아니라, **학생 정보 → 졸업과제 → 산학협력 성과 → 기업 정보 → 다시 학생 정보**로 유기적으로 연결되는 하나의 통합 시스템을 구축하는 것입니다. 흩어진 데이터를 정규화하고, 기존 엑셀 기록을 일괄 이관하며, 각 축이 서로를 참조하도록 데이터 모델을 잡아가고 있습니다.
+
+> 상세 케이스스터디(데이터 모델, 엑셀 이관, 동시 편집 처리 등)는 정리해 이어서 작성할 예정입니다.
