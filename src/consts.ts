@@ -12,6 +12,9 @@ export const PROFILE = {
 		'실서비스를 직접 굴리며 배웁니다. 증상이 아니라 근본 원인을, 감이 아니라 실측으로.',
 	email: 'octopus121@naver.com',
 	github: 'https://github.com/wlsgur11',
+	githubHandle: 'wlsgur11',
+	instagram: 'https://www.instagram.com/wlsgur_11/',
+	instagramHandle: 'wlsgur_11',
 };
 
 // 블로그 글이 속한 프로젝트 표시명 (frontmatter project slug → 라벨)
