@@ -5,6 +5,7 @@ import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
 import { type Lang, useTranslations } from '../i18n';
 import { techBadgeStyle } from '../techBadge';
+import { tabTitle } from '../consts';
 
 type Props = CollectionEntry<'projects'>['data'] & { lang?: Lang };
 
@@ -27,7 +28,7 @@ const pick = (ko: string, en?: string) => (lang === 'en' && en ? en : ko);
 
 <html lang={lang}>
 	<head>
-		<BaseHead title={pick(title, titleEn)} description={pick(description, descriptionEn)} />
+		<BaseHead title={tabTitle(title)} description={pick(description, descriptionEn)} />
 	</head>
 	<body>
 		<Header />

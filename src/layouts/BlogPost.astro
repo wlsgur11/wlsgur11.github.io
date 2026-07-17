@@ -5,7 +5,7 @@ import BaseHead from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
 import FormattedDate from '../components/FormattedDate.astro';
 import Header from '../components/Header.astro';
-import { PROJECT_LABELS } from '../consts';
+import { PROJECT_LABELS, tabTitle } from '../consts';
 import { type Lang, localize, useTranslations } from '../i18n';
 
 type Props = CollectionEntry<'blog'>['data'] & { lang?: Lang };
@@ -30,7 +30,7 @@ const projectLabel = project ? PROJECT_LABELS[project] : undefined;
 
 <html lang={lang}>
 	<head>
-		<BaseHead title={displayTitle} description={displayDesc} />
+		<BaseHead title={tabTitle(title)} description={displayDesc} />
 		<style>
 			main {
 				width: calc(100% - 2em);

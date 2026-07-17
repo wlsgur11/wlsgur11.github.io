@@ -4,7 +4,7 @@ import BaseHead from './BaseHead.astro';
 import Footer from './Footer.astro';
 import FormattedDate from './FormattedDate.astro';
 import Header from './Header.astro';
-import { PROJECT_LABELS, SITE_TITLE } from '../consts';
+import { PROJECT_LABELS, tabTitle } from '../consts';
 import { type Lang, localize, useTranslations } from '../i18n';
 
 interface Props {
@@ -34,7 +34,7 @@ const countLabel = (n: number) =>
 <!doctype html>
 <html lang={lang}>
 	<head>
-		<BaseHead title={`${t('writing')} · ${SITE_TITLE}`} description="Troubleshooting, retrospectives, learning notes." />
+		<BaseHead title={tabTitle('블로그')} description="Troubleshooting, retrospectives, learning notes." />
 	</head>
 	<body>
 		<Header />

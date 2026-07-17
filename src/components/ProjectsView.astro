@@ -3,7 +3,7 @@ import { getCollection } from 'astro:content';
 import BaseHead from './BaseHead.astro';
 import Footer from './Footer.astro';
 import Header from './Header.astro';
-import { SITE_TITLE } from '../consts';
+import { tabTitle } from '../consts';
 import { type Lang, localize, useTranslations } from '../i18n';
 
 interface Props {
@@ -29,7 +29,7 @@ const githubPath =
 <!doctype html>
 <html lang={lang}>
 	<head>
-		<BaseHead title={`${t('projectsTitle')} · ${SITE_TITLE}`} description={t('projectsSubtitle')} />
+		<BaseHead title={tabTitle('프로젝트')} description={t('projectsSubtitle')} />
 	</head>
 	<body>
 		<Header />
