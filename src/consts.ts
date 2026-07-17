@@ -14,6 +14,14 @@ export const PROFILE = {
 	github: 'https://github.com/wlsgur11',
 };
 
+// 블로그 글이 속한 프로젝트 표시명 (frontmatter project slug → 라벨)
+export const PROJECT_LABELS: Record<string, string> = {
+	'code-place': 'Code Place',
+	'pnu-modu': 'PNU-Modu',
+	pnuaicms: 'PNUAICMS',
+	simlog: 'SimLog',
+};
+
 export const NAV = [
 	{ href: '/', label: 'Home' },
 	{ href: '/projects', label: 'Projects' },

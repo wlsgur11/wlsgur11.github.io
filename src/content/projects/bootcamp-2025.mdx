@@ -1,8 +1,8 @@
 ---
-title: '2025 PNU 미니 부트캠프 — 백엔드'
-titleEn: '2025 PNU Mini Bootcamp — Backend'
-description: '멋쟁이사자처럼과 함께한 백엔드 부트캠프. FastAPI·Redis로 중고거래 서비스(당근마켓) 백엔드를 챗GPT 없이 공식 문서만으로 구현했습니다.'
-descriptionEn: 'A backend bootcamp with LikeLion. Built the backend of a second-hand marketplace (Karrot-style) with FastAPI and Redis, using only official docs — no ChatGPT.'
+title: '2025 PNU 미니 부트캠프 - 백엔드'
+titleEn: '2025 PNU Mini Bootcamp - Backend'
+description: '멋쟁이사자처럼과 함께한 2주 백엔드 부트캠프. 당근마켓을 모델로 중고거래 API를 챗GPT 없이 공식 문서만으로 구현하고, Redis 캐싱으로 목록 로딩을 5-10초에서 1초 이내로 줄였습니다.'
+descriptionEn: 'A 2-week backend bootcamp with LikeLion. Cloned a second-hand marketplace API (Karrot-style) using only official docs - no ChatGPT - and cut list loading from 5-10s to under 1s with Redis caching.'
 role: '백엔드'
 roleEn: 'Backend'
 period: '2025.02'
@@ -10,18 +10,19 @@ logo: '/images/logos/daangn.svg'
 badge: '부트캠프'
 badgeEn: 'Bootcamp'
 summary:
-  - '멋쟁이사자처럼 백엔드 부트캠프(70시간)에서 당근마켓을 모델로 중고거래 서비스 백엔드를 구현했습니다.'
-  - 'FastAPI·Redis·SQLAlchemy·pydantic 기반으로 JWT 인증, RESTful API, 세션 등 웹 백엔드 전반을 학습·적용했습니다.'
-  - '챗GPT 없이 공식 문서만으로 만든 첫 프로젝트 — 끊임없는 디버깅으로 오류를 다루는 법을 익혔습니다.'
+  - '멋쟁이사자처럼 2주 백엔드 부트캠프에서 당근마켓을 모델로 중고거래 서비스의 백엔드를 단독으로 구현했습니다. (프론트엔드는 팀원 담당.)'
+  - 'FastAPI·SQLite·Redis 기반으로 JWT 인증, 게시물 CRUD, 무한 스크롤, 사진 업로드를 구현했고, Redis 캐싱으로 목록 로딩을 5-10초에서 1초 이내로 줄였습니다.'
+  - '챗GPT 없이 공식 문서만으로 만든 첫 프로젝트 - 막히면 문서와 검색으로 파고들며 디버깅하는 습관을 들였습니다.'
 summaryEn:
-  - 'At a LikeLion backend bootcamp (70h), built the backend of a second-hand marketplace modeled on Karrot.'
-  - 'Applied JWT auth, RESTful APIs, and sessions with FastAPI, Redis, SQLAlchemy, and pydantic.'
-  - 'My first project built with official docs only (no ChatGPT) — learned to debug relentlessly.'
+  - 'At a 2-week LikeLion backend bootcamp, solo-built the backend of a second-hand marketplace modeled on Karrot. (Frontend was a teammate’s.)'
+  - 'Built JWT auth, post CRUD, infinite scroll, and photo upload on FastAPI/SQLite/Redis, cutting list loading from 5-10s to under 1s with Redis caching.'
+  - 'My first project built with official docs only (no ChatGPT) - learned to debug by digging through docs and search.'
 stack:
   - FastAPI
   - Python
+  - SQLite
   - Redis
-  - SQLAlchemy
+  - SQLModel
   - pydantic
   - JWT
 links:
@@ -34,6 +35,77 @@ draft: false
 
 ## 개요
 
-멋쟁이사자처럼과 함께한 2025 PNU 미니 부트캠프(백엔드)에서, **당근마켓을 모델로 중고거래 서비스의 백엔드**를 구현했습니다. FastAPI·Redis·SQLAlchemy·pydantic을 사용해 JWT 인증, RESTful API, 세션 기반 흐름 등 웹 백엔드의 기본기를 다졌습니다.
+멋쟁이사자처럼과 함께한 2025 PNU 미니 부트캠프(백엔드) 과정에서, 당근마켓을 모델로 중고거래 서비스의 백엔드를 만들었다. 새 서비스를 기획하는 대신 이미 존재하는 서비스의 API를 비슷하게 되짚어 구현하며, 2주 동안 웹 백엔드의 기본기를 다지는 게 목표였다.
 
-특히 이 프로젝트는 **챗GPT 없이 공식 문서만으로 만든 첫 프로젝트**였습니다. 막히는 부분을 검색과 문서로 직접 파고들며, 오류를 끝까지 디버깅하는 습관을 들였습니다.
+- **기간**: 2주 (2025.02.03-14), 총 70시간 이수
+- **역할**: 백엔드 단독(1인 팀). 프론트엔드(React)는 [별도 저장소](https://github.com/devmin24/daangn_front)를 참고했다.
+- **스택**: FastAPI · SQLite(SQLModel) · Redis · pydantic · jose(JWT) · bcrypt
+- **시연 영상**: [youtu.be/Ef-teuYRaN4](https://youtu.be/Ef-teuYRaN4)
+
+![FastAPI가 자동 생성한 Swagger UI — 인증·게시물 API 명세](/images/bootcamp/swagger.png)
+
+## 챗GPT 없이, 공식 문서만으로
+
+이 프로젝트의 규칙을 하나 정했다. **챗GPT를 쓰지 않는 것.** 답을 빨리 얻는 대신, 막히는 지점을 공식 문서와 검색으로 직접 파고들기로 했다. 편하려고 만든 규칙이 아니라, 프로그래밍과 디버깅 실력을 올리고 내가 짠 코드를 완전히 이해한 채로 넘어가려는 규칙이었다.
+
+실제로 이 방식은 느렸다. FastAPI의 의존성 주입, SQLModel 쿼리, Redis 클라이언트 사용법을 하나씩 문서에서 확인하며 붙였고, 에러가 나면 스택트레이스를 끝까지 읽었다. 대신 2주가 끝났을 때, 이 백엔드에서 내가 이유를 설명 못 하는 줄은 없었다. 챗GPT 없이 처음부터 끝까지 만든 첫 프로젝트였고, "막히면 문서로 돌아간다"는 습관은 이후 프로젝트 내내 남았다.
+
+## 구조
+
+백엔드는 라우터 - 서비스 - 모델로 계층을 나눴다. 요청은 `routers`(auth, post)가 받고, 실제 로직은 `services`(auth, post, redis)가 처리하며, DB·Redis·JWT 유틸은 `dependencies`로 분리했다. FastAPI를 처음 쓰면서도 파일이 뒤엉키지 않게, 역할별로 자른 구조를 지키려 했다.
+
+```text
+app/
+├── routers/       auth_routers · post_routers
+├── services/      auth_service · post_service · redis_service
+├── models/        user · post · parameter
+└── dependencies/  jwt_utils · sqlite_db · redis_db
+```
+
+DB는 SQLite를 골랐다. 테이블과 데이터가 적고 쿼리가 복잡하지 않은 학습용 규모라, 별도 DB 서버를 띄우는 대신 파일 하나로 끝나는 SQLite가 맞았다. 라이브러리는 프로젝트별 `venv`로 격리했다. "무거운 도구부터 깔지 말고, 규모에 맞는 걸 고른다"를 처음 의식한 선택이었다.
+
+![데이터 모델 — 사용자·게시물·사진 관계](/images/bootcamp/erd.png)
+
+## 핵심 기능
+
+### Redis 캐싱과 무한 스크롤
+
+메인 화면은 게시물을 최신순으로 보여주고, 스크롤이 끝에 닿으면 다음 페이지를 이어 불러오는 무한 스크롤이다. 백엔드는 `page`/`limit`로 페이지를 끊고, `updated_at` 내림차순으로 정렬해 넘긴다.
+
+여기서 가장 체감된 개선이 Redis 캐싱이었다. 게시물을 매번 DB에서 조인해 읽으면 목록이 느렸다. 그래서 게시물을 `POST#{id}` 해시로 Redis(인메모리)에 캐싱하고, 조회 순서를 **캐시 먼저, 없으면 DB**로 바꿨다. 캐시에 있으면 Redis에서 바로 꺼내고, 미스면 DB에서 읽어 캐시에 채운 뒤 짧은 TTL로 만료시킨다.
+
+```python
+async def get_post(self, redis, post_id: int) -> Post | None:
+    post = await redis.hgetall(self.make_post_key(post_id))   # POST#{id}
+    if not post:
+        return None            # 캐시 미스 → 호출부가 DB로 폴백
+    return _to_post(post)
+```
+
+효과는 분명했다. 게시물 20개 기준 전체 목록 로딩이 **기존 5-10초에서 Redis 적용 후 1초 이내**로 줄었다. 캐싱이 왜 필요한지를 숫자로 처음 실감한 지점이었다.
+
+![게시물 목록 — 스크롤 끝에 닿으면 4개씩 이어 불러오고, Redis로 캐싱한다](/images/bootcamp/post-list.png)
+
+### JWT 인증
+
+로그인은 JWT 토큰으로 처리했다(`jose`로 발급·검증, 비밀번호는 `bcrypt`로 해시). HTTP는 상태를 안 들고 가는(stateless) 프로토콜이라, 매 요청에 토큰을 헤더에 실어 사용자를 식별하도록 했다. 부트캠프에서 세션 기반 인증도 함께 배웠는데, 서버가 상태를 안 들어도 되는 stateless 쪽을 골라 붙여봤다. 액세스 토큰만 쓰면 탈취 시 만료까지 무방비라, 리프레시 토큰을 함께 둬 보안을 보완했다. 세션과 토큰, 두 방식의 장단을 직접 짜보며 비교한 게 이 프로젝트의 수확 중 하나였다.
+
+### 끌어올리기
+
+당근마켓의 "끌어올리기"를 구현하려면, 정렬 기준과 표시 기준을 나눠야 했다. Post 테이블에 `created_at`과 `updated_at`을 따로 두고, **목록 정렬은 `updated_at` 순으로, 상세의 작성일자는 `created_at`으로** 보여줬다. 끌어올리기는 `updated_at`만 현재 시각으로 갱신해, 글은 그대로인데 목록 맨 위로 다시 올라오게 했다.
+
+![끌어올리기 결과 — updated_at만 갱신돼 글이 목록 최상단으로 다시 올라온다](/images/bootcamp/bump.png)
+
+### 사진 첨부
+
+한 게시물은 사진을 최대 5장 가진다. 사진은 서버에 `static/{사용자 id}/{게시물 id}/{번호}.{확장자}` 규칙으로 저장하고, FastAPI의 static 서빙으로 `/static/...` 경로에서 바로 내려준다. 업로드 입력은 그대로 믿지 않고 파싱했다 - 파일명은 1-5번으로 치환하고, 확장자는 jpg·png·webp 등 몇 가지로만 제한해 임의의 파일명이 경로에 끼어들지 않게 했다.
+
+![게시물 작성 — 제목·내용·가격·지역과 함께 사진을 최대 5장 첨부한다](/images/bootcamp/write.png)
+
+## 남긴 것과 배운 점
+
+2주짜리 학습 프로젝트라 끝맺지 못한 것도 정직하게 남아 있다. 검색은 API는 만들었지만 프론트에서 스크롤로 불러온 목록 안에서만 걸러, API를 제대로 활용하지 못했다. 배포(Amazon Lightsail)와 실시간 채팅·댓글은 다음 과제로 미뤘다.
+
+과정 자체도 순탄치 않았다. 프론트와 백엔드 사이에서 고민하다 백엔드 1인 팀으로 방향을 틀었고, 그 뒤로는 끊임없이 나는 오류를 혼자 붙잡았다. 하루에 열 시간씩 코드만 들여다본 날도 있었다. 처음엔 막히면 강사님을 디버거처럼 불렀지만, 챗GPT 없이 문서로 파는 규칙을 지키다 보니 어느새 스스로 원인을 찾아 해결하고 있었다. 오류를 무서워하지 않게 된 게, 2주에서 가장 크게 바뀐 점이다.
+
+그럼에도 이 프로젝트에서 웹 백엔드의 뼈대를 처음 손으로 세웠다. 라우터-서비스-모델로 나누는 감각, JWT로 인증을 유지하는 법, 그리고 Redis 캐싱이 목록 로딩을 몇 초에서 1초 이내로 바꾸는 걸 직접 재보며, 백엔드가 무엇을 고민하는 일인지 처음 몸으로 알았다. 백엔드 외에 GitHub 협업, Figma, React도 곁들여 배웠다. 무엇보다 챗GPT 없이 문서만으로 끝까지 밀어붙인 경험이, 이후 더 큰 프로젝트를 겁 없이 시작하게 해준 바탕이 됐다.

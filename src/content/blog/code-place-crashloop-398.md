@@ -1,6 +1,6 @@
 ---
-title: '운영 백엔드가 398번 재시작한 이유 — probe와 이미지의 릴리즈 스큐'
-titleEn: 'Why the production backend restarted 398 times — a probe/image release skew'
+title: '운영 파드가 398번 재시작한 이유 - liveness probe와 이미지 릴리즈 스큐'
+titleEn: 'Why a production pod restarted 398 times - a liveness probe vs image release skew'
 description: '멀쩡히 살아 있는데 재시작 398회. kubectl logs → describe → replicaset → git → exec로 계층을 좁혀, 헬스체크 경로를 그 경로가 없는 이미지에 먼저 배포한 릴리즈 스큐를 찾아낸 진단 기록.'
 descriptionEn: 'Restarting 398 times while the app booted fine. Narrowing from kubectl logs → describe → replicaset → git → exec to find a health-check path deployed before the image that served it.'
 pubDate: 2026-05-20
@@ -9,7 +9,7 @@ project: 'code-place'
 draft: false
 ---
 
-> **TL;DR** — 운영 백엔드 파드가 재시작 398회를 기록했지만 앱 로그는 정상 기동이었습니다. startup probe가 `/api/health`에서 404를 받고 있었고, 배포된 이미지에는 아직 그 엔드포인트가 없었습니다. **헬스체크(매니페스트)를 그 경로를 제공하는 이미지보다 먼저 배포한 릴리즈 스큐**가 원인. 재시작 횟수는 `failureThreshold × period`와 산술적으로 정확히 맞아떨어졌습니다.
+> **TL;DR** - 운영 백엔드 파드가 재시작 398회를 기록했지만 앱 로그는 정상 기동이었습니다. startup probe가 `/api/health`에서 404를 받고 있었고, 배포된 이미지에는 아직 그 엔드포인트가 없었습니다. **헬스체크(매니페스트)를 그 경로를 제공하는 이미지보다 먼저 배포한 릴리즈 스큐**가 원인. 재시작 횟수는 `failureThreshold × period`와 산술적으로 정확히 맞아떨어졌습니다.
 
 ## 증상
 
@@ -23,13 +23,13 @@ backend-689df5f547-xxxxx   1/1    Running   0          16d     # 정상
 
 `57b765dc95` 파드들이 `0/1`(NotReady)에 재시작 398회. 그런데 서비스 자체는 살아 있었습니다. 롤아웃이 어딘가에서 멈춘 채였습니다.
 
-![k9s로 본 code-place-prod 파드들 — 재시작(RESTARTS) 수가 한눈에 드러난다](/images/code-place/k9s-crashloop.webp)
+![k9s로 본 code-place-prod 파드들 - 재시작(RESTARTS) 수가 한눈에 드러난다](/images/code-place/k9s-crashloop.webp)
 
 평소 운영 상태는 `k9s`로 훑어봅니다. RESTARTS 컬럼에 세 자리 숫자가 찍혀 있으면 뭔가 반복해서 죽고 있다는 뜻입니다.
 
-## 진단 — 계층을 좁혀 간다
+## 진단 - 계층을 좁혀 간다
 
-### ① 로그 — 앱은 정상 기동한다
+### ① 로그 - 앱은 정상 기동한다
 
 ```bash
 kubectl -n code-place-prod logs backend-57b765dc95-xxxxx --previous --tail=100
@@ -37,7 +37,7 @@ kubectl -n code-place-prod logs backend-57b765dc95-xxxxx --previous --tail=100
 
 gunicorn이 정상 기동하고 마이그레이션·픽스처 로드까지 성공한 뒤, 정확히 **10분 후** `SIGTERM`으로 exit 0. 앱이 스스로 죽는 게 아니라 **외부(kubelet)가 죽이고** 있었습니다.
 
-### ② describe — probe가 404
+### ② describe - probe가 404
 
 ```
 Warning  Unhealthy  Startup probe failed: HTTP probe failed with statuscode: 404 (x23311)
@@ -45,9 +45,9 @@ Normal   Killing    Container backend failed startup probe, will be restarted (x
 Startup: http-get http://:8080/api/health delay=0s period=10s #failure=60
 ```
 
-startup probe가 `/api/health`에서 404. `failureThreshold=60 × period=10s = 600초 = 10분` — 로그의 "기동 후 정확히 10분 뒤 kill"과 일치합니다. 10분마다 죽으니 2일 18시간이면 약 398회. **숫자가 맞아떨어졌습니다.**
+startup probe가 `/api/health`에서 404. `failureThreshold=60 × period=10s = 600초 = 10분` - 로그의 "기동 후 정확히 10분 뒤 kill"과 일치합니다. 10분마다 죽으니 2일 18시간이면 약 398회. **숫자가 맞아떨어졌습니다.**
 
-### ③ ReplicaSet 비교 — 같은 이미지인데?
+### ③ ReplicaSet 비교 - 같은 이미지인데?
 
 ```bash
 kubectl -n code-place-prod get rs -o wide
@@ -55,7 +55,7 @@ kubectl -n code-place-prod get rs -o wide
 
 크래시 나는 `57b765dc95`와 정상 `689df5f547`가 **동일 이미지**였습니다. 이미지 코드 차이가 아니었던 것입니다. 파드 템플릿을 diff 하니, `57b`는 liveness/readiness/startup probe(`/api/health`) 3종을 새로 추가했고 `689`에는 probe가 아예 없었습니다. 즉 `689`의 `1/1`은 "건강해서"가 아니라 **검사를 안 해서**였습니다.
 
-### ④ git + exec — 이미지에 엔드포인트가 없다
+### ④ git + exec - 이미지에 엔드포인트가 없다
 
 ```bash
 git show <deployed-sha>:backend/conf/urls/oj.py   # /health 라우트 없음

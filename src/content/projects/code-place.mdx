@@ -1,11 +1,11 @@
 ---
-title: 'Code Place — 부산대 온라인 저지 플랫폼'
-titleEn: 'Code Place — PNU Online Judge Platform'
+title: 'Code Place - 부산대 온라인 저지 플랫폼'
+titleEn: 'Code Place - PNU Online Judge Platform'
 description: '부산대학교 교양필수 기초컴퓨터프로그래밍 수업에 실제로 사용되는 온라인 저지(OJ). Django·Vue·Kubernetes(K3s) 위에서 인프라·백엔드를 맡고, 로컬 LLM 기반 AI 조교를 기획·개발했습니다.'
 descriptionEn: 'A production Online Judge used in PNU''s mandatory intro-to-programming course. Owned infra & backend on Django·Vue·Kubernetes(K3s) and built a local-LLM AI teaching assistant.'
 role: 'Backend / Infra (3인 개발팀 리딩)'
 roleEn: 'Backend / Infra (led a 3-person team)'
-period: '2026.02 ~ 진행 중'
+period: '2026.02 - 진행 중'
 logo: '/images/logos/code-place.svg'
 badge: '실서비스'
 badgeEn: 'Production'
@@ -14,7 +14,7 @@ summary:
   - '로컬 LLM(vLLM) 기반 AI 조교를 기획·개발하고, Locust 부하 테스트로 동접 30명을 3초 안에 처리하도록 서빙을 최적화했습니다.'
   - 'K3s 클러스터를 직접 운영하며 크래시루프·CNPG WAL 폭주 같은 실서비스 장애를 근본 원인까지 진단·복구했습니다.'
 summaryEn:
-  - 'A production Online Judge used in PNU’s mandatory course (~800 users). Owned infra & backend and led a 3-person team.'
+  - 'A production Online Judge used in PNU’s mandatory course (about 800 users). Owned infra & backend and led a 3-person team.'
   - 'Designed and built a local-LLM (vLLM) AI tutor, tuned via Locust load tests to serve 30 concurrent users within 3 seconds.'
   - 'Ran the K3s cluster directly, diagnosing production incidents (crash-loops, a CNPG WAL runaway) down to root cause.'
 stack:
@@ -61,7 +61,7 @@ draft: false
 
 **인프라 아키텍처**
 
-![Code Place 인프라 아키텍처 — K3s + Longhorn + Harbor + kube-vip](/images/code-place/arch/infra.png)
+![Code Place 인프라 아키텍처 - K3s + Longhorn + Harbor + kube-vip](/images/code-place/arch/infra.png)
 
 ## 인프라 들여다보기
 
@@ -75,7 +75,7 @@ draft: false
 
 영속 스토리지는 Longhorn을 씁니다. 노드별 스토리지 할당·사용량과 볼륨 상태를 대시보드로 확인하며, 마운트 문제나 replica 스케줄링 이슈를 여기서부터 좁혀 갑니다.
 
-![Longhorn 대시보드 — 노드별 스토리지와 Ready 상태](/images/code-place/longhorn-nodes.png)
+![Longhorn 대시보드 - 노드별 스토리지와 Ready 상태](/images/code-place/longhorn-nodes.png)
 
 ## 기술적 도전
 
@@ -83,10 +83,10 @@ draft: false
 
 각 사건은 따라 하며 재현할 수 있게 블로그 글로 정리했습니다.
 
-- **[동접 2명에서 30명으로 — 로컬 LLM AI 조교 서빙 최적화](/blog/code-place-ai-tutor-load-test/)** — Ollama에서 vLLM까지, Locust 실측으로 서빙을 최적화한 전 과정과 모델 선택.
-- **[백업 없는 HA는 HA가 아니었다 — CNPG WAL 폭주 복구기](/blog/code-place-cnpg-wal-data-loss/)** — 죽은 standby의 replication slot이 WAL로 디스크를 채운 장애를 계층별로 복구.
-- **[운영 백엔드가 398번 재시작한 이유](/blog/code-place-crashloop-398/)** — probe와 이미지의 릴리즈 스큐를 산술로 검증하며 근본 원인까지.
-- **[CI가 레포에 자동 커밋할 때 생기는 레이스 컨디션](/blog/code-place-ci-race-condition/)** — concurrency 직렬화와 idempotent 재적용으로 해결.
+- **[Ollama에서 vLLM으로 - AI 조교 서빙을 동접 30명까지 끌어올리기](/blog/code-place-ai-tutor-load-test/)** - Ollama에서 vLLM까지, Locust 실측으로 서빙을 최적화한 전 과정과 모델 선택.
+- **[WAL 폭주로 디스크가 찼다 - CNPG/Longhorn 클러스터 복구기](/blog/code-place-cnpg-wal-data-loss/)** - 죽은 standby의 replication slot이 WAL로 디스크를 채운 장애를 계층별로 복구.
+- **[운영 파드가 398번 재시작한 이유 - liveness probe와 이미지 릴리즈 스큐](/blog/code-place-crashloop-398/)** - probe와 이미지의 릴리즈 스큐를 산술로 검증하며 근본 원인까지.
+- **[CI가 자기 레포에 커밋할 때의 레이스 컨디션 - concurrency 직렬화](/blog/code-place-ci-race-condition/)** - concurrency 직렬화와 idempotent 재적용으로 해결.
 
 ## 배운 점
 

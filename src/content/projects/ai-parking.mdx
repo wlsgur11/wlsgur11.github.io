@@ -1,28 +1,29 @@
 ---
-title: 'AI-Parking — 강화학습 자율주차'
-titleEn: 'AI-Parking — reinforcement-learning autonomous parking'
-description: 'Unity 시뮬레이션에서 PPO 강화학습으로 차량이 스스로 주차를 학습하는 졸업과제입니다. 코드보다 최종 보고서에 문제 정의와 실험을 상세히 정리했습니다.'
-descriptionEn: 'A graduation project where a car learns to park itself via PPO reinforcement learning in a Unity simulation. The final report holds the depth more than the code does.'
-role: '강화학습·시뮬레이션'
-roleEn: 'RL & simulation'
+title: 'AI-Parking - 강화학습 자율주차'
+titleEn: 'AI-Parking - reinforcement-learning autonomous parking'
+description: 'Unity 시뮬레이션에서 PPO로 차량이 직각주차를 스스로 학습하는 졸업과제. 3인 팀에서 강화학습 쪽(상태·행동·보상 설계, PPO 학습, 실험)을 맡았고, 데모 파일과 학습 예산을 키워 주차 성공률을 추정 75-90%에서 95-99%까지 끌어올렸습니다.'
+descriptionEn: 'A capstone where a car learns perpendicular parking via PPO in Unity. On a 3-person team I owned the RL side - state/action/reward design, PPO training, experiments - pushing the estimated parking success rate from 75-90% to 95-99% by improving the demo data and training budget.'
+role: '강화학습 (보상 설계·PPO 학습·실험)'
+roleEn: 'RL (reward design, PPO training, experiments)'
 period: '2025'
 logo: '/images/logos/ai-parking.png'
 cover: '/images/logos/ai-parking.png'
 badge: '졸업과제'
 badgeEn: 'Capstone'
 summary:
-  - 'Unity 시뮬레이션 안에서 PPO 알고리즘으로 차량이 스스로 주차를 학습하도록 만든 강화학습 졸업과제입니다.'
-  - 'Unity ML-Agents로 물리 시뮬레이션과 학습 파이프라인을 연동하고, 보상 설계를 바꿔가며 학습을 반복했습니다.'
-  - '구현 자체는 규모가 크지 않지만, 문제 정의·접근·실험 과정을 최종 보고서에 꼼꼼히 정리했습니다.'
+  - 'Unity 시뮬레이션 안에서 PPO 강화학습으로 차량이 직각주차를 스스로 학습하는 졸업과제. 부산대 정보컴퓨터공학부 3인 팀 프로젝트.'
+  - '3인 팀에서 강화학습 쪽을 맡았습니다 - 주차 문제를 상태·행동·보상으로 정의하고, PPO로 학습시키고, TensorBoard로 실험을 분석했습니다. (Unity 환경은 팀원이, 성능 데이터 분석은 다른 팀원이 담당.)'
+  - '학습 초기의 콜드스타트를 데모 파일(모방학습)로 넘기고, 데모 다양성과 학습 예산을 키워 추정 주차 성공률을 75-90%에서 95-99%까지 끌어올린 두 번의 실험을 정리했습니다.'
 summaryEn:
-  - 'A graduation project training a car to park itself with the PPO algorithm inside a Unity simulation.'
-  - 'Wired the physics simulation to the training pipeline via Unity ML-Agents, iterating on reward design.'
-  - 'The implementation is modest, but the final report carefully documents the problem framing, approach, and experiments.'
+  - 'A capstone training a car to do perpendicular parking with PPO inside a Unity simulation. A 3-person team project at PNU.'
+  - 'I owned the RL side - framing parking as states/actions/rewards, training with PPO, and analyzing runs in TensorBoard. (A teammate built the Unity environment; another did the performance analysis.)'
+  - 'Got past the early cold-start with a demonstration file (imitation learning), then raised the estimated success rate from 75-90% to 95-99% by improving demo diversity and training budget across two experiments.'
 stack:
   - Unity
+  - C#
   - ML-Agents
   - PPO
-  - PyTorch
+  - GAIL
   - Python
 links:
   repo: 'https://github.com/wlsgur11/AI-Parking-Unity-main-final'
@@ -34,6 +35,64 @@ draft: false
 
 ## 개요
 
-Unity 환경에서 **PPO(Proximal Policy Optimization) 강화학습**으로 차량이 스스로 주차 동작을 학습하는 졸업과제입니다. Unity ML-Agents로 시뮬레이션과 학습 파이프라인을 연동하고, 보상 설계를 조정하며 학습을 반복했습니다.
+Unity 시뮬레이션 안에서 **PPO(Proximal Policy Optimization)** 강화학습으로 차량이 스스로 직각주차를 학습하는 부산대 졸업과제다. 라이다·규칙 기반 경로계획에 의존하는 기존 자율주차가 환경 변화에 경직적이라는 문제의식에서 출발해, 명시적 규칙 없이 환경과의 상호작용으로 정책을 학습하는 강화학습으로 접근했다.
 
-솔직히 구현 규모나 저장소는 크지 않습니다. 대신 문제 정의부터 접근·실험·결과까지의 과정을 **최종 보고서에 상세히 정리**하는 데 공을 들였습니다.
+3인 팀 프로젝트였고, 나는 **강화학습 쪽 전체**를 맡았다.
+
+- **내 역할**: 주차 문제를 강화학습으로 정의(상태 공간·행동 공간·보상 함수 설계), PPO 모델 개발과 하이퍼파라미터 튜닝, Unity ML-Agents 연동, 학습 과정 모니터링·평가·실험
+- **팀 (3인)**: Unity 시뮬레이션 환경(3D 주차장·차량 물리)은 서민수, 성능 지표 분석·시스템 통합은 김창환이 맡았다. 지도교수 김정구.
+- **핵심 결과**: 데모 파일과 학습 예산을 키워 추정 주차 성공률을 75-90%에서 95-99%로 개선
+
+구현 저장소 자체는 크지 않다. 대신 문제 정의부터 실험·해석까지를 최종 보고서에 상세히 정리했고, 이 글은 그중 내가 맡은 강화학습 부분을 추린 것이다.
+
+## 주차를 강화학습 문제로 바꾸기
+
+강화학습을 붙이는 일의 절반은 "주차"라는 물리적 과제를 상태·행동·보상이라는 언어로 번역하는 것이었다. 여기서 무엇을 관측하고 무엇을 보상할지가 사실상 에이전트의 행동 전부를 결정한다.
+
+**관측(상태).** 차량은 자신의 위치·방향, 목표 주차 지점까지의 거리, 주변 장애물 정보를 본다. 핵심 센서는 `RayPerceptionSensorComponent3D` - 여러 방향으로 레이캐스트를 쏴서 벽·장애물·주차공간까지의 거리를 재는 ML-Agents의 레이 센서다. 출력은 방향별로 정규화된 거리값(0-1)이라, 이걸 조합하면 주차공간의 크기와 내가 중앙에 있는지, 장애물이 얼마나 가까운지를 판단할 수 있다.
+
+**행동.** 조향(steering), 가속, 감속. 이 셋으로 차량을 움직인다.
+
+**보상.** 목표에 도달하면 +100, 충돌하면 -10, 목표에서 멀어지는 등 불필요한 움직임에는 -100을 준다. 여기서 신경 쓴 건 "주차 성공"을 애매하게 두지 않은 것이다. 단순히 주차 구역에 들어가는 걸 성공으로 치면 삐뚤게 걸치거나 빠르게 들이받고 멈춰도 성공이 된다. 그래서 성공 판정을 네 조건의 논리곱으로 못박았다.
+
+```text
+주차 성공 =  주차공간(Finish 태그) 진입
+          AND 차량 진행방향과 주차공간 방향의 각도 < 5°
+          AND 차량-주차공간 중심 거리 < 1m
+          AND 차량 속도 < 3 m/s
+→ 이때만 +100 부여하고 에피소드 종료
+```
+
+각도·거리·속도까지 걸어야 "똑바로, 중앙에, 멈춰서" 주차한 것만 성공으로 인정된다. 보상 설계가 곧 "무엇을 잘한 것으로 볼 것인가"의 정의였다.
+
+## 콜드스타트: 무작위로는 성공을 못 만난다
+
+문제는 학습 초기였다. 에이전트는 처음에 완전히 무작위로 움직인다. 그런데 주차 성공은 위 네 조건을 동시에 만족해야 하는 드문 사건이라, 무작위 탐색만으로는 성공(+100)을 거의 경험하지 못한다. 성공을 못 겪으니 보상 신호가 안 들어오고, 학습이 기어가거나 아예 수렴하지 못했다.
+
+그래서 **데모 파일(모방학습)**을 붙였다. 성공적으로 주차하는 행동 시퀀스를 기록해 학습 초기에 에이전트에게 먹이면, 에이전트가 무작위 대신 그 행동을 모방(Behavioral Cloning)하며 시작한다. 성공 경로를 미리 보여줘 탐색 공간을 좁히는 셈이다. 학습 지표에 GAIL Loss가 잡히는 것도 이 데모 기반 모방 보상을 함께 쓴 흔적이다. 데모를 붙이자 초기 정책이 훨씬 빨리 성공 쪽으로 수렴했다.
+
+이때 배운 건, 데모 파일이 단순한 부팅 보조가 아니라 **학습의 질을 좌우하는 입력**이라는 것이었다. 그리고 그 가설을 두 번의 실험으로 확인했다.
+
+## 두 번의 학습 - 무엇이 성공률을 갈랐나
+
+같은 알고리즘(PPO + 데모)으로 조건만 바꿔 두 번 돌렸다. 성능은 TensorBoard로 추적했고, 성공률은 평균 누적 보상과 보상 구조로 역산해 추정했다.
+
+| | 실험 1 (최초) | 실험 2 (최종) |
+|---|---|---|
+| 학습 스텝 | 약 900만 (중간 종료) | 5,000만 (목표까지 완료) |
+| 데모 파일 | 짧은 시나리오만 | 약 10분 분량, 다양한 시나리오 |
+| 학습 시간 | 가장 짧게 | 약 9시간 |
+| 누적 보상(수렴) | 약 150-200 | 약 350-400 |
+| 추정 성공률 | 약 75-90% | 약 95-99% |
+
+같은 구조인데 결과가 크게 벌어졌다. 실험 1은 누적 보상이 150-200에서 멈췄고, 이는 에이전트가 주차 성공 근처까지는 갔지만 최대 보상(+100)에 자주 도달하지는 못했다는 뜻이다. 원인은 셋이었다 - 학습 스텝이 목표(5천만)의 5분의 1도 안 됐고, 데모가 짧아 다양한 주차 상황을 못 담았으며, 그래서 정책이 완전히 수렴하지 못했다.
+
+실험 2에서 학습 예산을 목표치까지 채우고 데모를 10분 분량의 다양한 시나리오로 늘리자, 누적 보상이 350-400까지 올라 최대 보상에 도달하는 에피소드가 크게 늘었다. Policy Loss와 GAIL Loss가 꾸준히 감소하고 Policy Entropy·Epsilon도 내려가, 정책이 확정적으로 수렴한 게 지표로 확인됐다. 학습된 에이전트의 평균 주차 소요 시간은 8-9초 수준이었다.
+
+정리하면, 성공률을 가른 건 알고리즘 교체가 아니라 **데모의 다양성과 학습 예산**이었다. 강화학습에서 "무엇을 얼마나 보여주고, 얼마나 오래 학습시키느냐"가 알고리즘 선택만큼 결과를 좌우한다는 걸 숫자로 본 경험이었다.
+
+## 한계와 배운 것
+
+솔직히 이건 시뮬레이션 안의 결과다. 성공률도 실측 카운트가 아니라 누적 보상에서 역산한 추정치라, "약 95-99%"는 정밀한 측정값이 아니라 학습이 잘 수렴했다는 정황 지표로 읽는 게 맞다. 현실의 센서 노이즈·기상·노면은 이 환경에 담기지 않았고, 학습에 든 시간·자원도 실시간 주행에 바로 쓰기엔 무겁다. sim-to-real 격차, 하이브리드(규칙+학습) 기법, 시뮬레이션 병렬화가 다음 과제로 남았다.
+
+그럼에도 이 과제에서 강화학습의 실제 감각을 처음 잡았다. 보상 함수를 어떻게 쓰느냐가 곧 에이전트가 무엇을 "잘한 것"으로 배우는지를 정한다는 것, 희소 보상 문제를 데모로 넘긴다는 것, 그리고 같은 알고리즘도 데이터와 학습 예산에 따라 결과가 크게 갈린다는 것. 코드 규모는 작아도, 문제를 정의하고 실험으로 가설을 확인하는 과정 자체가 이 프로젝트의 알맹이였다.

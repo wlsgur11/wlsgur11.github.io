@@ -1,6 +1,14 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" role="img" aria-label="jh">
-  <rect width="100" height="100" rx="26" fill="#3b5bdb"/>
-  <text x="50" y="56" text-anchor="middle" dominant-baseline="middle"
-        font-family="'Segoe UI', 'Helvetica Neue', system-ui, sans-serif"
-        font-weight="800" font-size="62" fill="#ffffff">M</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" role="img" aria-label="M">
+  <style>
+    .bg { fill: #0f1219; }
+    .fg { fill: #ffffff; }
+    @media (prefers-color-scheme: dark) {
+      .bg { fill: #e9edf5; }
+      .fg { fill: #0f1219; }
+    }
+  </style>
+  <rect class="bg" width="100" height="100" rx="26"/>
+  <text class="fg" x="50" y="56" text-anchor="middle" dominant-baseline="middle"
+        font-family="'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace"
+        font-weight="800" font-size="60">M</text>
 </svg>

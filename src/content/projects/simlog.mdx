@@ -1,23 +1,23 @@
 ---
-title: 'SimLog (심로그) — AI 감정 분석 일기 앱'
-titleEn: 'SimLog — an AI emotion-analysis journaling app'
+title: 'SimLog (심로그) - AI 감정 분석 일기 앱'
+titleEn: 'SimLog - an AI emotion-analysis journaling app'
 description: '대학생 정신건강을 위한 AI 일기 앱. 일기를 감정 분석하고, 부정 감정이 오래 지속되면 교내 상담 연계를 제안합니다. 제6회 PNU 창의융합SW해커톤 장려상.'
 descriptionEn: 'A mental-health journaling app for students. It analyzes emotions in each entry and, when negative feelings persist, suggests connecting to campus counseling. Encouragement Award at the 6th PNU SW Hackathon.'
 role: '개발 (백엔드·앱·배포)'
 roleEn: 'Development (backend, app, deployment)'
-period: '2025.05 ~ 2025.08'
+period: '2025.05 - 2025.08'
 logo: '/images/logos/simlog.png'
 cover: '/images/logos/simlog.png'
 badge: '해커톤'
 badgeEn: 'Hackathon'
 summary:
   - '일기를 GPT로 감정 분석(플루치크 감정 바퀴)하고, 7일간 부정 감정이 지속되면 교내 상담을 연계하는 정신건강 앱. 제6회 PNU 창의융합SW해커톤 장려상.'
-  - '처음 도전한 앱 개발 — FastAPI·MySQL 백엔드와 Flutter 크로스플랫폼 앱을 개발하고 배포까지 맡았습니다.'
-  - '7일 일기 요약을 동의 기반으로 안전하게 공유하는 토큰 스냅샷 방식과, 마음정원의 요소 배치를 위한 레이어 렌더링을 직접 설계했습니다.'
+  - '팀에서 유일한 개발자로 FastAPI·MySQL 백엔드와 Flutter 크로스플랫폼 앱을 처음부터 만들고 배포까지 맡았습니다. 웹만 하다 처음 도전한 앱 개발입니다.'
+  - 'LLM이 실패해도 앱이 멈추지 않도록 키워드 폴백을 둔 감정 분석, 동의 기반 토큰 스냅샷으로 7일 요약을 안전하게 공유하는 상담 연계, 요소가 겹치는 마음정원의 레이어 렌더링을 직접 설계했습니다.'
 summaryEn:
   - 'A mental-health app that analyzes journal emotions with GPT (Plutchik’s wheel) and links students to campus counseling when negative emotions persist for 7 days. Encouragement Award, 6th PNU SW Hackathon.'
-  - 'My first app project — built and deployed a FastAPI/MySQL backend and a Flutter cross-platform app.'
-  - 'Designed a consent-based token-snapshot scheme for safely sharing 7-day journal summaries, and a layer-based rendering system for placing items in the "mind garden".'
+  - 'As the team’s only developer, I built and deployed a FastAPI/MySQL backend and a Flutter cross-platform app end to end - my first app project after only doing web.'
+  - 'Designed a keyword fallback so emotion analysis keeps working when the LLM fails, a consent-based token-snapshot scheme for safely sharing 7-day summaries with counselors, and a layer-based renderer for the overlapping items in the "mind garden".'
 stack:
   - Flutter
   - Dart
@@ -25,7 +25,9 @@ stack:
   - Python
   - MySQL
   - SQLAlchemy
+  - JWT
   - OpenAI GPT-4o
+  - Railway
 links:
   repo: 'https://github.com/wlsgur11/SimLog'
 featured: false
@@ -36,16 +38,94 @@ draft: false
 
 ## 개요
 
-대학생의 정신건강을 돕는 AI 일기 앱입니다. 사용자가 하루의 경험을 기록하면 AI가 감정을 분석해 패턴을 보여주고, 부정적인 감정이 일정 기간 지속되면 교내 상담 연계를 제안합니다. 부산대학교의 낮은 상담센터 이용률과 높은 위기 신호 비율에서 출발한 서비스로, **제6회 PNU 창의융합SW해커톤에서 장려상**을 받았습니다.
+대학생의 정신건강을 돕는 AI 일기 앱이다. 사용자가 하루를 기록하면 AI가 감정을 분석해 색으로 보여주고, 부정적인 감정이 일정 기간 지속되면 교내 상담 연계를 제안한다. 부산대의 낮은 상담센터 이용률과 높은 위기 신호 비율에서 출발했고, **제6회 PNU 창의융합SW해커톤에서 장려상**(2025.08.29, 부산대학교 소프트웨어융합교육원장상)을 받았다.
 
-- **역할**: 백엔드(FastAPI·MySQL)·Flutter 앱 개발·배포
-- **팀**: 4인 (기획 2 · 개발 1 · 리서치 1)
-- **핵심**: GPT 기반 감정 분석(플루치크 감정 바퀴), 7일 위기 감지·상담 연계, 마음정원 게이미피케이션
+- **역할**: 팀에서 유일한 개발자 - 백엔드(FastAPI·MySQL)·Flutter 앱·배포까지 개발 전부. 실제로 저장소 커밋의 대부분이 내 것이다.
+- **팀**: 4인 (기획 2 · 개발 1 · 리서치 1). 기획·시장 리서치·효원상담원 협업과 감정 모델 방향은 팀이, 그걸 돌아가는 코드로 옮기는 일은 내가 맡았다.
+- **핵심**: GPT 기반 감정 분석(플루치크 감정 바퀴), 7일 위기 감지·상담 연계, 마음정원 게이미피케이션, 음성 일기
+- **기간**: 약 4개월(2025.05-08)의 긴 해커톤
+- **시연 영상**: [youtu.be/2i2YJWFWQY4](https://youtu.be/2i2YJWFWQY4)
+
+## 왜 만들었나
+
+시작은 숫자였다. 2023년 전국 국립대 마음건강 조사에서 위기 학생 비율이 18.4%였는데, 부산대는 43%로 유독 높았다. 그런데 정작 교내 상담센터를 쓰는 학생은 조사에 참여한 1,242명 중 23%뿐이었다. 위험은 큰데 손을 내미는 사람은 적은, 전형적인 골든타임 문제였다.
+
+우울증 양성 판정을 받은 성인 509명 중 94%가 "진단받은 적 없다"고 답했다는 자료도 있었다. 우울은 스스로 알아차리기 어렵고, 알아도 병원 문턱을 넘기까지가 멀다. 그래서 우리가 잡은 방향은 "상담을 권하기 전에, 먼저 자기 감정을 눈으로 보게 하자"였다. 말로 설명하기 어려운 마음을 일기로 남기면 AI가 그날의 감정을 색으로 돌려주고, 그 색이 며칠째 어두우면 그때 조심스럽게 상담을 건네는 흐름이다.
+
+## 처음 만든 앱
+
+나는 그때까지 웹만 했다. 이 프로젝트에서 처음으로 크로스플랫폼 앱(Flutter)에 도전했고, 백엔드(FastAPI·MySQL)부터 앱, 배포까지 팀에서 혼자 개발을 맡았다. 평소 웹이라면 일정을 금방금방 소화했겠지만, 앱은 새 언어(Dart)와 프레임워크를 공부하며 만들다 보니 같은 기능도 시간이 더 걸렸다. 4개월짜리 긴 해커톤이었는데도 가장 먼저 무너진 건 일정 감각이었다. 초반에 이걸 인정하고 회의·기능 개발 일정에 일부러 여유를 뒀다. "이번 주에 다 된다"를 "이번 주에 감정 분석까지만"으로 쪼개는 편이, 결국 데모까지 가는 길이 짧았다.
+
+앱은 스플래시에서 토큰을 검증해 자동 로그인 여부를 가르고, 홈에서 일기 작성·마음정원·마음 체크로 갈라진다. 백엔드는 JWT 인증 뒤에서 감정 기록, 정원, 알림, 상담 보고서 API를 담당한다.
+
+![SimLog 시스템 아키텍처 - Flutter 앱, FastAPI 백엔드, MySQL, 그리고 OpenAI·Clova 외부 AI 서비스의 연결 구조](/images/simlog/architecture.png)
+
+## 핵심 기능 들여다보기
+
+### AI 감정 분석 - LLM은 언젠가 실패한다
+
+일기 한 편이 들어오면 GPT-4o mini에게 넘겨, 감정을 구조화된 JSON으로 받아온다. 로버트 플루치크의 감정 바퀴에 기반한 기본 감정, 강도(1-10), 신뢰도, 그리고 그 감정을 대표하는 색(이름·hex)까지 함께 온다. 색으로 돌려주는 게 이 앱의 핵심 UX라, 분석 결과는 곧바로 화면의 색이 된다.
+
+```json
+{
+  "primary_emotion": "슬픔",
+  "intensity": 8,
+  "confidence": 0.95,
+  "color": { "name": "어두운 파랑", "hex": "#000046" },
+  "ai_used": true,
+  "ai_failed": false
+}
+```
+
+문제는 LLM이 늘 성공하지는 않는다는 것이다. 타임아웃, 응답 형식 깨짐, API 오류 - 어느 것이든 감정 분석이 앱의 정중앙 기능인 이상, 실패하면 사용자는 빈 화면을 본다. 그래서 AI가 실패하면 **키워드 기반 분류로 폴백**하도록 만들고, 응답에 `ai_used`·`ai_failed` 플래그를 실어 어느 경로로 나온 결과인지 남겼다. 완벽한 분석보다 "항상 무언가는 돌려주는" 쪽이 정신건강 앱에는 더 맞다고 봤다.
+
+![감정 분석 결과 화면 - 그날의 감정을 색과 강도, 키워드, 요약으로 표현한다](/images/simlog/emotion-analysis.png)
+
+### 7일 위기 감지와 상담 연계 - 동의가 먼저다
+
+감정을 색으로 보여주는 데서 그치면 그냥 예쁜 일기장이다. 이 앱이 하려던 건 그다음, 어두운 색이 오래 이어질 때 개입하는 것이었다. `/alerts/check`는 최근 7일 기록에서 부정 감정 비율(`negative_ratio`)과 지속 일수(`days_negative`)를 계산해, 임계치를 넘으면 "마음이 오랫동안 비를 맞고 있을 때" 알림을 띄우고 상담 신청 폼 URL을 함께 내려준다.
+
+여기서 가장 신경 쓴 건 기능이 아니라 **동의와 보안**이었다. 감정 일기는 극도로 사적인 데이터라, 상담사에게 넘어가는 순간을 사용자가 온전히 통제해야 했다. 공유 요청(POST)이 들어오면 무작위 토큰(`secrets.token_urlsafe(32)`)을 발급하고, 그 시점의 7일 일기를 스냅샷으로 만료일시·취소 여부와 함께 저장한다. 이때 **DB에는 토큰 원문이 아니라 SHA-256 해시만 저장**하고, 원문 토큰은 발급 응답으로 딱 한 번만 돌려준다.
+
+```python
+token = secrets.token_urlsafe(32)          # 원문 - 응답에 한 번만
+token_digest = sha256(token).hexdigest()   # DB엔 이 해시만 저장
+# 조회(GET): 들어온 토큰을 다시 해싱 → digest 대조 → 취소·만료 검사 → 스냅샷 반환
+```
+
+이렇게 하면 DB가 통째로 새어도 저장된 해시로는 유효한 공유 링크를 되살릴 수 없다. 조회 때는 들어온 토큰을 서버가 같은 방식으로 해싱해 digest를 대조하고, 취소·만료를 확인한 뒤에야 스냅샷을 내준다. 원본 기록이 나중에 바뀌거나 지워져도 상담사가 보는 건 동의한 그 순간의 스냅샷이고, 사용자는 언제든 취소(revoke)할 수 있다. 알림 모달도 "동의 없이 바로가기 / 동의하고 바로가기"로 갈라, 상담 연결과 데이터 공유를 분리했다.
+
+![마음 체크 화면 - 7일 부정 감정이 지속되면 상담 연계를 조심스럽게 제안한다](/images/simlog/mind-check.png)
+
+### 마음정원 - 겹치는 것들을 어떻게 쌓나
+
+꾸준함이 이 앱의 두 번째 벽이었다. 마음 챙김은 원래 작심삼일이 기본값이라, 매일 돌아올 이유를 게임으로 만들었다. 출석하면 씨앗(화폐)을 주는데, 그냥 매일 같은 개수가 아니라 연속 출석에 따라 2·4·6·8개로 늘고 7일마다 보너스 5개를 얹는다. 모은 씨앗으로 상점에서 아이템을 사서 6×12 그리드 정원에 배치한다.
+
+배치를 구현하면서 만난 게 겹침 문제였다. 흙 위에 꽃이 놓이고, 울타리가 그 앞을 지나고, 연못 속에 물고기가 있는 화면은 평면 좌표만으로는 순서가 안 잡힌다. 각 아이템 레코드에 정수 `layer` 컬럼(0: 배경, 1: 중간, 2: 앞)을 두고, 같은 칸에 겹친 아이템을 `layer` 기준으로 정렬한 뒤 Flutter `Stack`으로 아래에서 위로 쌓아 렌더링했다. `position_x`/`position_y`는 어디에 놓일지, `layer`는 누가 누구를 덮을지를 나눠 관리한 셈이다.
+
+![마음정원 - 출석으로 모은 씨앗으로 아이템을 사서 정원을 꾸민다](/images/simlog/garden.png)
+
+### 음성 일기
+
+글로 쓰기 부담스러운 사용자를 위해, 말로도 일기를 남길 수 있게 했다. 녹음한 오디오를 `multipart/form-data`로 올리면 백엔드가 Naver Clova STT로 텍스트로 바꾸고, 그 텍스트가 그대로 감정 분석 파이프라인을 탄다. 입력 수단만 다를 뿐, 이후 흐름은 텍스트 일기와 같다.
 
 ## 특히 어려웠던 것
 
-- **첫 앱 개발** — 웹만 하다 처음 크로스플랫폼 앱(Flutter)에 도전해, 학습과 개발을 병행하느라 일정 관리가 특히 어려웠습니다. 초반에 이를 파악하고 회의·기능 개발 일정에 여유를 뒀습니다.
-- **7일 요약 링크의 보안** — 요약 POST 시 무작위 토큰을 발급하고 만료·취소 정보와 함께 일기를 스냅샷으로 저장해, 이후 정확히 일치하는 토큰으로만 요약을 제공하도록 설계했습니다.
-- **마음정원 레이어 시스템** — 흙 위의 꽃·울타리·연못 속 물고기처럼 요소가 겹치는 화면을, 각 요소에 정수 레이어를 부여하고 정렬해 쌓는 방식으로 렌더링했습니다.
+- **첫 앱 개발과 일정** - 새 스택(Flutter)을 배우며 기능을 만드느라 일정 예측이 계속 빗나갔다. 완벽한 계획 대신 자주 쪼개고 여유를 두는 쪽으로 운영을 바꿔 데모까지 갔다.
+- **AI의 불확실성** - LLM 응답은 신뢰할 수 있는 인프라가 아니다. 실패를 정상 경로의 일부로 보고 키워드 폴백과 상태 플래그를 설계에 넣었다.
+- **사적인 데이터의 공유** - 감정 일기를 상담사에게 넘기는 건 되돌릴 수 없는 일이라, 동의·토큰·스냅샷·취소를 먼저 설계하고 기능을 얹었다.
+- **겹치는 UI 렌더링** - 마음정원의 요소 겹침을 좌표와 레이어로 분리해 해결했다.
 
-> 상세 케이스스터디는 정리해 이어서 작성할 예정입니다.
+## 배운 점
+
+처음으로 앱을 처음부터 끝까지 만들어봤다는 게 가장 큰 수확이었다. 서버·DB 설계부터 크로스플랫폼 앱, 배포까지 한 줄로 이어보니, 개발이 API를 구현하는 데서 끝나지 않는다는 걸 몸으로 알았다.
+
+기술적으로는 두 가지가 남았다. 하나는 **AI를 인프라처럼 신뢰하면 안 된다**는 것. GPT는 대부분 잘 하지만 언젠가는 실패하고, 그 실패가 핵심 기능이라면 폴백은 선택이 아니라 필수다. 다른 하나는 정신건강처럼 민감한 도메인에서는 **기능보다 통제권 설계가 먼저**라는 것. 무엇을, 언제, 누구에게 넘길지를 사용자가 쥐게 만드는 일이, 감정을 분석하는 일만큼 중요했다.
+
+## 기술적 도전
+
+처음 만든 앱이라, 웹에서는 겪지 않던 문제들을 밑바닥에서 부딪혔다. 핵심 기능 세 개에서 특히 오래 고민했고, 각 사건은 따라 하며 재현할 수 있게 블로그로 정리했다.
+
+- **[GPT는 언젠가 실패한다 - 감정 분석에 폴백을 깐 이유](/blog/simlog-emotion-fallback/)** - 앱 정중앙 기능이 외부 LLM 위에 서 있었다. 클라이언트가 `proxies` 인자로 초기화부터 깨지고, JSON을 달라 해도 JSON이 아닌 게 오던 실패들을 정상 경로로 받아들여, 키워드 폴백과 `ai_used`·`ai_failed` 상태 플래그를 넣은 기록.
+- **[정원에 물고기가 가라앉았다 - 마음정원의 레이어 렌더링](/blog/simlog-garden-layer-rendering/)** - 흙 위의 꽃, 연못 속 물고기처럼 겹치는 요소의 z-순서를, 아이템마다 정수 `layer`(0-3)를 부여하고 정렬해 Flutter `Stack`으로 쌓아 해결한 과정. 이름 기반 휴리스틱의 한계까지.
+- **[링크 하나가 곧 열쇠였다 - 7일 일기 요약을 안전하게 공유하기](/blog/simlog-report-token-snapshot/)** - 계정 없는 상담사에게 링크만으로 열려야 했기에 링크가 곧 자격증명이 됐다. 토큰을 SHA-256 해시로만 저장하고, 동의 시점의 7일을 스냅샷으로 굳히고, 취소·만료로 통제권을 사용자에게 돌려준 설계.

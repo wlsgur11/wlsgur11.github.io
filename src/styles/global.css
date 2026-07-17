@@ -9,6 +9,7 @@
 	--accent-dark: #1c3aa9;
 	--accent-rgb: 59, 91, 219;
 	--black: 15, 18, 25;
+	--page-bg: #f5f6f9;
 	--gray: 96, 115, 159;
 	--gray-light: 229, 233, 240;
 	--gray-dark: 34, 41, 57;
@@ -28,11 +29,13 @@
 :root[data-theme='dark'] {
 	--accent: #8aa2ff;
 	--accent-dark: #b3c2ff;
+	--accent-rgb: 138, 162, 255;
 	--black: 233, 237, 245;
 	--gray: 140, 155, 190;
 	--gray-light: 38, 44, 58;
 	--gray-dark: 210, 217, 230;
 	--bg: #0f1218;
+	--page-bg: #0b0e14;
 }
 @media (prefers-color-scheme: dark) {
 	:root:not([data-theme='light']) {
@@ -44,6 +47,7 @@
 		--gray-light: 38, 44, 58;
 		--gray-dark: 210, 217, 230;
 		--bg: #0f1218;
+		--page-bg: #0b0e14;
 	}
 }
 body {
@@ -51,7 +55,7 @@ body {
 	margin: 0;
 	padding: 0;
 	text-align: left;
-	background-color: var(--bg);
+	background-color: var(--page-bg);
 	word-wrap: break-word;
 	overflow-wrap: break-word;
 	color: rgb(var(--gray-dark));

@@ -1,8 +1,8 @@
 ---
-title: '백업 없는 HA는 HA가 아니었다 — CNPG WAL 폭주 이후 Longhorn/CNPG 복구기'
-titleEn: "HA without backups isn't HA — recovering a CNPG/Longhorn cluster after a WAL runaway"
+title: 'WAL 폭주로 디스크가 찼다 - CNPG/Longhorn 클러스터 복구기'
+titleEn: 'A WAL runaway filled the disk - recovering a CNPG/Longhorn cluster'
 description: 'WAL이 디스크를 채워 PostgreSQL이 뜨지 않았다. 원인은 저용량 노드의 죽은 standby가 replication slot으로 WAL을 붙잡은 것. CNPG·Longhorn·노드 장치를 계층별로 나눠 replica 축소→dangling PVC→Pod 정리→multipathd 제거→물리 디스크 추가 순으로 복구한 기록.'
-descriptionEn: 'WAL filled the disk and PostgreSQL would not start. A dead standby on a low-capacity node had pinned WAL through its replication slot. A layered recovery across CNPG, Longhorn, and node devices — and why "HA" without backups was never HA.'
+descriptionEn: 'WAL filled the disk and PostgreSQL would not start. A dead standby on a low-capacity node had pinned WAL through its replication slot. A layered recovery across CNPG, Longhorn, and node devices - and why "HA" without backups was never HA.'
 pubDate: 2026-04-27
 tags: ['troubleshooting', 'infra', 'kubernetes', 'database']
 project: 'code-place'
@@ -45,7 +45,7 @@ Instances are present, but none have reported a system ID
 
 이렇게 나누자 CNPG 메시지는 원인이라기보다 **결과**일 수 있다는 게 보였다. "system ID를 보고하지 못했다"는 건 인스턴스가 정상 기동까지 못 갔다는 뜻이지, 반드시 내부 손상은 아니다. 데이터를 올릴 스토리지가 정상 연결되지 않아 기동이 멈췄을 수도 있다. 그래서 "왜 깨졌지"가 아니라 "왜 여기서 멈췄지"로 봤다.
 
-## 근본 원인 — 죽은 standby의 replication slot
+## 근본 원인 - 죽은 standby의 replication slot
 
 스토리지를 파고들자 단서가 늘었다. WAL이 계속 쌓여 디스크 여유가 빠르게 줄었는데, standby 하나는 이미 며칠 전부터 디스크가 차서 replication이 멈춰 있었다.
 
@@ -67,13 +67,13 @@ FROM pg_replication_slots;
 1. **replica 3 → 2로 축소.** 3번 노드의 여유가 부족해 replica 3 구성을 그대로 유지할 수 없었다. Longhorn에서 3번 노드를 배제하고 replica를 2로 줄였다. 전부 맞추기보다 **먼저 살아날 수 있는 구성**을 만드는 선택이었다.
 2. **용량 확보 후 PVC 복구.** 그런데 PVC가 복구됐다고 CNPG가 곧바로 인스턴스를 살리지는 않았다. 한 번 dangling PVC처럼 본 대상은 단순 재시작만으로 정상 후보로 다시 채택되지 않았다. **"리소스가 존재한다"와 "오퍼레이터가 그걸 정상 후보로 재채택한다"는 다른 문제**였다.
 3. **Pod 정리.** 남아 있던 1·3번 Pod가 있는 상태에선 CNPG가 원하는 방향으로 reconciliation을 진행하지 않았다. 나머지 Pod를 정리하자 그제서야 2번 인스턴스를 기준으로 복구가 시작됐다.
-4. **mount error → `multipathd` 제거.** 2번을 살리는 중 mount error가 다시 났다. 이건 CNPG·PostgreSQL만 봐선 안 풀렸다. 노드로 내려가니 호스트의 `multipathd`가 Longhorn이 써야 할 블록 장치를 건드리고 있었다. `multipathd`를 중지·비활성화하고 다시 mount하자 풀렸다. 중간에 노드 재부팅도 있었지만, 결정적 조치는 재부팅이 아니라 `multipathd` 간섭 제거였다 — "다시 켜니 됐다"로 정리하지 않은 이유다.
+4. **mount error → `multipathd` 제거.** 2번을 살리는 중 mount error가 다시 났다. 이건 CNPG·PostgreSQL만 봐선 안 풀렸다. 노드로 내려가니 호스트의 `multipathd`가 Longhorn이 써야 할 블록 장치를 건드리고 있었다. `multipathd`를 중지·비활성화하고 다시 mount하자 풀렸다. 중간에 노드 재부팅도 있었지만, 결정적 조치는 재부팅이 아니라 `multipathd` 간섭 제거였다 - "다시 켜니 됐다"로 정리하지 않은 이유다.
 5. **1번 복구, 3번은 물리 디스크 추가.** 1번은 정상 복구됐지만, 3번은 앞서 볼륨을 확장한 탓에 필요한 물리 용량을 못 채웠다. 3번 노드에 빈 디스크를 새로 마운트해 Longhorn 디스크로 추가하고 나서야 3번까지 복구해 replica 3 구성을 되찾았다.
 6. **slot·WAL 정리.** 장애의 시작이 WAL이었으니, 복구 후에도 불필요한 replication slot이 남아 WAL을 다시 붙잡지 않는지 확인했다.
 
 ### 연결이 되는데 INSERT만 실패한다면
 
-복구 후엔 애플리케이션이 **쓰기 가능한 primary**에 붙는지도 확인했다. CNPG는 역할별 서비스를 따로 만든다 — `-rw`(primary), `-ro`(replica), `-r`(읽기 계열). 이 구분을 놓치면 `cannot execute INSERT in a read-only transaction`를 보고 `@Transactional(readOnly=true)`부터 의심하기 쉽지만, 실제론 read-only replica에 붙은 결과일 수 있다.
+복구 후엔 애플리케이션이 **쓰기 가능한 primary**에 붙는지도 확인했다. CNPG는 역할별 서비스를 따로 만든다 - `-rw`(primary), `-ro`(replica), `-r`(읽기 계열). 이 구분을 놓치면 `cannot execute INSERT in a read-only transaction`를 보고 `@Transactional(readOnly=true)`부터 의심하기 쉽지만, 실제론 read-only replica에 붙은 결과일 수 있다.
 
 ```sql
 SELECT pg_is_in_recovery();  -- true면 지금 붙은 대상은 standby(읽기전용)
@@ -81,7 +81,7 @@ SELECT pg_is_in_recovery();  -- true면 지금 붙은 대상은 standby(읽기�
 
 ## 백업의 부재
 
-클러스터는 위 과정을 거쳐 되살렸다. 하지만 이 사고에서 가장 뼈아팠던 건 따로 있었다 — **백업이 없었다.** CNPG 매니페스트에 `backup`도, WAL을 별도 스토리지에 아카이빙하는 구성도 없었다. 특정 시점으로 되돌리는 PITR(Point-in-Time Recovery) 자체가 불가능했다. 인스턴스를 살려 서비스는 복구했지만, 되돌릴 지점이 없다는 건 "이번엔 운이 좋았다"는 뜻이었다. slot 하나가 조금만 더 오래 방치됐어도 잃을 게 훨씬 컸다.
+클러스터는 위 과정을 거쳐 되살렸다. 하지만 이 사고에서 가장 뼈아팠던 건 따로 있었다 - **백업이 없었다.** CNPG 매니페스트에 `backup`도, WAL을 별도 스토리지에 아카이빙하는 구성도 없었다. 특정 시점으로 되돌리는 PITR(Point-in-Time Recovery) 자체가 불가능했다. 인스턴스를 살려 서비스는 복구했지만, 되돌릴 지점이 없다는 건 "이번엔 운이 좋았다"는 뜻이었다. slot 하나가 조금만 더 오래 방치됐어도 잃을 게 훨씬 컸다.
 
 ## 재발 방지
 

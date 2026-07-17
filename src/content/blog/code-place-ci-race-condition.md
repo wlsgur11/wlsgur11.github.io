@@ -1,6 +1,6 @@
 ---
-title: 'CI가 레포에 자동 커밋할 때 생기는 레이스 컨디션'
-titleEn: 'A race condition when CI auto-commits to the repo'
+title: 'CI가 자기 레포에 커밋할 때의 레이스 컨디션 - concurrency 직렬화'
+titleEn: 'When CI commits to its own repo - a race fixed with concurrency serialization'
 description: 'PR을 연달아 머지하니 이미지 태그를 매니페스트에 자동 커밋하는 잡이 rebase 충돌로 줄줄이 실패했다. concurrency 직렬화와 merge 아닌 idempotent 재적용으로 해결한 기록.'
 descriptionEn: 'Merging PRs back-to-back made the image-tag auto-commit job fail on rebase conflicts. Fixed with concurrency serialization and idempotent reapply instead of merge.'
 pubDate: 2026-05-28
@@ -9,7 +9,7 @@ project: 'code-place'
 draft: false
 ---
 
-> **TL;DR** — GitHub Actions가 빌드한 이미지 태그를 kustomization 매니페스트에 자동 커밋하는데, PR을 1분 안에 여러 개 머지하면 잡들이 같은 파일 같은 줄을 동시에 push하다 rebase 충돌로 실패했습니다. **`concurrency`로 직렬화**하고, `git pull --rebase` 대신 **idempotent 재적용(fetch → reset → 태그 덮어쓰기 → push 재시도)**으로 바꿔 해결했습니다.
+> **TL;DR** - GitHub Actions가 빌드한 이미지 태그를 kustomization 매니페스트에 자동 커밋하는데, PR을 1분 안에 여러 개 머지하면 잡들이 같은 파일 같은 줄을 동시에 push하다 rebase 충돌로 실패했습니다. **`concurrency`로 직렬화**하고, `git pull --rebase` 대신 **idempotent 재적용(fetch → reset → 태그 덮어쓰기 → push 재시도)**으로 바꿔 해결했습니다.
 
 ## 파이프라인 구조
 

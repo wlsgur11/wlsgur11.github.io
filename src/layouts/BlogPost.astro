@@ -5,7 +5,8 @@ import BaseHead from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
 import FormattedDate from '../components/FormattedDate.astro';
 import Header from '../components/Header.astro';
-import { type Lang, useTranslations } from '../i18n';
+import { PROJECT_LABELS } from '../consts';
+import { type Lang, localize, useTranslations } from '../i18n';
 
 type Props = CollectionEntry<'blog'>['data'] & { lang?: Lang };
 
@@ -17,11 +18,14 @@ const {
 	pubDate,
 	updatedDate,
 	heroImage,
+	tags = [],
+	project,
 	lang = 'ko',
 } = Astro.props;
 const t = useTranslations(lang);
 const displayTitle = lang === 'en' && titleEn ? titleEn : title;
 const displayDesc = lang === 'en' && descriptionEn ? descriptionEn : description;
+const projectLabel = project ? PROJECT_LABELS[project] : undefined;
 ---
 
 <html lang={lang}>
@@ -53,22 +57,50 @@ const displayDesc = lang === 'en' && descriptionEn ? descriptionEn : description
 				padding: 1.5em 0 1em;
 				text-align: left;
 			}
-			.date {
+			.meta-line {
+				display: flex;
+				align-items: center;
+				flex-wrap: wrap;
+				gap: 0.5em;
 				font-family: var(--font-mono);
 				font-size: 0.8em;
-				margin-bottom: 0.6em;
+				margin-bottom: 0.9em;
 				color: rgb(var(--gray));
+			}
+			.meta-line .sep {
+				opacity: 0.5;
+			}
+			.proj-link {
+				display: inline-flex;
+				align-items: center;
+				gap: 0.4em;
+				color: var(--accent);
+				text-decoration: none;
+			}
+			.proj-link::before {
+				content: '';
+				width: 5px;
+				height: 5px;
+				border-radius: 50%;
+				background: var(--accent);
+				opacity: 0.7;
+			}
+			.proj-link:hover {
+				text-decoration: underline;
 			}
 			.last-updated-on {
 				font-style: italic;
 			}
+			.post-tags {
+				margin: 1.1em 0 0;
+			}
 			.notice {
 				font-size: 0.85em;
 				color: rgb(var(--gray));
-				margin: 0.6em 0 0;
+				margin: 0.9em 0 0;
 			}
 			.title hr {
-				margin: 1em 0 0;
+				margin: 1.2em 0 0;
 			}
 		</style>
 	</head>
@@ -82,17 +114,28 @@ const displayDesc = lang === 'en' && descriptionEn ? descriptionEn : description
 				</div>
 				<div class="prose">
 					<div class="title">
-						<div class="date">
+						<div class="meta-line">
 							<FormattedDate date={pubDate} />
-							{
-								updatedDate && (
-									<div class="last-updated-on">
-										Last updated on <FormattedDate date={updatedDate} />
-									</div>
-								)
-							}
+							{projectLabel && (
+								<>
+									<span class="sep">·</span>
+									<a class="proj-link" href={localize(`/projects/${project}/`, lang)}>{projectLabel}</a>
+								</>
+							)}
+							{updatedDate && (
+								<span class="last-updated-on">
+									· Last updated {<FormattedDate date={updatedDate} />}
+								</span>
+							)}
 						</div>
 						<h1>{displayTitle}</h1>
+						{tags.length > 0 && (
+							<ul class="tags post-tags">
+								{tags.map((tag) => (
+									<li class="tag">{tag}</li>
+								))}
+							</ul>
+						)}
 						{lang === 'en' && t('koreanNotice') && <p class="notice">{t('koreanNotice')}</p>}
 						<hr />
 					</div>
