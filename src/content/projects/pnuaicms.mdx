@@ -154,6 +154,7 @@ Caddy ─HTTPS▶ aicms.pusan.ac.kr
 - **[멀쩡한 코드를 고쳐서 깨뜨렸다 - 정규식 xlsx 파서의 self-closing 셀](/blog/pnuaicms-xlsx-self-closing-cell/)** - 정규식 기반 xlsx 리더가 self-closing 빈 셀을 여는 태그로 오인해 옆 칸 값을 흡수하던 오프셋. "off-by-one"으로 착각해 고친 커밋이 오히려 회귀를 만든 과정을 DB 조회와 두 파서 비교로 좁혀 되돌린 기록.
 - **[Vercel·Supabase에서 온프레미스로 - 학생 데이터를 교내 서버로 이전하기](/blog/pnuaicms-cloud-to-onprem/)** - DB 비밀번호의 `@`가 libpq 파싱을 막고, 인증서 실패의 원인이 서버가 아니라 캠퍼스 방화벽이었으며, self-hosted Auth.js의 `AUTH_TRUST_HOST`와 엉뚱한 구글 프로젝트에 있던 OAuth 클라이언트까지 되짚은 이전기.
 - **[파워서플라이가 죽어 서버가 꺼졌다 - 복구 전에 데이터 손실 범위부터 따지기](/blog/pnuaicms-psu-failure-recovery/)** - 서버 PSU 고장 시 라이브 볼륨·매일 백업·클라우드 스냅샷의 최신도를 비교해 복구 방식을 정하고, 백업이 전부 같은 디스크에 있던 단일 장애점을 마주한 기록.
+- **[로그인만 안 됐다 - DNS는 되는데 나가지 못한 컨테이너](/blog/pnuaicms-docker-egress-login/)** - 구글 로그인만 "server configuration" 에러로 막힌 원인이 콜백 등록이 아니라 컨테이너 egress 유실(DNS는 되는데 연결 안 됨)이었던 장애. env·prisma·ufw·MTU·docker0 대 compose 브리지로 좁혀 NAT 유실을 찾고, 엉킨 iptables는 clean 재부팅으로 정리했다.
 
 ## 배운 점
 
