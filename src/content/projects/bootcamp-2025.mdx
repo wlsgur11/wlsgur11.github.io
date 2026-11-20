@@ -11,7 +11,7 @@ badge: '부트캠프'
 badgeEn: 'Bootcamp'
 summary:
   - '멋쟁이사자처럼 2주 백엔드 부트캠프에서 당근마켓을 모델로 중고거래 서비스의 백엔드를 단독으로 구현했습니다. (프론트엔드는 팀원 담당.)'
-  - 'FastAPI·SQLite·Redis 기반으로 JWT 인증, 게시물 CRUD, 무한 스크롤, 사진 업로드를 구현했고, Redis 캐싱으로 목록 로딩을 5-10초에서 1초 이내로 줄였습니다.'
+  - 'FastAPI, SQLite, Redis 기반으로 JWT 인증, 게시물 CRUD, 무한 스크롤, 사진 업로드를 구현했고, Redis 캐싱으로 목록 로딩을 5-10초에서 1초 이내로 줄였습니다.'
   - '챗GPT 없이 공식 문서만으로 만든 첫 프로젝트 - 막히면 문서와 검색으로 파고들며 디버깅하는 습관을 들였습니다.'
 summaryEn:
   - 'At a 2-week LikeLion backend bootcamp, solo-built the backend of a second-hand marketplace modeled on Karrot. (Frontend was a teammate’s.)'
@@ -39,10 +39,10 @@ draft: false
 
 - **기간**: 2주 (2025.02.03-14), 총 70시간 이수
 - **역할**: 백엔드 단독(1인 팀). 프론트엔드(React)는 [별도 저장소](https://github.com/devmin24/daangn_front)를 참고했다.
-- **스택**: FastAPI · SQLite(SQLModel) · Redis · pydantic · jose(JWT) · bcrypt
+- **스택**: FastAPI, SQLite(SQLModel), Redis, pydantic, jose(JWT), bcrypt
 - **시연 영상**: [youtu.be/Ef-teuYRaN4](https://youtu.be/Ef-teuYRaN4)
 
-![FastAPI가 자동 생성한 Swagger UI — 인증·게시물 API 명세](/images/bootcamp/swagger.png)
+![FastAPI가 자동 생성한 Swagger UI - 인증/게시물 API 명세](/images/bootcamp/swagger.png)
 
 ## 챗GPT 없이, 공식 문서만으로
 
@@ -52,19 +52,19 @@ draft: false
 
 ## 구조
 
-백엔드는 라우터 - 서비스 - 모델로 계층을 나눴다. 요청은 `routers`(auth, post)가 받고, 실제 로직은 `services`(auth, post, redis)가 처리하며, DB·Redis·JWT 유틸은 `dependencies`로 분리했다. FastAPI를 처음 쓰면서도 파일이 뒤엉키지 않게, 역할별로 자른 구조를 지키려 했다.
+백엔드는 라우터 - 서비스 - 모델로 계층을 나눴다. 요청은 `routers`(auth, post)가 받고, 실제 로직은 `services`(auth, post, redis)가 처리하며, DB, Redis, JWT 유틸은 `dependencies`로 분리했다. FastAPI를 처음 쓰면서도 파일이 뒤엉키지 않게, 역할별로 자른 구조를 지키려 했다.
 
 ```text
 app/
-├── routers/       auth_routers · post_routers
-├── services/      auth_service · post_service · redis_service
-├── models/        user · post · parameter
-└── dependencies/  jwt_utils · sqlite_db · redis_db
+├── routers/       auth_routers, post_routers
+├── services/      auth_service, post_service, redis_service
+├── models/        user, post, parameter
+└── dependencies/  jwt_utils, sqlite_db, redis_db
 ```
 
 DB는 SQLite를 골랐다. 테이블과 데이터가 적고 쿼리가 복잡하지 않은 학습용 규모라, 별도 DB 서버를 띄우는 대신 파일 하나로 끝나는 SQLite가 맞았다. 라이브러리는 프로젝트별 `venv`로 격리했다. "무거운 도구부터 깔지 말고, 규모에 맞는 걸 고른다"를 처음 의식한 선택이었다.
 
-![데이터 모델 — 사용자·게시물·사진 관계](/images/bootcamp/erd.png)
+![데이터 모델 - 사용자, 게시물, 사진 관계](/images/bootcamp/erd.png)
 
 ## 핵심 기능
 
@@ -84,27 +84,27 @@ async def get_post(self, redis, post_id: int) -> Post | None:
 
 효과는 분명했다. 게시물 20개 기준 전체 목록 로딩이 **기존 5-10초에서 Redis 적용 후 1초 이내**로 줄었다. 캐싱이 왜 필요한지를 숫자로 처음 실감한 지점이었다.
 
-![게시물 목록 — 스크롤 끝에 닿으면 4개씩 이어 불러오고, Redis로 캐싱한다](/images/bootcamp/post-list.png)
+![게시물 목록 - 스크롤 끝에 닿으면 4개씩 이어 불러오고, Redis로 캐싱한다](/images/bootcamp/post-list.png)
 
 ### JWT 인증
 
-로그인은 JWT 토큰으로 처리했다(`jose`로 발급·검증, 비밀번호는 `bcrypt`로 해시). HTTP는 상태를 안 들고 가는(stateless) 프로토콜이라, 매 요청에 토큰을 헤더에 실어 사용자를 식별하도록 했다. 부트캠프에서 세션 기반 인증도 함께 배웠는데, 서버가 상태를 안 들어도 되는 stateless 쪽을 골라 붙여봤다. 액세스 토큰만 쓰면 탈취 시 만료까지 무방비라, 리프레시 토큰을 함께 둬 보안을 보완했다. 세션과 토큰, 두 방식의 장단을 직접 짜보며 비교한 게 이 프로젝트의 수확 중 하나였다.
+로그인은 JWT 토큰으로 처리했다(`jose`로 발급/검증, 비밀번호는 `bcrypt`로 해시). HTTP는 상태를 안 들고 가는(stateless) 프로토콜이라, 매 요청에 토큰을 헤더에 실어 사용자를 식별하도록 했다. 부트캠프에서 세션 기반 인증도 함께 배웠는데, 서버가 상태를 안 들어도 되는 stateless 쪽을 골라 붙여봤다. 액세스 토큰만 쓰면 탈취 시 만료까지 무방비라, 리프레시 토큰을 함께 둬 보안을 보완했다. 세션과 토큰, 두 방식의 장단을 직접 짜보며 비교한 게 이 프로젝트의 수확 중 하나였다.
 
 ### 끌어올리기
 
 당근마켓의 "끌어올리기"를 구현하려면, 정렬 기준과 표시 기준을 나눠야 했다. Post 테이블에 `created_at`과 `updated_at`을 따로 두고, **목록 정렬은 `updated_at` 순으로, 상세의 작성일자는 `created_at`으로** 보여줬다. 끌어올리기는 `updated_at`만 현재 시각으로 갱신해, 글은 그대로인데 목록 맨 위로 다시 올라오게 했다.
 
-![끌어올리기 결과 — updated_at만 갱신돼 글이 목록 최상단으로 다시 올라온다](/images/bootcamp/bump.png)
+![끌어올리기 결과 - updated_at만 갱신돼 글이 목록 최상단으로 다시 올라온다](/images/bootcamp/bump.png)
 
 ### 사진 첨부
 
-한 게시물은 사진을 최대 5장 가진다. 사진은 서버에 `static/{사용자 id}/{게시물 id}/{번호}.{확장자}` 규칙으로 저장하고, FastAPI의 static 서빙으로 `/static/...` 경로에서 바로 내려준다. 업로드 입력은 그대로 믿지 않고 파싱했다 - 파일명은 1-5번으로 치환하고, 확장자는 jpg·png·webp 등 몇 가지로만 제한해 임의의 파일명이 경로에 끼어들지 않게 했다.
+한 게시물은 사진을 최대 5장 가진다. 사진은 서버에 `static/{사용자 id}/{게시물 id}/{번호}.{확장자}` 규칙으로 저장하고, FastAPI의 static 서빙으로 `/static/...` 경로에서 바로 내려준다. 업로드 입력은 그대로 믿지 않고 파싱했다 - 파일명은 1-5번으로 치환하고, 확장자는 jpg, png, webp 등 몇 가지로만 제한해 임의의 파일명이 경로에 끼어들지 않게 했다.
 
-![게시물 작성 — 제목·내용·가격·지역과 함께 사진을 최대 5장 첨부한다](/images/bootcamp/write.png)
+![게시물 작성 - 제목, 내용, 가격, 지역과 함께 사진을 최대 5장 첨부한다](/images/bootcamp/write.png)
 
 ## 남긴 것과 배운 점
 
-2주짜리 학습 프로젝트라 끝맺지 못한 것도 정직하게 남아 있다. 검색은 API는 만들었지만 프론트에서 스크롤로 불러온 목록 안에서만 걸러, API를 제대로 활용하지 못했다. 배포(Amazon Lightsail)와 실시간 채팅·댓글은 다음 과제로 미뤘다.
+2주짜리 학습 프로젝트라 끝맺지 못한 것도 정직하게 남아 있다. 검색은 API는 만들었지만 프론트에서 스크롤로 불러온 목록 안에서만 걸러, API를 제대로 활용하지 못했다. 배포(Amazon Lightsail)와 실시간 채팅/댓글은 다음 과제로 미뤘다.
 
 과정 자체도 순탄치 않았다. 프론트와 백엔드 사이에서 고민하다 백엔드 1인 팀으로 방향을 틀었고, 그 뒤로는 끊임없이 나는 오류를 혼자 붙잡았다. 하루에 열 시간씩 코드만 들여다본 날도 있었다. 처음엔 막히면 강사님을 디버거처럼 불렀지만, 챗GPT 없이 문서로 파는 규칙을 지키다 보니 어느새 스스로 원인을 찾아 해결하고 있었다. 오류를 무서워하지 않게 된 게, 2주에서 가장 크게 바뀐 점이다.
 

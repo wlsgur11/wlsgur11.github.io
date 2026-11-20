@@ -3,7 +3,8 @@ title: 'GPT는 언젠가 실패한다 - 감정 분석에 폴백을 깐 이유'
 titleEn: 'The LLM will fail eventually - why I put a fallback under emotion analysis'
 description: 'GPT-4o mini로 일기 감정을 분석하는 게 앱의 정중앙 기능이었다. 그런데 클라이언트가 안 뜨고, JSON을 달라 해도 JSON이 아닌 게 왔다. LLM 응답을 신뢰할 인프라로 취급하지 않기로 한 기록.'
 descriptionEn: 'Emotion analysis with GPT-4o mini was the core of the app. But the client failed to init, and asking for JSON did not guarantee JSON. How I stopped treating an LLM response as reliable infrastructure.'
-pubDate: 2025-07-27
+pubDate: 2025-08-14
+updatedDate: 2026-11-20
 tags: ['troubleshooting', 'llm', 'backend']
 project: 'simlog'
 draft: false
@@ -17,7 +18,7 @@ SimLog에서 사용자가 일기를 쓰면 GPT-4o mini가 그날의 감정을 �
 
 | | |
 |---|---|
-| 백엔드 | FastAPI · Python |
+| 백엔드 | FastAPI, Python |
 | AI | OpenAI GPT-4o mini |
 | 배포 | Railway |
 
@@ -43,9 +44,11 @@ result = json.loads(response.choices[0].message.content)
 
 ## 첫 번째: 클라이언트가 아예 안 떴다
 
-배포 환경에서 감정 분석을 처음 태웠더니, OpenAI 클라이언트를 만드는 `OpenAI(api_key=...)` 한 줄에서 `TypeError`가 났다. 에러 메시지에 `proxies`가 있었다. openai 파이썬 패키지 버전과 그 아래 http 클라이언트가 안 맞아서, 내가 넘기지도 않은 `proxies` 인자를 두고 생성자가 넘어지는 문제였다. 코드가 틀린 게 아니라, 같은 requirements로 깔았는데도 환경에 따라 초기화가 깨졌다.
+배포 환경에서 감정 분석을 처음 태웠더니, OpenAI 클라이언트를 만드는 `OpenAI(api_key=...)` 한 줄에서 `TypeError`가 났다. 에러 메시지에 `proxies`가 있었다.
 
-처음엔 내 코드에서 뭘 잘못 넘겼나 한참 봤다. 아무것도 안 넘기고 있었다. 결국 클라이언트 생성을 방어적으로 감쌌다. 기본 생성이 `proxies` 때문에 실패하면, 명시적으로 `base_url`을 줘서 다시 만든다.
+처음엔 내 코드에서 뭘 잘못 넘겼나 한참 봤다. 아무것도 안 넘기고 있었다. 원인은 의존성 조합이었다. requirements에는 `openai==1.0.0`만 고정돼 있었고, 그 아래 깔리는 httpx는 버전을 묶지 않았다. openai 1.0.0은 기본 http 클라이언트를 만들 때 `httpx.Client(...)`에 `proxies=` 인자를 값이 없어도 항상 넘긴다. 그런데 httpx 0.28에서 이 `proxies` 인자가 없어졌다. 그래서 설치 시점에 httpx 0.28이 깔린 환경에서는, 내가 넘기지도 않은 `proxies` 때문에 생성자가 넘어졌다. 같은 requirements라도 httpx가 몇 버전으로 깔리느냐에 따라 결과가 갈린 셈이다.
+
+그때 한 조치는 두 가지였다. 클라이언트 생성을 감싸서 `proxies` TypeError가 나면 `base_url`을 명시해 다시 만들게 했고, 같은 커밋에서 requirements의 `openai==1.0.0`을 `openai>=1.12.0`으로 올렸다.
 
 ```python
 try:
@@ -57,7 +60,9 @@ except TypeError as e:
         raise
 ```
 
-깔끔한 해결은 아니다. 근본은 패키지 버전 핀이었겠지만, 데모가 며칠 안 남은 상황에서 "어느 환경에서든 일단 뜨게" 만드는 게 먼저였다. 이 지점에서 배운 게 하나 있다. 외부 SDK의 초기화조차 항상 성공한다고 믿으면 안 된다는 것.
+데모가 며칠 안 남은 상황이라 "어느 환경에서든 일단 뜨게" 만드는 게 먼저였다. 그런데 지금 다시 보면, 실제로 문제를 없앤 건 재시도가 아니라 버전 업 쪽이다. openai 1.0.0은 `base_url`을 줘도 `proxies`를 똑같이 넘기니, 재시도는 같은 `TypeError`로 다시 넘어진다. 그러면 바깥의 `except Exception`이 `None`을 돌려 결국 아래에서 다룰 키워드 폴백으로 빠질 뿐이다.
+
+하한만 건 `>=1.12.0`이 통한 것도 운이 섞여 있었다. pip가 그 시점의 최신판(내 로컬 venv에는 1.99.9가 깔렸다)을 받아왔기 때문이고, 1.12.0 자체는 아직 `proxies`를 넘기는 버전이다. httpx 0.28 호환 수정은 openai 1.55.3에서 들어갔다. 제대로 막으려면 openai 하한을 1.55.3 이상으로 잡거나 httpx를 0.28 미만으로 묶었어야 했다.
 
 ## 두 번째: JSON을 달라 했는데 JSON이 아니었다
 
@@ -81,7 +86,7 @@ LLM에게 형식을 지시하는 것과 LLM이 형식을 지킨다는 것은 다
 
 두 사건을 겪고 나니 결론은 하나였다. **감정 분석은 GPT가 성공했을 때의 경로와 실패했을 때의 경로, 둘 다 있어야 한다.** GPT가 죽어도 앱은 무언가를 돌려줘야 하니까.
 
-그래서 API 키가 없거나, 클라이언트가 안 뜨거나, JSON 파싱이 깨지면 전부 키워드 기반 분석으로 폴백하게 했다. 부정·긍정 감정 키워드 사전으로 텍스트를 스캔해 점수를 매기고, 더 높은 쪽에서 세부 감정을 고른다. 정교하진 않지만 항상 답을 낸다.
+그래서 API 키가 없거나, 클라이언트가 안 뜨거나, JSON 파싱이 깨지면 전부 키워드 기반 분석으로 폴백하게 했다. 부정/긍정 감정 키워드 사전으로 텍스트를 스캔해 점수를 매기고, 더 높은 쪽에서 세부 감정을 고른다. 정교하진 않지만 항상 답을 낸다.
 
 ```python
 def analyze_emotion_with_ai(content: str) -> Dict:
@@ -95,14 +100,12 @@ def analyze_emotion_with_ai(content: str) -> Dict:
     return fallback
 ```
 
-그리고 응답에 `ai_used`·`ai_failed` 플래그를 실었다. 폴백 결과는 `confidence`를 0.6으로 낮춰, 이게 확신에 찬 분석이 아니라는 걸 데이터 자체에 남겼다. 나중에 "이 사용자는 GPT 경로였나 폴백이었나"를 로그에서 되짚을 수 있게 하려는 목적도 있었다.
+그리고 응답에 `ai_used`, `ai_failed` 플래그를 실었다. 폴백 결과는 `confidence`를 0.6으로 낮춰, 이게 확신에 찬 분석이 아니라는 걸 데이터 자체에 남겼다. 나중에 "이 사용자는 GPT 경로였나 폴백이었나"를 로그에서 되짚을 수 있게 하려는 목적도 있었다.
 
 ## 배운 것
 
 이 앱을 만들기 전에는 "GPT를 붙인다"를 그냥 API 호출 하나로 생각했다. 붙이고 나니 그건 절반이었다. 나머지 절반은 GPT가 실패할 때 무슨 일이 벌어지느냐였다.
 
-- 외부 SDK는 초기화부터 실패할 수 있다. 내 코드가 멀쩡해도.
-- "JSON으로 답해줘"는 요청이지 계약이 아니다. 파싱은 언제나 깨질 수 있다고 보고 짜야 한다.
-- 핵심 기능이 외부 AI 위에 있다면, 폴백은 나중에 붙이는 예외 처리가 아니라 처음부터 있는 정상 경로다.
+`proxies` 건은 버전 핀을 직접 쓰는 패키지에만 걸어두면 부족하다는 걸 보여줬다. 그때 급하게 덧댄 재시도는 사실 아무것도 고치지 못하는 코드였다. JSON 건은 "JSON으로 답해줘"가 요청일 뿐 계약이 아니라는 얘기였고, 그래서 파싱은 언제든 깨질 수 있다고 보고 짰다. 두 경우 모두 마지막에 받쳐준 건 키워드 폴백이었다. 핵심 기능이 외부 AI 위에 있다면 폴백은 나중에 붙이는 예외 처리가 아니라 처음부터 있는 정상 경로여야 했다.
 
-완벽한 감정 분석보다, 실패해도 항상 무언가는 돌려주는 쪽이 정신건강 앱에는 맞았다. 이건 [SimLog](/projects/simlog/) 백엔드를 처음부터 혼자 만들며 얻은, 꽤 오래 남을 감각이다.
+완벽한 감정 분석보다, 실패해도 항상 무언가는 돌려주는 쪽이 [SimLog](/projects/simlog/) 같은 정신건강 앱에는 맞았다.

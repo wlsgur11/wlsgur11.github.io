@@ -118,13 +118,13 @@ const projectLabel = project ? PROJECT_LABELS[project] : undefined;
 							<FormattedDate date={pubDate} />
 							{projectLabel && (
 								<>
-									<span class="sep">·</span>
+									<span class="sep">|</span>
 									<a class="proj-link" href={localize(`/projects/${project}/`, lang)}>{projectLabel}</a>
 								</>
 							)}
 							{updatedDate && (
 								<span class="last-updated-on">
-									· Last updated {<FormattedDate date={updatedDate} />}
+									| Last updated {<FormattedDate date={updatedDate} />}
 								</span>
 							)}
 						</div>

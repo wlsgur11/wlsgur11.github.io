@@ -30,8 +30,8 @@ const introParas = [
 
 const highlights = [
 	{ ko: '부산대 AI융합교육원 | 연구원', en: 'PNU AI Institute | Researcher' },
-	{ ko: 'K3s 실서비스 운영 · 백엔드', en: 'Backend · running K3s in production' },
-	{ ko: '수상 3회 · 정보처리기사 · SQLD', en: '3 awards · Info-Processing Engineer · SQLD' },
+	{ ko: 'K3s 실서비스 운영 | 백엔드', en: 'Backend | running K3s in production' },
+	{ ko: '수상 3회 | 정보처리기사 | SQLD', en: '3 awards | Info-Processing Engineer | SQLD' },
 ];
 
 const projects = (await getCollection('projects', (p) => !p.data.draft))
@@ -62,9 +62,9 @@ const experience = [
 		logo: '/images/logos/pnu.png',
 		org: { ko: 'PNU Mini Bootcamp (멋쟁이사자처럼)', en: 'PNU Mini Bootcamp (LikeLion)' },
 		badge: { ko: '부트캠프', en: 'Bootcamp' },
-		meta: { ko: '2024 - 2025 · 수료 (BE / FE)', en: '2024 - 2025 · Completed (BE / FE)' },
+		meta: { ko: '2024 - 2025 | 수료 (BE / FE)', en: '2024 - 2025 | Completed (BE / FE)' },
 		desc: {
-			ko: 'FastAPI·Redis·Spring Boot·Docker 기반 백엔드·인프라를 실습하며 총 230시간을 이수했습니다.',
+			ko: 'FastAPI, Redis, Spring Boot, Docker 기반 백엔드/인프라를 실습하며 총 230시간을 이수했습니다.',
 			en: 'Practiced backend and infra with FastAPI, Redis, Spring Boot, and Docker across 230 hours.',
 		},
 	},
@@ -74,8 +74,8 @@ const education = [
 	{
 		mark: 'PNU',
 		logo: '/images/logos/pnu.png',
-		school: { ko: '부산대학교 정보컴퓨터공학부', en: 'Pusan National University — Computer Science' },
-		meta: { ko: '2023.03 - 2026.02 · 졸업', en: '2023.03 - 2026.02 · B.S.' },
+		school: { ko: '부산대학교 정보컴퓨터공학부', en: 'Pusan National University, Computer Science' },
+		meta: { ko: '2023.03 - 2026.02 | 졸업', en: '2023.03 - 2026.02 | B.S.' },
 	},
 ];
 
@@ -90,17 +90,17 @@ const stack = [
 const awards = [
 	{
 		title: { ko: '제6회 PNU 창의융합SW해커톤', en: '6th PNU SW Hackathon' },
-		meta: { ko: '2025.08 · 팀', en: '2025.08 · Team' },
+		meta: { ko: '2025.08 | 팀', en: '2025.08 | Team' },
 		result: { ko: '장려상 / 소프트웨어융합교육원장상', en: 'Encouragement Award' },
 	},
 	{
 		title: { ko: 'PNU 정보컴퓨터공학부 아이디어톤', en: 'PNU CSE Ideathon' },
-		meta: { ko: '2024.12 · 팀', en: '2024.12 · Team' },
+		meta: { ko: '2024.12 | 팀', en: '2024.12 | Team' },
 		result: { ko: '3등 / 학과장상', en: '3rd Place' },
 	},
 	{
 		title: { ko: '제3회 PNU 메디컬 해커톤', en: '3rd PNU Medical Hackathon' },
-		meta: { ko: '2024.11 · 팀', en: '2024.11 · Team' },
+		meta: { ko: '2024.11 | 팀', en: '2024.11 | Team' },
 		result: { ko: '우수상 / 산학협력본부장상', en: 'Excellence Award' },
 	},
 ];

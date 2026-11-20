@@ -115,7 +115,7 @@ const countLabel = (n: number) =>
 			el.classList.toggle('is-active', (el.dataset.tag ?? '') === tag);
 		});
 		if (countEl) {
-			countEl.textContent = tag ? `${tag} · ${shown}` : base;
+			countEl.textContent = tag ? `${tag} | ${shown}` : base;
 		}
 	}
 

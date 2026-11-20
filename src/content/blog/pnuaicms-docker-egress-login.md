@@ -24,7 +24,7 @@ URL은 `…/api/auth/error?error=Configuration`. 딱 봤을 때 "콜백 URI를 �
 - **앱/DB**: 교내 물리 서버의 Docker (`app` + `postgres` 컨테이너, compose)
 - **인증**: NextAuth v5, 구글 OAuth(@pusan.ac.kr)
 - **프록시/방화벽**: Caddy(HTTPS), ufw
-- **맥락**: 며칠 새 PSU 교체·재부팅, hostname 변경, 그리고 DataGrip 접속용으로 db 컨테이너에 포트를 하나 추가(`up -d db`)하는 등 네트워크를 여러 번 건드린 뒤였다.
+- **맥락**: 며칠 새 PSU 교체와 재부팅, hostname 변경, 그리고 DataGrip 접속용으로 db 컨테이너에 포트를 하나 추가(`up -d db`)하는 등 네트워크를 여러 번 건드린 뒤였다.
 
 ## env부터 - 아니었다
 
@@ -89,7 +89,7 @@ sudo ufw reload && sudo systemctl restart docker
 
 ## MTU인 줄 알았다 - 아니었다
 
-에러 코드를 정확히 뽑고, 커널·NAT를 확인했다.
+에러 코드를 정확히 뽑고, 커널과 NAT 설정을 확인했다.
 
 ```
 ERR ETIMEDOUT
@@ -98,7 +98,7 @@ net.ipv4.ip_forward = 1
 -A POSTROUTING -s 172.18.0.0/16 ! -o br-... -j MASQUERADE
 ```
 
-`ETIMEDOUT`(응답 없음) + ip_forward=1 + masquerade 존재. 나간 패킷의 응답이 안 오는 전형적 모양이라 MTU 블랙홀을 의심했다(작은 패킷은 되고 큰 TLS 패킷만 드롭). 그런데 raw TCP 연결(작은 SYN)조차 timeout이었고, 인터페이스 MTU는 호스트·도커 전부 1500이었다. **SYN이 안 가는 건 MTU가 아니다.** MTU 가설도 버렸다. (이때 넣어 본 도커 MTU 조정은 원인이 아니었고, 뒤에 정리했다.)
+`ETIMEDOUT`(응답 없음) + ip_forward=1 + masquerade 존재. 나간 패킷의 응답이 안 오는 전형적 모양이라 MTU 블랙홀을 의심했다(작은 패킷은 되고 큰 TLS 패킷만 드롭). 그런데 raw TCP 연결(작은 SYN)조차 timeout이었고, 인터페이스 MTU는 호스트와 도커 모두 1500이었다. **SYN이 안 가는 건 MTU가 아니다.** MTU 가설도 버렸다. (이때 넣어 본 도커 MTU 조정은 원인이 아니었고, 뒤에 정리했다.)
 
 ## docker0는 되고 compose 브리지만 안 된다
 
@@ -128,7 +128,7 @@ sudo iptables -t nat -S POSTROUTING | grep masq
 # FETCH OK 200
 ```
 
-한 문장으로: **compose 브리지의 outbound NAT(masquerade)가 유실돼, 컨테이너 패킷이 사설 IP 그대로 나갔다가 응답을 못 받고 있었다.** docker0는 rule이 살아 있어 됐고, compose 브리지만 유실됐던 것이다. 그동안의 `up -d db`(단일 서비스) + ufw reload + 반복된 도커 재시작이 겹치며 iptables 상태가 어긋난 결과였다.
+compose 브리지의 outbound NAT(masquerade)가 빠져 있어서, 컨테이너 패킷이 사설 IP 그대로 나갔다가 응답을 못 받고 있었다. docker0는 rule이 살아 있어 됐고, compose 브리지만 유실됐던 것이다. 왜 빠졌는지는 확인하지 못했다. 그동안의 `up -d db`(단일 서비스), ufw reload, 반복된 도커 재시작이 겹치며 iptables 상태가 어긋났다고 보고 있지만, 재현해 본 적은 없는 추정이다.
 
 ## 그래도 절반만 나았다
 
@@ -139,7 +139,7 @@ accounts.google.com  → 200
 oauth2.googleapis.com/token → ETIMEDOUT
 ```
 
-discovery는 되는데 token 엔드포인트만 timeout. 로그인은 token 교환에서 죽고 있었다. 여러 번의 수동 조작(ufw reload, 수동 iptables 룰, daemon 설정 변경, 재시작 반복)으로 iptables가 어중간하게 엉킨 상태였다. 손으로 더 만지는 것보다, 상태를 통째로 정합화하는 게 빨랐다.
+discovery는 되는데 token 엔드포인트만 timeout. 로그인은 token 교환에서 죽고 있었다. 여러 번의 수동 조작(ufw reload, 수동 iptables 룰, daemon 설정 변경, 재시작 반복)으로 iptables가 어중간하게 엉켰다고 판단했다. 한 호스트만 막히는 이유를 끝까지 파는 대신, 손으로 더 만지지 않고 상태를 통째로 다시 까는 쪽을 택했다.
 
 ```bash
 sudo reboot
@@ -155,16 +155,18 @@ accounts 200 | token 400
 
 ## 근본 원인과 조치
 
-- 근본 원인: **compose 브리지의 outbound NAT(masquerade) 유실**로 컨테이너가 밖으로 못 나갔다. 여러 네트워크 조작이 겹쳐 iptables 상태가 어긋난 것이 방아쇠였다.
-- 즉시 조치: 네트워크가 존재하는 상태에서 도커 재시작 → NAT 재삽입.
-- 정합화: 부분 손복구가 남긴 어중간한 상태는 **clean 재부팅**으로 정리. 부팅 시 도커가 규칙을 처음부터 다시 깔아 완전히 정상화됐다.
+직접 확인한 원인은 compose 브리지의 outbound NAT(masquerade)가 빠져 컨테이너가 밖으로 못 나간 것이다. 네트워크가 존재하는 상태에서 도커를 재시작해 NAT를 다시 넣었고, 그 뒤에도 남은 어중간한 상태는 재부팅으로 정리했다. 부팅하면서 도커가 규칙을 처음부터 다시 깔았고 로그인도 돌아왔다.
+
+다만 끝까지 밝히지 못한 것이 두 가지 있다. NAT가 왜 빠졌는지는 위에 적은 대로 여러 조작이 겹친 탓이라고 추정할 뿐이다. NAT를 되살린 뒤에도 token 엔드포인트만 timeout 난 이유도 모른다. 마지막 해결이 재부팅이라, 재부팅이 정확히 무엇을 정리했는지 보지 못한 채 증상이 사라졌다. 다음에 같은 모양을 만나면 NAT가 빠져 있던 동안 생긴 conntrack 항목이 남아 있었는지, ufw와 도커가 iptables의 nft 백엔드와 legacy 백엔드에 규칙을 나눠 쓰고 있었는지부터 볼 생각인데, 둘 다 확인하지 못한 가설이다.
 
 ## 교훈
 
-- **"Configuration" 로그인 에러는 콜백 등록 문제가 아니다.** 서버 로그의 실제 원인(`fetch failed`)을 봐야 방향이 잡힌다. 에러 화면의 문구만으로 엉뚱한 곳(구글 콘솔)을 파면 시간을 버린다.
-- **DNS 된다 ≠ 밖으로 나간다.** 도커 내장 리졸버 때문에 egress가 죽어도 이름 해석은 된다. 연결을 확인하려면 실제 fetch/TCP로 찔러야 한다.
-- **계층을 나눠 격리한다.** env → prisma/auth 로그 → 호스트 vs 컨테이너 → docker0 vs compose 브리지. "docker0는 되고 이 브리지만 안 된다"가 범위를 결정적으로 좁혔다. 틀린 가설(ufw FORWARD, MTU)도 빠르게 버리는 게 진행이었다.
-- **iptables를 여러 방식으로 난타하지 않는다.** ufw + 도커 + 수동 룰 + 반복 재시작이 겹치면 재현 어려운 부분 실패(한 호스트는 되고 다른 호스트는 timeout)가 남는다. 상태가 심하게 엉켰으면 손복구보다 clean 부팅이 가장 빠른 정합화다.
-- **단일 서비스만 재생성하지 않는다.** `up -d db`로 db만 새로 띄우면 app이 옛 네트워크에 남는다. 네트워크가 걸린 변경은 `up -d`(전체)로.
+"Configuration" 로그인 에러를 보고 처음 떠올린 건 콜백 등록이었지만, 실제 원인(`fetch failed`)은 서버 로그에 있었다. 에러 화면 문구만 보고 구글 콘솔부터 팠다면 시간을 더 버렸을 것이다.
 
-앞선 온프레미스 이전 기록은 [학생 데이터를 교내로](/blog/pnuaicms-cloud-to-onprem/)에, 같은 서버의 PSU 고장 복구는 [파워서플라이가 죽어 서버가 꺼졌다](/blog/pnuaicms-psu-failure-recovery/)에 적어 뒀다.
+도커 컨테이너는 내장 리졸버 덕분에 egress가 죽어도 이름 해석은 된다. DNS가 된다고 밖으로 나간다는 보장은 없어서, 연결은 실제 fetch나 TCP로 찔러 봐야 확인된다.
+
+범위를 좁힌 건 계층을 나눈 덕이었다. env, prisma/auth 로그, 호스트 대 컨테이너, docker0 대 compose 브리지 순으로 내려갔고, "docker0는 되고 이 브리지만 안 된다"에서 범위가 결정적으로 줄었다. ufw FORWARD와 MTU는 틀린 가설이었지만 일찍 버려서 오래 붙잡지 않았다.
+
+반성할 점도 있다. ufw, 도커, 수동 룰, 반복 재시작으로 iptables를 여러 방식으로 건드린 뒤에 한 호스트는 되고 다른 호스트는 timeout 나는 부분 실패가 남았다. 그 조작들과 관계가 있다고 보지만, 재부팅으로 덮으면서 원인은 모른 채 끝났다. 그리고 `up -d db`처럼 단일 서비스만 다시 띄우면 app이 옛 네트워크에 남을 수 있어서, 네트워크가 걸린 변경은 `up -d`로 전체를 올리기로 했다.
+
+앞선 온프레미스 이전 기록은 [학생 데이터를 교내로](/blog/pnuaicms-cloud-to-onprem/)에, 같은 서버의 PSU 고장 복구는 그 글의 [이전 뒤 첫 하드웨어 장애](/blog/pnuaicms-cloud-to-onprem/#이전-뒤-첫-하드웨어-장애) 단락에 적어 뒀다.

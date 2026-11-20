@@ -36,7 +36,7 @@ const pick = (ko: string, en?: string) => (lang === 'en' && en ? en : ko);
 			<article class="prose">
 				<header class="project-head">
 					{logo && <img class="proj-logo" src={logo} alt="" width="56" height="56" />}
-					<p class="meta">{pick(role, roleEn)} · {period}</p>
+					<p class="meta">{pick(role, roleEn)} | {period}</p>
 					<h1>{pick(title, titleEn)}</h1>
 					<p class="lead">{pick(description, descriptionEn)}</p>
 					<ul class="tags">

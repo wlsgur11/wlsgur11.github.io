@@ -1,8 +1,8 @@
 // 사이트 전역 데이터. 어디서든 import 해서 사용.
 
-export const SITE_TITLE = '문진혁 · Jinhyeok Moon';
+export const SITE_TITLE = '문진혁 | Jinhyeok Moon';
 export const SITE_DESCRIPTION =
-	'백엔드·인프라 개발자 문진혁. 실서비스 운영, 부하 테스트, 장애 진단 기록.';
+	'백엔드/인프라 개발자 문진혁. 실서비스 운영, 부하 테스트, 장애 진단 기록.';
 
 // 브라우저 탭 제목: "{페이지 이름} - Moon"
 export const tabTitle = (name: string) => `${name} - Moon`;
