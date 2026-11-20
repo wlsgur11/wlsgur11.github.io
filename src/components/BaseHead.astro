@@ -5,7 +5,6 @@ import '../styles/global.css';
 import type { ImageMetadata } from 'astro';
 import FallbackImage from '../assets/blog-placeholder-1.jpg';
 import { SITE_TITLE } from '../consts';
-import { Font } from 'astro:assets';
 import { ClientRouter } from 'astro:transitions';
 
 interface Props {
@@ -44,14 +43,21 @@ const { title, description, image = FallbackImage } = Astro.props;
 
 <ClientRouter />
 
-<!-- NanumSquareNeo (jun0.dev와 동일 계열) -->
+<!-- 글꼴: Pretendard(본문), Paperlogy(제목, global.css @font-face), JetBrains Mono(측정값, 코드) -->
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
 <link
 	rel="stylesheet"
-	href="https://cdn.jsdelivr.net/gh/moonspam/NanumSquareNeo/nanumsquareneo.css"
+	href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css"
+/>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+	rel="stylesheet"
+	href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap"
 />
 
-<Font cssVariable="--font-atkinson" preload />
+<!-- 모션 (GSAP). reduced-motion 이면 아무것도 하지 않는다 -->
+<script src="../scripts/motion.ts"></script>
 
 <!-- Canonical URL -->
 <link rel="canonical" href={canonicalURL} />

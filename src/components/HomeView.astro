@@ -6,7 +6,6 @@ import FormattedDate from './FormattedDate.astro';
 import Header from './Header.astro';
 import { PROFILE, SITE_DESCRIPTION, tabTitle } from '../consts';
 import { type Lang, localize, useTranslations } from '../i18n';
-import { techBadgeStyle } from '../techBadge';
 
 interface Props {
 	lang: Lang;
@@ -16,6 +15,17 @@ const t = useTranslations(lang);
 const en = lang === 'en';
 const pick = (ko: string, e?: string) => (en && e ? e : ko);
 const L = (o: { ko: string; en: string }) => (en ? o.en : o.ko);
+
+const hero = {
+	headline: {
+		ko: '제한된 자원에서 측정하고 최적화하는 백엔드 개발자',
+		en: 'A backend engineer who measures and optimizes under tight resources',
+	},
+	sub: {
+		ko: '부산대 AI융합교육원 연구원. 실서비스 Code Place의 인프라와 AI 조교를 운영합니다.',
+		en: 'Researcher at PNU’s AI Convergence Education Institute, running the infrastructure and AI tutor for Code Place, a production online judge.',
+	},
+};
 
 const introParas = [
 	{
@@ -28,11 +38,44 @@ const introParas = [
 	},
 ];
 
-const highlights = [
-	{ ko: '부산대 AI융합교육원 | 연구원', en: 'PNU AI Institute | Researcher' },
-	{ ko: 'K3s 실서비스 운영 | 백엔드', en: 'Backend | running K3s in production' },
-	{ ko: '수상 3회 | 정보처리기사 | SQLD', en: '3 awards | Info-Processing Engineer | SQLD' },
-];
+const allPosts = (await getCollection('blog', (p) => !p.data.draft)).sort(
+	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+);
+const posts = allPosts.slice(0, 5);
+
+// 측정값 띠. 수치는 각 글 본문에서 확인한 값만 쓴다.
+//  2.89: load-test 글 "30명까지는 목표인 3초 안(2.891초)에 들어왔다."
+//  4.6 : prefix-cache 글 "같은 30명인데 첫 토큰이 312ms에서 1,435ms로 4.6배 뛰었다."
+//  398 : crashloop 글 "운영 백엔드 파드가 재시작 398회를 기록했지만 앱 로그는 정상 기동이었다."
+const metrics = [
+	{
+		value: '2.89',
+		unit: { ko: '초', en: 's' },
+		slug: 'code-place-ai-tutor-load-test',
+		desc: {
+			ko: '동접 30명에서 AI 조교 평균 응답 시간, 실패 0건',
+			en: 'Average AI-tutor response at 30 concurrent users, zero failures',
+		},
+	},
+	{
+		value: '4.6',
+		unit: { ko: '배', en: '×' },
+		slug: 'code-place-ai-tutor-prefix-cache',
+		desc: {
+			ko: 'prefix cache 유무로 갈린 첫 토큰 시간(TTFT), 312ms 대 1,435ms',
+			en: 'Time to first token with and without prefix cache, 312 ms vs 1,435 ms',
+		},
+	},
+	{
+		value: '398',
+		unit: { ko: '회', en: 'restarts' },
+		slug: 'code-place-crashloop-398',
+		desc: {
+			ko: 'probe 설정 산술로 원인을 좁힌 운영 파드 재시작 횟수',
+			en: 'Production pod restarts, narrowed to the cause by matching probe arithmetic',
+		},
+	},
+].filter((m) => allPosts.some((p) => p.id === m.slug));
 
 const projects = (await getCollection('projects', (p) => !p.data.draft))
 	.filter((p) => p.data.featured)
@@ -41,17 +84,14 @@ const projects = (await getCollection('projects', (p) => !p.data.draft))
 // 프로젝트 slug -> 로고/모노그램 매핑 (정사각 로고 없으면 mark로 폴백)
 const projMark: Record<string, string> = { 'code-place': 'CP' };
 
-const posts = (await getCollection('blog', (p) => !p.data.draft))
-	.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
-	.slice(0, 5);
-
 const experience = [
 	{
 		mark: 'AI',
 		logo: '/images/logos/pnu.png',
 		org: { ko: '부산대학교 AI융합교육원', en: 'PNU AI Convergence Education Institute' },
 		badge: { ko: '운영', en: 'Ops' },
-		meta: { ko: '2026.08 - 현재 | 연구원 (2026.02 - 2026.07 SW조교)', en: '2026.08 - present | Researcher (2026.02 - 2026.07 SW Assistant)' },
+		period: { ko: '2026.08 - 현재', en: '2026.08 - present' },
+		role: { ko: '연구원 (2026.02 - 2026.07 SW조교)', en: 'Researcher (2026.02 - 2026.07 SW Assistant)' },
 		desc: {
 			ko: '교육원 개발 업무를 담당. 실서비스 온라인 저지 "Code Place"의 기능 개발과 인프라 운영을 맡아 3인 개발팀을 리딩하고, 멀티 노드 K3s 환경의 운영 문제를 해결하며 로컬 LLM 기반 AI 조교를 기획, 개발했습니다.',
 			en: 'Responsible for the institute’s software development. Own feature development and infrastructure for "Code Place", a production Online Judge. Lead a 3-person team, resolve operational issues on a multi-node K3s cluster, and built a local-LLM AI teaching assistant.',
@@ -62,7 +102,8 @@ const experience = [
 		logo: '/images/logos/pnu.png',
 		org: { ko: 'PNU Mini Bootcamp (멋쟁이사자처럼)', en: 'PNU Mini Bootcamp (LikeLion)' },
 		badge: { ko: '부트캠프', en: 'Bootcamp' },
-		meta: { ko: '2024 - 2025 | 수료 (BE / FE)', en: '2024 - 2025 | Completed (BE / FE)' },
+		period: { ko: '2024 - 2025', en: '2024 - 2025' },
+		role: { ko: '수료 (BE / FE)', en: 'Completed (BE / FE)' },
 		desc: {
 			ko: 'FastAPI, Redis, Spring Boot, Docker 기반 백엔드/인프라를 실습하며 총 230시간을 이수했습니다.',
 			en: 'Practiced backend and infra with FastAPI, Redis, Spring Boot, and Docker across 230 hours.',
@@ -75,7 +116,8 @@ const education = [
 		mark: 'PNU',
 		logo: '/images/logos/pnu.png',
 		school: { ko: '부산대학교 정보컴퓨터공학부', en: 'Pusan National University, Computer Science' },
-		meta: { ko: '2023.03 - 2026.02 | 졸업', en: '2023.03 - 2026.02 | B.S.' },
+		period: { ko: '2023.03 - 2026.02', en: '2023.03 - 2026.02' },
+		role: { ko: '졸업', en: 'B.S.' },
 	},
 ];
 
@@ -131,84 +173,128 @@ const certs = en
 	</head>
 	<body>
 		<Header />
-		<main>
-			<!-- HERO -->
-			<section class="hero">
-				<div class="hero-row">
-					<div class="hero-text">
-						<p class="eyebrow">{t('role')}</p>
-						<h1>{PROFILE.name} <span class="name-en">{PROFILE.nameEn}</span></h1>
-						{introParas.map((p) => <p class="intro">{L(p)}</p>)}
-						<nav class="contact">
-							<a href={PROFILE.github} target="_blank" rel="noopener">
-								<svg viewBox="0 0 16 16" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.6 7.6 0 0 1 2-.27c.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>{PROFILE.githubHandle}</a>
-							<a href={`mailto:${PROFILE.email}`}>
-								<svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true"><rect x="1.5" y="3" width="13" height="10" rx="1.5"/><path d="M2 4l6 4.5L14 4"/></svg>Email</a>
-							<a href={PROFILE.instagram} target="_blank" rel="noopener">
-								<svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true"><rect x="1.5" y="1.5" width="13" height="13" rx="4"/><circle cx="8" cy="8" r="3.2"/><circle cx="12" cy="4" r="0.55" fill="currentColor" stroke="none"/></svg>{PROFILE.instagramHandle}</a>
-						</nav>
-					</div>
-					<img class="portrait" src="/images/profile.png" alt={PROFILE.name} width="150" height="150" />
+		<main class="home">
+			<!-- HERO: 텍스트 요소 4개 (eyebrow, 헤드라인, 서브, 연락처) + 프로필 -->
+			<section class="hero wrap">
+				<div class="hero-text">
+					<p class="eyebrow" data-hero>{en ? PROFILE.nameEn : PROFILE.name} | {t('role')}</p>
+					<h1 data-hero>{L(hero.headline)}</h1>
+					<p class="sub" data-hero>{L(hero.sub)}</p>
+					<nav class="contact" data-hero>
+						<a href={PROFILE.github} target="_blank" rel="noopener">
+							<svg viewBox="0 0 16 16" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.6 7.6 0 0 1 2-.27c.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>{PROFILE.githubHandle}</a>
+						<a href={`mailto:${PROFILE.email}`}>
+							<svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true"><rect x="1.5" y="3" width="13" height="10" rx="1.5"/><path d="M2 4l6 4.5L14 4"/></svg>Email</a>
+						<a href={PROFILE.instagram} target="_blank" rel="noopener">
+							<svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true"><rect x="1.5" y="1.5" width="13" height="13" rx="4"/><circle cx="8" cy="8" r="3.2"/><circle cx="12" cy="4" r="0.55" fill="currentColor" stroke="none"/></svg>{PROFILE.instagramHandle}</a>
+					</nav>
 				</div>
-				<ul class="highlights">
-					{highlights.map((h, i) => <li style={`--i:${i}`}>{L(h)}</li>)}
-				</ul>
+				<div class="portrait">
+					<img src="/images/profile.png" alt={PROFILE.name} width="896" height="1060" />
+				</div>
 			</section>
 
-			<!-- EXPERIENCE -->
-			<section class="reveal">
+			<!-- 측정값 띠 -->
+			{
+				metrics.length > 0 && (
+					<section class="band" data-band aria-label={en ? 'Measured results' : '측정한 결과'}>
+						<div class="wrap band-grid">
+							{metrics.map((m) => (
+								<a class="metric" href={localize(`/blog/${m.slug}/`, lang)}>
+									<span class="figure">
+										<span class="num" data-count={m.value} style={`--len:${m.value.length}`}>
+											{m.value}
+										</span>
+										<span class="unit">{L(m.unit)}</span>
+									</span>
+									<span class="metric-desc">{L(m.desc)}</span>
+									<span class="metric-link">{t('viewDetail')}</span>
+								</a>
+							))}
+						</div>
+					</section>
+				)
+			}
+
+			<!-- 소개 -->
+			<section class="about wrap" aria-label={t('aboutTitle')}>
+				{introParas.map((p) => <p>{L(p)}</p>)}
+			</section>
+
+			<!-- 경험 + 학력: 타임라인 행 -->
+			<section class="wrap block">
 				<div class="sec-head"><h2>{en ? 'Experience' : '경험'}</h2></div>
-				<div class="grid">
+				<ol class="timeline">
 					{
 						experience.map((e) => (
-							<article class="card">
-								{
-									e.logo ? (
-										<img class="logo-img" src={e.logo} alt="" width="46" height="46" />
-									) : (
-										<div class="logo mono">{e.mark}</div>
-									)
-								}
-								<div class="card-body">
-									<div class="card-top">
+							<li class="tl-row" data-reveal>
+								<span class="tl-when">{L(e.period)}</span>
+								<div class="tl-what">
+									<div class="tl-head">
+										{e.logo ? (
+											<img class="tl-logo" src={e.logo} alt="" width="28" height="28" />
+										) : (
+											<span class="tl-logo mono">{e.mark}</span>
+										)}
 										<h3>{L(e.org)}</h3>
 										<span class="badge">{L(e.badge)}</span>
 									</div>
-									<span class="meta">{L(e.meta)}</span>
-									<p>{L(e.desc)}</p>
+									<p class="tl-role">{L(e.role)}</p>
+									<p class="tl-desc">{L(e.desc)}</p>
 								</div>
-							</article>
+							</li>
 						))
 					}
-				</div>
+				</ol>
+				<h3 class="sub-head">{en ? 'Education' : '학력'}</h3>
+				<ol class="timeline">
+					{
+						education.map((e) => (
+							<li class="tl-row" data-reveal>
+								<span class="tl-when">{L(e.period)}</span>
+								<div class="tl-what">
+									<div class="tl-head">
+										{e.logo ? (
+											<img class="tl-logo" src={e.logo} alt="" width="28" height="28" />
+										) : (
+											<span class="tl-logo mono">{e.mark}</span>
+										)}
+										<h3>{L(e.school)}</h3>
+									</div>
+									<p class="tl-role">{L(e.role)}</p>
+								</div>
+							</li>
+						))
+					}
+				</ol>
 			</section>
 
-			<!-- FEATURED PROJECTS -->
-			<section class="reveal">
+			<!-- 대표 프로젝트: 2열, 개수가 홀수면 첫 카드가 전체 폭 -->
+			<section class="wrap block">
 				<div class="sec-head">
 					<h2>{en ? 'Featured projects' : '대표 프로젝트'}</h2>
 					<a href={localize('/projects', lang)}>{t('viewAll')}</a>
 				</div>
-				<div class="grid">
+				<div class="feat-grid">
 					{
 						projects.map((p) => (
-							<a class="card link" href={localize(`/projects/${p.id}/`, lang)}>
-								{
-									p.data.logo ? (
-										<img class="logo-img" src={p.data.logo} alt="" width="46" height="46" />
+							<a class="feat" href={localize(`/projects/${p.id}/`, lang)} data-reveal>
+								<div class="feat-mark">
+									{p.data.logo ? (
+										<img src={p.data.logo} alt="" width="56" height="56" />
 									) : (
-										<div class="logo mono">{projMark[p.id] ?? p.data.title.slice(0, 2)}</div>
-									)
-								}
-								<div class="card-body">
-									<div class="card-top">
+										<span class="mono">{projMark[p.id] ?? p.data.title.slice(0, 2)}</span>
+									)}
+								</div>
+								<div class="feat-body">
+									<div class="feat-top">
 										<h3>{pick(p.data.title, p.data.titleEn)}</h3>
 										<span class="badge">
 											{pick(p.data.badge ?? '', p.data.badgeEn) || (en ? 'Production' : '실서비스')}
 										</span>
 									</div>
-									<span class="meta">{p.data.period}</span>
-									<p>{pick(p.data.description, p.data.descriptionEn)}</p>
+									<span class="feat-period">{p.data.period}</span>
+									<span class="feat-desc">{pick(p.data.description, p.data.descriptionEn)}</span>
 									<span class="more">{t('viewDetail')}</span>
 								</div>
 							</a>
@@ -217,17 +303,38 @@ const certs = en
 				</div>
 			</section>
 
-			<!-- TECH STACK -->
-			<section class="reveal">
+			<!-- 최근 글: 날짜 | 제목 | 대표 태그 -->
+			<section class="wrap block">
+				<div class="sec-head">
+					<h2>{t('writing')}</h2>
+					<a href={localize('/blog', lang)}>{t('viewAll')}</a>
+				</div>
+				<ul class="post-rows">
+					{
+						posts.map((post) => (
+							<li data-reveal>
+								<a href={localize(`/blog/${post.id}/`, lang)}>
+									<FormattedDate date={post.data.pubDate} />
+									<span class="post-title">{pick(post.data.title, post.data.titleEn)}</span>
+									{post.data.tags[0] && <span class="post-tag">{post.data.tags[0]}</span>}
+								</a>
+							</li>
+						))
+					}
+				</ul>
+			</section>
+
+			<!-- 기술 스택: 그룹별 열 -->
+			<section class="wrap block">
 				<div class="sec-head"><h2>Tech Stack</h2></div>
 				<div class="stack">
 					{
 						stack.map((s) => (
 							<div class="stack-group">
 								<h3>{s.group}</h3>
-								<ul>
+								<ul class="tags">
 									{s.items.map((it) => (
-										<li class="pill" style={techBadgeStyle(it)}>{it}</li>
+										<li class="tag">{it}</li>
 									))}
 								</ul>
 							</div>
@@ -236,81 +343,37 @@ const certs = en
 				</div>
 			</section>
 
-			<!-- AWARDS -->
-			<section class="reveal">
-				<div class="sec-head"><h2>{en ? 'Awards' : '수상'}</h2></div>
-				<div class="rows">
-					{
-						awards.map((a) => (
-							<div class="row">
-								<div>
-									<span class="row-title">{L(a.title)}</span>
-									<span class="row-sub">{L(a.result)}</span>
-								</div>
-								<span class="meta">{L(a.meta)}</span>
-							</div>
-						))
-					}
+			<!-- 수상 | 자격증: 2열 압축 -->
+			<section class="wrap block creds">
+				<div>
+					<div class="sec-head"><h2>{en ? 'Awards' : '수상'}</h2></div>
+					<ul class="cred-list">
+						{
+							awards.map((a) => (
+								<li>
+									<span class="cred-name">
+										{L(a.title)}
+										<span class="cred-sub">{L(a.result)}</span>
+									</span>
+									<span class="cred-date">{L(a.meta)}</span>
+								</li>
+							))
+						}
+					</ul>
 				</div>
-			</section>
-
-			<!-- EDUCATION -->
-			<section class="reveal">
-				<div class="sec-head"><h2>{en ? 'Education' : '학력'}</h2></div>
-				<div class="grid">
-					{
-						education.map((e) => (
-							<article class="card">
-								{
-									e.logo ? (
-										<img class="logo-img" src={e.logo} alt="" width="46" height="46" />
-									) : (
-										<div class="logo mono">{e.mark}</div>
-									)
-								}
-								<div class="card-body">
-									<div class="card-top"><h3>{L(e.school)}</h3></div>
-									<span class="meta">{L(e.meta)}</span>
-								</div>
-							</article>
-						))
-					}
+				<div>
+					<div class="sec-head"><h2>{en ? 'Certificates' : '자격증'}</h2></div>
+					<ul class="cred-list">
+						{
+							certs.map(([name, date]) => (
+								<li>
+									<span class="cred-name">{name}</span>
+									<span class="cred-date">{date}</span>
+								</li>
+							))
+						}
+					</ul>
 				</div>
-			</section>
-
-			<!-- CERTIFICATES -->
-			<section class="reveal">
-				<div class="sec-head"><h2>{en ? 'Certificates' : '자격증'}</h2></div>
-				<ul class="certs">
-					{
-						certs.map(([name, date]) => (
-							<li>
-								<span>{name}</span>
-								<span class="meta">{date}</span>
-							</li>
-						))
-					}
-				</ul>
-			</section>
-
-			<!-- WRITING -->
-			<section class="reveal">
-				<div class="sec-head">
-					<h2>{t('writing')}</h2>
-					<a href={localize('/blog', lang)}>{t('viewAll')}</a>
-				</div>
-				<ul class="posts">
-					{
-						posts.map((post) => (
-							<li>
-								<a href={localize(`/blog/${post.id}/`, lang)}>
-									<span class="post-title">{pick(post.data.title, post.data.titleEn)}</span>
-									<FormattedDate date={post.data.pubDate} />
-								</a>
-							</li>
-						))
-					}
-				</ul>
 			</section>
 		</main>
 		<Footer />
@@ -318,142 +381,66 @@ const certs = en
 </html>
 
 <style>
-	main {
-		width: 940px;
-		max-width: calc(100% - 2em);
+	main.home {
+		max-width: none;
+		padding: 0;
 	}
-	h1,
-	h2,
-	h3 {
-		font-weight: 800;
+	.wrap {
+		max-width: calc(var(--wrap) + var(--gutter) * 2);
+		margin-inline: auto;
+		padding-inline: var(--gutter);
+	}
+	.mono {
+		font-family: var(--font-mono);
 	}
 
-	/* hero */
+	/* ---- hero: 비대칭 split ---- */
 	.hero {
-		padding: 2.5em 0 3em;
-		position: relative;
-	}
-	/* 은은한 배경 글로우 (reactbits 느낌의 앰비언트 모션) */
-	.hero::before {
-		content: '';
-		position: absolute;
-		z-index: -1;
-		top: -30%;
-		left: -15%;
-		width: 60%;
-		height: 380px;
-		background: radial-gradient(50% 60% at 40% 30%, rgba(var(--accent-rgb), 0.16), transparent 70%);
-		filter: blur(30px);
-		pointer-events: none;
-	}
-	@media (prefers-reduced-motion: no-preference) {
-		.hero::before {
-			animation: glow-drift 16s ease-in-out infinite alternate;
-		}
-		/* 로드 시 히어로 요소가 순차로 떠오른다 */
-		.hero-text > * {
-			animation: rise 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
-		}
-		.hero-text > *:nth-child(1) {
-			animation-delay: 0.03s;
-		}
-		.hero-text > *:nth-child(2) {
-			animation-delay: 0.1s;
-		}
-		.hero-text > *:nth-child(3) {
-			animation-delay: 0.17s;
-		}
-		.hero-text > *:nth-child(4) {
-			animation-delay: 0.24s;
-		}
-		.hero-text > *:nth-child(5) {
-			animation-delay: 0.31s;
-		}
-		.portrait {
-			animation: fade-in 0.9s ease 0.15s both;
-		}
-		.highlights li {
-			animation: rise 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
-			animation-delay: calc(0.36s + var(--i, 0) * 0.06s);
-		}
-	}
-	@keyframes rise {
-		from {
-			opacity: 0;
-			transform: translateY(14px);
-		}
-		to {
-			opacity: 1;
-			transform: none;
-		}
-	}
-	@keyframes fade-in {
-		from {
-			opacity: 0;
-		}
-		to {
-			opacity: 1;
-		}
-	}
-	@keyframes glow-drift {
-		from {
-			transform: translate(-4%, 0) scale(1);
-			opacity: 0.7;
-		}
-		to {
-			transform: translate(8%, 4%) scale(1.15);
-			opacity: 1;
-		}
-	}
-	.hero-row {
-		display: flex;
-		align-items: flex-start;
-		justify-content: space-between;
-		gap: 2em;
-	}
-	.hero-text {
-		flex: 1;
-		min-width: 0;
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) 248px;
+		gap: 4rem;
+		align-items: end;
+		padding-top: 4.5rem;
+		padding-bottom: 3.5rem;
 	}
 	.eyebrow {
-		font-size: 0.9em;
-		color: var(--accent);
-		margin: 0 0 0.5em;
-		font-weight: 700;
+		font-family: var(--font-mono);
+		font-size: 0.8rem;
+		color: rgb(var(--gray));
+		margin: 0 0 1.1rem;
 	}
 	.hero h1 {
-		font-size: 3em;
+		font-size: clamp(2rem, 1.15rem + 2.6vw, 2.9rem);
 		font-weight: 800;
-		letter-spacing: -0.025em;
-		line-height: 1.1;
-		margin: 0 0 0.6em;
+		line-height: 1.22;
+		max-width: 19em;
+		margin: 0 0 1.1rem;
+		text-wrap: balance;
 	}
-	.name-en {
-		color: rgb(var(--gray));
-		font-weight: 700;
-		font-size: 0.45em;
-		letter-spacing: 0;
-		margin-left: 0.4em;
+	/* 영문 헤드라인은 글자 수가 많아 한 단계 작게: 데스크톱 2줄 유지 */
+	.hero h1:lang(en) {
+		font-size: clamp(1.9rem, 1rem + 2.1vw, 2.35rem);
+		max-width: 22em;
 	}
-	.intro {
-		color: rgb(var(--gray-dark));
-		max-width: 60ch;
-		margin: 0 0 0.8em;
+	.sub {
+		font-size: 1.08rem;
+		max-width: 44ch;
+		margin: 0 0 1.6rem;
 	}
 	.contact {
 		display: flex;
 		flex-wrap: wrap;
-		gap: 1.2em;
-		margin-top: 1.2em;
-		font-size: 0.92em;
+		gap: 0.6rem 1.4rem;
+		font-family: var(--font-mono);
+		font-size: 0.85rem;
 	}
 	.contact a {
 		display: inline-flex;
 		align-items: center;
-		gap: 0.4em;
+		gap: 0.45em;
 		color: rgb(var(--gray-dark));
 		text-decoration: none;
-		border-bottom: 1px solid rgba(var(--gray), 0.4);
+		border-bottom: 1px solid var(--line);
 		padding-bottom: 2px;
 	}
 	.contact svg {
@@ -466,285 +453,430 @@ const certs = en
 		border-color: var(--accent);
 	}
 	.portrait {
-		flex: none;
-		width: 150px;
-		height: 150px;
-		border-radius: var(--radius);
-		object-fit: cover;
+		aspect-ratio: 1;
+		border: 1px solid var(--line);
 		background: #fff;
-		border: 1px solid rgba(var(--gray), 0.18);
-		box-shadow: 0 6px 22px rgba(var(--gray), 0.22);
+		overflow: hidden;
 	}
-	.highlights {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 0.6em;
-		list-style: none;
-		padding: 0;
-		margin: 2em 0 0;
-	}
-	.highlights li {
-		font-size: 0.85em;
-		color: rgb(var(--gray-dark));
-		padding: 0.4em 0.85em;
-		border: 1px solid rgba(var(--gray), 0.2);
-		border-radius: var(--radius);
-		background: rgba(var(--gray-light), 0.3);
+	.portrait img {
+		display: block;
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		object-position: 50% 20%;
 	}
 
-	/* section heads */
-	section {
-		padding: 2.4em 0;
-		border-top: 1px solid rgba(var(--gray), 0.15);
+	/* ---- 측정값 띠: 전체 폭, 3칸, 세로 hairline ---- */
+	.band {
+		border-top: 1px solid var(--line);
+		border-bottom: 1px solid var(--line);
 	}
-	.hero {
-		border-top: none;
+	.band-grid {
+		display: grid;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+	}
+	.metric {
+		display: flex;
+		flex-direction: column;
+		gap: 0.35rem;
+		padding: 1.75rem 1.75rem 1.5rem;
+		border-left: 1px solid var(--line);
+		color: inherit;
+		text-decoration: none;
+	}
+	.metric:first-child {
+		border-left: none;
+		padding-left: 0;
+	}
+	.figure {
+		display: flex;
+		align-items: baseline;
+		gap: 0.35rem;
+		color: rgb(var(--black));
+	}
+	.num {
+		display: inline-block;
+		min-width: calc(var(--len) * 1ch);
+		text-align: right;
+		font-family: var(--font-mono);
+		font-weight: 500;
+		font-size: clamp(2.4rem, 1.6rem + 2.2vw, 3.4rem);
+		line-height: 1.05;
+		font-variant-numeric: tabular-nums;
+	}
+	.unit {
+		font-size: 1.05rem;
+		font-weight: 600;
+		color: var(--accent);
+	}
+	.metric-desc {
+		font-size: 0.92rem;
+		line-height: 1.55;
+		color: rgb(var(--gray-dark));
+		max-width: 30ch;
+	}
+	.metric-link {
+		margin-top: auto;
+		padding-top: 0.6rem;
+		font-family: var(--font-mono);
+		font-size: 0.75rem;
+		color: rgb(var(--gray));
+	}
+	.metric:hover .metric-link,
+	.metric:hover .num {
+		color: var(--accent);
+	}
+
+	/* ---- 소개: 짧은 단락 ---- */
+	.about {
+		padding-top: 3.5rem;
+	}
+	.about p {
+		max-width: 62ch;
+		font-size: 1.06rem;
+		margin: 0 0 1em;
+	}
+	.about p:last-child {
+		margin-bottom: 0;
+	}
+
+	/* ---- 섹션 공통: Paperlogy 제목 + 위쪽 hairline ---- */
+	.block {
+		margin-top: 5rem;
 	}
 	.sec-head {
 		display: flex;
 		align-items: baseline;
 		justify-content: space-between;
-		margin-bottom: 1.3em;
+		gap: 1rem;
+		padding-top: 0.9rem;
+		margin-bottom: 1.5rem;
+		border-top: 1px solid var(--line);
 	}
 	.sec-head h2 {
-		font-size: 1.3em;
+		font-size: 1.55rem;
+		font-weight: 800;
 		margin: 0;
 	}
 	.sec-head a {
-		font-size: 0.88em;
-		text-decoration: none;
+		font-family: var(--font-mono);
+		font-size: 0.8rem;
 		color: rgb(var(--gray));
+		text-decoration: none;
+		white-space: nowrap;
 	}
 	.sec-head a:hover {
 		color: var(--accent);
 	}
-
-	/* card grid (experience, projects, education) */
-	.grid {
-		display: grid;
-		grid-template-columns: 1fr 1fr;
-		gap: 0.9em;
-	}
-	.card {
-		display: flex;
-		gap: 1em;
-		padding: 1.2em 1.3em;
-		border: 1px solid rgba(var(--gray), 0.18);
-		border-radius: var(--radius);
-		background: rgba(var(--gray-light), 0.22);
-		text-decoration: none;
-		color: inherit;
-		transition:
-			border-color 0.2s ease,
-			background-color 0.3s ease,
-			transform 0.25s ease,
-			box-shadow 0.25s ease;
-	}
-	.card:hover {
-		transform: translateY(-2px);
-		box-shadow: 0 8px 24px rgba(var(--black), 0.06);
-	}
-	.card.link:hover {
-		border-color: var(--accent);
-	}
-	.logo {
-		flex: none;
-		width: 46px;
-		height: 46px;
-		border-radius: var(--radius);
-		display: grid;
-		place-items: center;
-		font-weight: 800;
-		font-size: 0.9em;
-		color: var(--accent);
-		background: rgba(var(--gray), 0.12);
-		border: 1px solid rgba(var(--gray), 0.18);
-	}
-	.logo.mono {
-		font-family: var(--font-mono);
-		letter-spacing: -0.03em;
-	}
-	.logo-img {
-		flex: none;
-		width: 46px;
-		height: 46px;
-		border-radius: var(--radius);
-		padding: 6px;
-		background: #fff;
-		border: 1px solid rgba(var(--gray), 0.18);
-		object-fit: contain;
-	}
-	.card-body {
-		min-width: 0;
-	}
-	.card-top {
-		display: flex;
-		align-items: center;
-		gap: 0.6em;
-		flex-wrap: wrap;
-	}
-	.card-top h3 {
-		font-size: 1.1em;
-		margin: 0;
-	}
 	.badge {
 		font-family: var(--font-mono);
-		font-size: 0.74em;
+		font-size: 0.74rem;
 		color: rgb(var(--gray));
 		white-space: nowrap;
 	}
 	.badge::before {
 		content: '#';
-		opacity: 0.55;
 	}
-	.card-body .meta {
-		display: block;
-		margin: 0.3em 0;
+
+	/* ---- 경험: 타임라인 행 ---- */
+	.timeline {
+		list-style: none;
+		margin: 0;
+		padding: 0;
 	}
-	.card-body p {
-		margin: 0.4em 0 0;
-		color: rgb(var(--gray-dark));
-		font-size: 0.94em;
+	.tl-row {
+		display: grid;
+		grid-template-columns: 11rem minmax(0, 1fr);
+		gap: 2rem;
+		padding: 1.3rem 0;
 	}
-	.stack-line {
-		font-size: 0.83em !important;
-		color: rgb(var(--gray)) !important;
+	.tl-row + .tl-row {
+		border-top: 1px solid var(--line-soft);
 	}
-	.more {
-		display: inline-block;
-		margin-top: 0.7em;
-		font-size: 0.85em;
-		color: var(--accent);
-	}
-	.meta {
-		font-size: 0.82em;
+	.tl-when {
+		font-family: var(--font-mono);
+		font-size: 0.82rem;
 		color: rgb(var(--gray));
+		padding-top: 0.2rem;
 		white-space: nowrap;
 	}
-
-	/* tech stack pills */
-	.stack {
+	.tl-head {
 		display: flex;
-		flex-direction: column;
-		gap: 1.1em;
-	}
-	.stack-group {
-		display: grid;
-		grid-template-columns: 10em 1fr;
-		gap: 1em;
-		align-items: start;
-	}
-	.stack-group h3 {
-		font-size: 0.95em;
-		margin: 0.2em 0 0;
-		color: rgb(var(--gray-dark));
-	}
-	.stack-group ul {
-		display: flex;
+		align-items: center;
 		flex-wrap: wrap;
-		gap: 0.45em;
-		list-style: none;
-		margin: 0;
-		padding: 0;
+		gap: 0.4rem 0.7rem;
 	}
-	.pill {
-		font-size: 0.82em;
-		padding: 0.35em 0.75em;
-		border-radius: var(--radius);
-		background: rgba(var(--gray), 0.14);
+	.tl-head h3 {
+		font-size: 1.12rem;
+		margin: 0;
+	}
+	.tl-logo {
+		flex: none;
+		width: 28px;
+		height: 28px;
+		padding: 3px;
+		background: #fff;
+		border: 1px solid var(--line);
+		object-fit: contain;
+		display: grid;
+		place-items: center;
+		font-size: 0.6rem;
+		font-weight: 700;
+		color: #18181b;
+	}
+	.tl-role {
+		margin: 0.35rem 0 0;
+		font-size: 0.92rem;
+		color: rgb(var(--black));
+	}
+	.tl-desc {
+		margin: 0.45rem 0 0;
+		max-width: 68ch;
+		font-size: 0.95rem;
+	}
+	.sub-head {
+		font-size: 1.05rem;
+		margin: 2rem 0 0;
+		padding-top: 0.8rem;
+		border-top: 1px solid var(--line-soft);
 		color: rgb(var(--gray-dark));
 	}
 
-	/* awards rows */
-	.rows {
+	/* ---- 대표 프로젝트 ---- */
+	.feat-grid {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 1rem;
+	}
+	/* 홀수 개면 첫 카드가 한 줄 전체: 빈 칸 없이 1 + 2 */
+	.feat:first-child:nth-last-child(odd) {
+		grid-column: 1 / -1;
+	}
+	.feat {
+		display: flex;
+		gap: 1.25rem;
+		padding: 1.4rem;
+		border: 1px solid var(--line);
+		color: inherit;
+		text-decoration: none;
+	}
+	.feat:hover {
+		border-color: var(--accent);
+	}
+	.feat-mark {
+		flex: none;
+		display: grid;
+		place-items: center;
+		width: 72px;
+		height: 72px;
+		background: var(--surface);
+		border: 1px solid var(--line-soft);
+	}
+	.feat-mark img {
+		width: 48px;
+		height: 48px;
+		object-fit: contain;
+		padding: 4px;
+		background: #fff;
+	}
+	.feat-mark .mono {
+		font-weight: 700;
+		color: var(--accent);
+	}
+	.feat-body {
 		display: flex;
 		flex-direction: column;
+		min-width: 0;
 	}
-	.row {
+	.feat-top {
 		display: flex;
-		justify-content: space-between;
 		align-items: baseline;
-		gap: 1em;
-		padding: 0.8em 0;
-		border-bottom: 1px solid rgba(var(--gray), 0.12);
+		flex-wrap: wrap;
+		gap: 0.3rem 0.7rem;
 	}
-	.row:last-child {
-		border-bottom: none;
+	.feat-top h3 {
+		font-size: 1.15rem;
+		margin: 0;
 	}
-	.row-title {
-		display: block;
+	.feat:hover h3 {
+		color: var(--accent);
 	}
-	.row-sub {
-		display: block;
-		font-size: 0.86em;
+	.feat-period {
+		font-family: var(--font-mono);
+		font-size: 0.78rem;
 		color: rgb(var(--gray));
-		margin-top: 0.15em;
+		margin-top: 0.3rem;
+	}
+	.feat-desc {
+		margin-top: 0.55rem;
+		font-size: 0.95rem;
+		max-width: 68ch;
+	}
+	.more {
+		margin-top: auto;
+		padding-top: 0.8rem;
+		font-family: var(--font-mono);
+		font-size: 0.78rem;
+		color: var(--accent);
 	}
 
-	/* certs */
-	.certs {
+	/* ---- 최근 글: 날짜 | 제목 | 태그 ---- */
+	.post-rows {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+	.post-rows a {
 		display: grid;
-		grid-template-columns: 1fr 1fr;
-		gap: 0.3em 2em;
-		list-style: none;
-		padding: 0;
-		margin: 0;
-	}
-	.certs li {
-		display: flex;
-		justify-content: space-between;
+		grid-template-columns: 8.5rem minmax(0, 1fr) auto;
+		gap: 1.5rem;
 		align-items: baseline;
-		gap: 1em;
-		padding: 0.55em 0;
-		border-bottom: 1px solid rgba(var(--gray), 0.12);
-	}
-
-	/* posts */
-	.posts {
-		list-style: none;
-		padding: 0;
-		margin: 0;
-	}
-	.posts li a {
-		display: flex;
-		justify-content: space-between;
-		align-items: baseline;
-		gap: 1em;
-		padding: 0.7em 0;
-		border-bottom: 1px solid rgba(var(--gray), 0.12);
-		text-decoration: none;
+		padding: 0.85rem 0;
 		color: inherit;
+		text-decoration: none;
 	}
-	.posts li:last-child a {
-		border-bottom: none;
+	.post-rows li + li a {
+		border-top: 1px solid var(--line-soft);
+	}
+	.post-rows :global(time) {
+		font-family: var(--font-mono);
+		font-size: 0.8rem;
+		color: rgb(var(--gray));
+		white-space: nowrap;
 	}
 	.post-title {
 		color: rgb(var(--black));
+		font-weight: 600;
 	}
-	.posts li a:hover .post-title {
+	.post-rows a:hover .post-title {
 		color: var(--accent);
 	}
-	.posts :global(time) {
-		font-size: 0.82em;
+	.post-tag {
+		font-family: var(--font-mono);
+		font-size: 0.75rem;
+		color: rgb(var(--gray));
+	}
+
+	/* ---- 기술 스택: 그룹별 열 ---- */
+	.stack {
+		display: grid;
+		grid-template-columns: repeat(5, minmax(0, 1fr));
+		gap: 2rem 1.5rem;
+	}
+	.stack-group h3 {
+		font-size: 0.95rem;
+		margin: 0 0 0.75rem;
+	}
+	.stack-group .tags {
+		gap: 0.4rem;
+	}
+
+	/* ---- 수상 | 자격증 ---- */
+	.creds {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 0 3rem;
+	}
+	.cred-list {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+	.cred-list li {
+		display: flex;
+		justify-content: space-between;
+		align-items: baseline;
+		gap: 1rem;
+		padding: 0.6rem 0;
+		font-size: 0.95rem;
+	}
+	.cred-list li + li {
+		border-top: 1px solid var(--line-soft);
+	}
+	.cred-name {
+		color: rgb(var(--black));
+	}
+	.cred-sub {
+		display: block;
+		font-size: 0.85rem;
+		color: rgb(var(--gray));
+	}
+	.cred-date {
+		font-family: var(--font-mono);
+		font-size: 0.78rem;
 		color: rgb(var(--gray));
 		white-space: nowrap;
 	}
 
-	@media (max-width: 720px) {
-		.hero h1 {
-			font-size: 2.3em;
+	/* ---- 반응형 ---- */
+	@media (max-width: 1180px) {
+		.hero {
+			grid-template-columns: minmax(0, 1fr) 200px;
+			gap: 3rem;
+		}
+	}
+	@media (max-width: 900px) {
+		.stack {
+			grid-template-columns: repeat(3, minmax(0, 1fr));
+		}
+	}
+	@media (max-width: 767px) {
+		.hero {
+			grid-template-columns: 1fr;
+			gap: 1.75rem;
+			padding-top: 2.5rem;
+			padding-bottom: 2.5rem;
 		}
 		.portrait {
-			width: 112px;
-			height: 112px;
+			order: -1;
+			width: 104px;
 		}
-		.grid,
-		.stack-group,
-		.certs {
+		.band-grid {
 			grid-template-columns: 1fr;
 		}
-		.stack-group {
-			gap: 0.4em;
+		.metric,
+		.metric:first-child {
+			border-left: none;
+			padding: 1.4rem 0;
+		}
+		.metric + .metric {
+			border-top: 1px solid var(--line);
+		}
+		.block {
+			margin-top: 3.5rem;
+		}
+		.tl-row {
+			grid-template-columns: 1fr;
+			gap: 0.4rem;
+		}
+		/* 긴 기관명이 로고 아래로 떨어지지 않게: 로고 | 제목, 태그는 제목 아래 */
+		.tl-head {
+			display: grid;
+			grid-template-columns: 28px minmax(0, 1fr);
+			align-items: center;
+		}
+		.tl-head .badge {
+			grid-column: 2;
+		}
+		.feat-grid,
+		.creds {
+			grid-template-columns: 1fr;
+		}
+		.creds > div + div {
+			margin-top: 3.5rem;
+		}
+		.feat {
+			flex-direction: column;
+		}
+		.post-rows a {
+			grid-template-columns: 1fr;
+			gap: 0.15rem;
+		}
+		.post-tag {
+			display: none;
+		}
+		.stack {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
 		}
 	}
 </style>

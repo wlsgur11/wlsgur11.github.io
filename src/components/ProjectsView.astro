@@ -34,29 +34,31 @@ const githubPath =
 	<body>
 		<Header />
 		<main>
-			<h1>{t('projectsTitle')}</h1>
-			<p class="meta">{t('projectsSubtitle')}</p>
+			<header class="page-head">
+				<h1>{t('projectsTitle')}</h1>
+				<p class="subtitle">{t('projectsSubtitle')}</p>
+			</header>
 
 			{
 				groups.map((g) => (
 					<section class="group">
 						<h2 class="group-title">{g.title}</h2>
-						<div class={`list ${g.variant}`}>
+						<div class="plist">
 							{g.items.map((p) => {
 								const href = localize(`/projects/${p.id}/`, lang);
 								const bullets =
 									lang === 'en' && p.data.summaryEn.length ? p.data.summaryEn : p.data.summary;
 								return (
-									<article class={`card ${g.variant}`}>
+									<article class={`pcard pcard--${g.variant}`} data-reveal>
 										{g.variant === 'cover' ? (
-											<a class="cover-link" href={href} aria-label={p.data.title}>
+											<a class="pcard-media" href={href} aria-label={p.data.title}>
 												<div class="thumb">
 													{p.data.cover ? (
 														<img src={p.data.cover} alt="" />
 													) : (
-														<div class="cover-fallback">
+														<div class="thumb-fallback">
 															{p.data.logo ? (
-																<img class="mark" src={p.data.logo} alt="" />
+																<img class="thumb-logo" src={p.data.logo} alt="" />
 															) : (
 																<span class="mono">{p.data.title.slice(0, 2)}</span>
 															)}
@@ -65,15 +67,15 @@ const githubPath =
 												</div>
 											</a>
 										) : (
-											<a class="logo-link" href={href} aria-label={p.data.title}>
+											<a class="pcard-logo" href={href} aria-label={p.data.title}>
 												{p.data.logo ? (
-													<img class="logo-img" src={p.data.logo} alt="" />
+													<img src={p.data.logo} alt="" />
 												) : (
-													<div class="logo-mono">{p.data.title.slice(0, 2)}</div>
+													<span class="mono">{p.data.title.slice(0, 2)}</span>
 												)}
 											</a>
 										)}
-										<div class="body">
+										<div class="pcard-body">
 											<div class="top">
 												<a class="title-link" href={href}>
 													<h3>{pick(p.data.title, p.data.titleEn)}</h3>
@@ -113,133 +115,141 @@ const githubPath =
 </html>
 
 <style>
-	main {
-		width: 940px;
-		max-width: calc(100% - 2em);
+	.page-head {
+		padding-top: 1.5rem;
+	}
+	.page-head h1 {
+		font-size: 2.6rem;
+		margin-bottom: 0.3rem;
+	}
+	.subtitle {
+		color: rgb(var(--gray-dark));
+		margin: 0;
+		max-width: 60ch;
 	}
 	.group {
-		margin-top: 2.4em;
+		margin-top: 3.5rem;
 	}
 	.group-title {
-		font-size: 1.05em;
+		font-size: 1.35rem;
 		font-weight: 800;
-		margin: 0 0 1.1em;
-		padding-bottom: 0.5em;
-		border-bottom: 1px solid rgba(var(--gray), 0.16);
+		margin: 0 0 1.5rem;
+		padding-top: 0.9rem;
+		border-top: 1px solid var(--line);
 	}
-	.list {
+	.plist {
 		display: grid;
-		grid-template-columns: 1fr 1fr;
-		gap: 1.1em;
-		align-items: start;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 1rem;
+		align-items: stretch;
+	}
+	/* 홀수 개면 첫 카드가 한 줄 전체: 빈 칸 없이 1 + 2 */
+	.pcard:first-child:nth-last-child(odd) {
+		grid-column: 1 / -1;
 	}
 
-	/* base card */
-	.card {
-		border: 1px solid rgba(var(--gray), 0.18);
-		border-radius: var(--radius);
-		background: rgba(var(--gray-light), 0.22);
-		overflow: hidden;
-		transition:
-			border-color 0.2s ease,
-			background-color 0.3s ease,
-			transform 0.25s ease,
-			box-shadow 0.25s ease;
-	}
-	.card:hover {
-		border-color: var(--accent);
-		transform: translateY(-2px);
-		box-shadow: 0 8px 24px rgba(var(--black), 0.06);
-	}
-
-	/* row variant (activity) */
-	.card.row {
+	/* 카드 바깥(article)과 안쪽 요소 클래스는 겹치지 않게: pcard-* / thumb */
+	.pcard {
+		border: 1px solid var(--line);
 		display: flex;
-		gap: 1.1em;
-		padding: 1.4em 1.5em;
 	}
-	.logo-link {
+	.pcard:hover {
+		border-color: var(--accent);
+	}
+
+	/* row: 로고 + 본문 */
+	.pcard--row {
+		gap: 1.25rem;
+		padding: 1.5rem;
+	}
+	.pcard-logo {
 		flex: none;
-	}
-	.logo-img {
-		width: 54px;
-		height: 54px;
-		border-radius: var(--radius);
-		padding: 7px;
-		background: #fff;
-		border: 1px solid rgba(var(--gray), 0.18);
-		object-fit: contain;
-		display: block;
-		margin: 0;
-	}
-	.logo-mono {
-		width: 54px;
-		height: 54px;
-		border-radius: var(--radius);
 		display: grid;
 		place-items: center;
+		width: 72px;
+		height: 72px;
+		background: var(--surface);
+		border: 1px solid var(--line-soft);
+		text-decoration: none;
+	}
+	.pcard-logo img {
+		width: 48px;
+		height: 48px;
+		padding: 4px;
+		object-fit: contain;
+		background: #fff;
+	}
+	.mono {
 		font-family: var(--font-mono);
-		font-weight: 800;
+		font-weight: 700;
 		color: var(--accent);
-		background: rgba(var(--gray), 0.12);
-		border: 1px solid rgba(var(--gray), 0.18);
 	}
 
-	/* cover variant (projects) */
-	.card.cover {
-		display: flex;
+	/* cover: 표지 + 본문 */
+	.pcard--cover {
 		flex-direction: column;
 	}
-	.cover-link {
+	.pcard:first-child:nth-last-child(odd).pcard--cover {
+		flex-direction: row;
+	}
+	/* 전체 폭 표지 카드: 왼쪽 표지는 본문 높이를 따라가고 크기 계산에 끼지 않는다 */
+	.pcard:first-child:nth-last-child(odd).pcard--cover .pcard-media {
+		flex: 0 0 45%;
+		min-width: 0;
+		border-right: 1px solid var(--line);
+	}
+	.pcard:first-child:nth-last-child(odd).pcard--cover .thumb {
+		position: relative;
+		aspect-ratio: auto;
+		height: 100%;
+		min-height: 15rem;
+		border-bottom: none;
+	}
+	.pcard:first-child:nth-last-child(odd).pcard--cover .thumb > img,
+	.pcard:first-child:nth-last-child(odd).pcard--cover .thumb-fallback {
+		position: absolute;
+		inset: 0;
+	}
+	.pcard-media {
 		display: block;
 	}
 	.thumb {
 		aspect-ratio: 16 / 9;
 		overflow: hidden;
-		background: rgba(var(--gray), 0.1);
-		border-bottom: 1px solid rgba(var(--gray), 0.12);
+		background: var(--surface);
+		border-bottom: 1px solid var(--line);
 	}
 	.thumb img {
+		display: block;
 		width: 100%;
 		height: 100%;
 		object-fit: cover;
-		display: block;
-		border-radius: 0;
-		border: none;
 		margin: 0;
 	}
-	.cover-fallback {
+	.thumb-fallback {
 		width: 100%;
 		height: 100%;
 		display: grid;
 		place-items: center;
-		background:
-			radial-gradient(90% 90% at 50% 38%, rgba(var(--accent-rgb), 0.18), transparent 72%),
-			rgb(var(--gray-light));
+		background: var(--surface);
 	}
-	.cover-fallback .mark {
-		width: 92px;
-		height: 92px;
+	.thumb-fallback .thumb-logo {
+		width: 88px;
+		height: 88px;
+		padding: 12px;
 		object-fit: contain;
 		background: #fff;
-		border-radius: var(--radius);
-		padding: 14px;
-		border: 1px solid rgba(var(--gray), 0.15);
-		box-shadow: 0 6px 20px rgba(var(--black), 0.08);
-		margin: 0;
+		border: 1px solid var(--line-soft);
 	}
-	.cover-fallback .mono {
-		font-family: var(--font-mono);
-		font-weight: 800;
-		font-size: 2em;
-		color: var(--accent);
+	.thumb-fallback .mono {
+		font-size: 2rem;
 	}
-	.card.cover .body {
-		padding: 1.2em 1.3em 1.1em;
+	.pcard--cover .pcard-body {
+		padding: 1.3rem 1.4rem 1.2rem;
 	}
 
-	/* body (shared) */
-	.body {
+	/* body (공용) */
+	.pcard-body {
 		min-width: 0;
 		display: flex;
 		flex-direction: column;
@@ -247,8 +257,8 @@ const githubPath =
 	}
 	.top {
 		display: flex;
-		align-items: center;
-		gap: 0.55em;
+		align-items: baseline;
+		gap: 0.3rem 0.7rem;
 		flex-wrap: wrap;
 	}
 	.title-link {
@@ -256,44 +266,44 @@ const githubPath =
 		color: inherit;
 	}
 	.title-link h3 {
-		font-size: 1.2em;
+		font-size: 1.2rem;
 		font-weight: 800;
 		margin: 0;
 	}
-	.card:hover .title-link h3 {
+	.pcard:hover .title-link h3 {
 		color: var(--accent);
 	}
 	.cat {
 		font-family: var(--font-mono);
-		font-size: 0.74em;
+		font-size: 0.74rem;
 		color: rgb(var(--gray));
 		white-space: nowrap;
 	}
 	.cat::before {
 		content: '#';
-		opacity: 0.55;
 	}
 	.role {
-		font-size: 0.82em;
+		font-family: var(--font-mono);
+		font-size: 0.78rem;
 		color: rgb(var(--gray));
-		margin: 0.4em 0 0.7em;
+		margin: 0.4rem 0 0.8rem;
 	}
 	.bullets {
-		margin: 0 0 1em;
+		margin: 0 0 1rem;
 		padding-left: 1.1em;
 		display: flex;
 		flex-direction: column;
 		gap: 0.35em;
 	}
 	.bullets li {
-		font-size: 0.92em;
+		font-size: 0.93rem;
 		color: rgb(var(--gray-dark));
 		line-height: 1.6;
 	}
 	.foot {
 		display: flex;
 		align-items: center;
-		gap: 1.1em;
+		gap: 1.1rem;
 		margin-top: auto;
 	}
 	.ext,
@@ -301,8 +311,8 @@ const githubPath =
 		display: inline-flex;
 		align-items: center;
 		gap: 0.35em;
-		font-size: 0.85em;
-		font-weight: 700;
+		font-family: var(--font-mono);
+		font-size: 0.78rem;
 		text-decoration: none;
 	}
 	.ext {
@@ -316,27 +326,27 @@ const githubPath =
 		margin-left: auto;
 	}
 
-	@media (prefers-reduced-motion: no-preference) {
-		main > h1,
-		main > .meta,
-		.group-title,
-		.list > .card {
-			animation: text-rise 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+	@media (max-width: 767px) {
+		.page-head h1 {
+			font-size: 2.1rem;
 		}
-		.list > .card:nth-child(2) {
-			animation-delay: 0.08s;
-		}
-		.list > .card:nth-child(3) {
-			animation-delay: 0.14s;
-		}
-		.list > .card:nth-child(n + 4) {
-			animation-delay: 0.2s;
-		}
-	}
-
-	@media (max-width: 720px) {
-		.list {
+		.plist {
 			grid-template-columns: 1fr;
+		}
+		.pcard--row {
+			flex-direction: column;
+		}
+		.pcard:first-child:nth-last-child(odd).pcard--cover {
+			flex-direction: column;
+		}
+		.pcard:first-child:nth-last-child(odd).pcard--cover .pcard-media {
+			border-right: none;
+		}
+		.pcard:first-child:nth-last-child(odd).pcard--cover .thumb {
+			aspect-ratio: 16 / 9;
+			height: auto;
+			min-height: 0;
+			border-bottom: 1px solid var(--line);
 		}
 	}
 </style>

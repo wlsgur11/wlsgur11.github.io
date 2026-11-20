@@ -5,8 +5,11 @@ type Props = HTMLAttributes<'a'>;
 
 const { href, class: className, ...props } = Astro.props;
 const pathname = Astro.url.pathname.replace(import.meta.env.BASE_URL, '');
-const subpath = pathname.match(/[^\/]+/g);
-const isActive = href === pathname || href === '/' + (subpath?.[0] || '');
+// /en 접두사는 언어라서 건너뛰고 첫 구간으로 비교 (/en/blog/x 에서 Home 이 켜지던 문제)
+const segs = pathname.match(/[^\/]+/g) ?? [];
+const prefix = segs[0] === 'en' ? '/en' : '';
+const section = prefix ? segs[1] : segs[0];
+const isActive = href === (section ? `${prefix}/${section}` : prefix || '/');
 ---
 
 <a href={href} class:list={[className, { active: isActive }]} {...props}>
@@ -18,7 +21,11 @@ const isActive = href === pathname || href === '/' + (subpath?.[0] || '');
 		text-decoration: none;
 	}
 	a.active {
-		font-weight: bolder;
+		color: rgb(var(--black));
+		font-weight: 700;
 		text-decoration: underline;
+		text-decoration-color: var(--accent);
+		text-decoration-thickness: 2px;
+		text-underline-offset: 6px;
 	}
 </style>
