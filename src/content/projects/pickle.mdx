@@ -1,8 +1,8 @@
 ---
 title: 'Pickle - 교내 클라우드와 LLM 운영'
 titleEn: 'Pickle - Operating a campus cloud and LLM service'
-description: '학생에게 가상 서버와 교내 LLM API를 나눠 주는 부산대 교내 클라우드 플랫폼입니다. 개발은 개발팀이 했고, 나는 AI융합교육원 기관 관리자로 승인 기준, 용량 산정, 학생 연결 지원, 장애 대응을 맡고 있습니다.'
-descriptionEn: 'A campus cloud platform at Pusan National University that gives students virtual machines and a campus-hosted LLM API. The platform was built by its own dev team; I run it for the AI Convergence Education Institute as an organization admin: approval policy, capacity planning, student onboarding, and incident response.'
+description: '학생에게 가상 서버와 교내 LLM API를 나눠 주는 부산대 교내 클라우드 플랫폼입니다. 개발은 개발팀이 했고, 나는 AI융합교육원 연구원으로서 기관 관리자를 맡아 승인 기준, 용량 산정, 학생 연결 지원, 장애 대응을 맡고 있습니다.'
+descriptionEn: 'A campus cloud platform at Pusan National University that gives students virtual machines and a campus-hosted LLM API. The platform was built by its own dev team; as a researcher at the AI Convergence Education Institute I run it as an organization admin: approval policy, capacity planning, student onboarding, and incident response.'
 role: '운영 (기관 관리자)'
 roleEn: 'Operations (organization admin)'
 period: '2026.10 - 진행 중'
@@ -10,11 +10,11 @@ logo: '/images/logos/pnu.png'
 badge: '운영'
 badgeEn: 'Operations'
 summary:
-  - '학생에게 가상 서버(VM)와 교내 LLM API 키를 나눠 주는 교내 클라우드입니다. 개발은 개발팀이 했고, 나는 AI융합교육원 기관 관리자로 운영을 맡고 있습니다.'
+  - '학생에게 가상 서버(VM)와 교내 LLM API 키를 나눠 주는 교내 클라우드입니다. 개발은 개발팀이 했고, 나는 AI융합교육원 연구원으로서 기관 관리자 운영을 맡고 있습니다.'
   - '"키를 몇 개까지 승인해도 되나"를 키 개수가 아니라 동시 사용과 남은 CPU 기준으로 다시 정리해 승인 가이드를 만들고, 개발팀에 남은 자원 표시 기능을 요청했습니다.'
   - '서버 메모리 증설 뒤 약 6시간 30분 동안 서비스가 멈춘 장애의 원인을 부팅 검사와 BMC 연결 구조까지 따라가 복구에 참여했습니다.'
 summaryEn:
-  - 'A campus cloud that hands students virtual machines and keys for a campus-hosted LLM API. Its dev team built it; I run it for the AI Convergence Education Institute as an organization admin.'
+  - 'A campus cloud that hands students virtual machines and keys for a campus-hosted LLM API. Its dev team built it; as a researcher at the AI Convergence Education Institute I run it as an organization admin.'
   - 'Reframed "how many keys can we approve" around concurrent use and remaining CPU instead of key counts, wrote an approval guide, and asked the dev team for a remaining-capacity view.'
   - 'Helped diagnose and recover a roughly 6.5-hour outage after a server memory upgrade, tracing it to a boot-time guard and the BMC wiring.'
 stack:
@@ -36,7 +36,7 @@ draft: false
 **Pickle**은 부산대 학생에게 가상 서버(VM)와 교내 LLM API를 나눠 주는 교내 클라우드 플랫폼입니다. 승인받은 학생은 VM을 받아 SSH와 도메인 기반 HTTPS로 서비스를 올리고, 교내 장비에서 돌리는 학교 모델(pickle-general)을 사용 금액 없이 쓸 수 있습니다. 학교 모델은 NVIDIA DGX Spark에서 vLLM으로 서빙하고, 필요하면 한도 안에서 유료 외부 모델도 같은 키로 씁니다. 학과 같은 다른 기관도 따로 등록해 쓸 수 있는 구조입니다.
 
 - **서비스 주소**: [pickle.pusan.ac.kr](https://pickle.pusan.ac.kr)
-- **역할**: AI융합교육원 기관 관리자(운영). 플랫폼 개발은 개발팀(PNUops)이 했습니다.
+- **역할**: AI융합교육원 연구원, 기관 관리자(운영). 플랫폼 개발은 개발팀(PNUops)이 했습니다.
 - **수업 사용**: 수업에서 나온 AI 요청 3,095건 가운데 토큰 기준 85.3%를 교내 모델이 처리했습니다(개발팀 집계).
 
 ## 내가 맡은 일

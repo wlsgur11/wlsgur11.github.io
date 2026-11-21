@@ -21,9 +21,13 @@ const hero = {
 		ko: '제한된 자원에서 측정하고 최적화하는 백엔드 개발자',
 		en: 'A backend engineer who measures and optimizes under tight resources',
 	},
+	eyebrow: {
+		ko: '부산대 AI융합교육원 연구원',
+		en: 'Researcher, PNU AI Convergence Education Institute',
+	},
 	sub: {
-		ko: '부산대 AI융합교육원 연구원. 실서비스 Code Place의 인프라와 AI 조교를 운영합니다.',
-		en: 'Researcher at PNU’s AI Convergence Education Institute, running the infrastructure and AI tutor for Code Place, a production online judge.',
+		ko: '실서비스 온라인 저지 Code Place의 인프라와 AI 조교를 운영합니다.',
+		en: 'Running the infrastructure and AI tutor for Code Place, a production online judge.',
 	},
 };
 
@@ -90,8 +94,11 @@ const experience = [
 		logo: '/images/logos/pnu.png',
 		org: { ko: '부산대학교 AI융합교육원', en: 'PNU AI Convergence Education Institute' },
 		badge: { ko: '운영', en: 'Ops' },
-		period: { ko: '2026.08 - 현재', en: '2026.08 - present' },
-		role: { ko: '연구원 (2026.02 - 2026.07 SW조교)', en: 'Researcher (2026.02 - 2026.07 SW Assistant)' },
+		period: { ko: '2026.02 - 현재', en: '2026.02 - present' },
+		role: {
+			ko: '연구원 (2026.08 - 현재) | SW조교 (2026.02 - 2026.07)',
+			en: 'Researcher (2026.08 - present) | SW Assistant (2026.02 - 2026.07)',
+		},
 		desc: {
 			ko: '교육원 개발 업무를 담당. 실서비스 온라인 저지 "Code Place"의 기능 개발과 인프라 운영을 맡아 3인 개발팀을 리딩하고, 멀티 노드 K3s 환경의 운영 문제를 해결하며 로컬 LLM 기반 AI 조교를 기획, 개발했습니다.',
 			en: 'Responsible for the institute’s software development. Own feature development and infrastructure for "Code Place", a production Online Judge. Lead a 3-person team, resolve operational issues on a multi-node K3s cluster, and built a local-LLM AI teaching assistant.',
@@ -177,7 +184,7 @@ const certs = en
 			<!-- HERO: 텍스트 요소 4개 (eyebrow, 헤드라인, 서브, 연락처) + 프로필 -->
 			<section class="hero wrap">
 				<div class="hero-text">
-					<p class="eyebrow" data-hero>{en ? PROFILE.nameEn : PROFILE.name} | {t('role')}</p>
+					<p class="eyebrow" data-hero>{en ? PROFILE.nameEn : PROFILE.name} | {L(hero.eyebrow)}</p>
 					<h1 data-hero>{L(hero.headline)}</h1>
 					<p class="sub" data-hero>{L(hero.sub)}</p>
 					<nav class="contact" data-hero>

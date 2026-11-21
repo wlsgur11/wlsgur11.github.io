@@ -10,7 +10,9 @@ const altLabel = lang === 'ko' ? languages.en : languages.ko;
 
 <header class="site-header">
 	<nav>
-		<a class="brand" href={localize('/', lang)}>{PROFILE.name}</a>
+		<a class="brand" href={localize('/', lang)}
+			><img class="brand-mark" src="/images/moon-64.png" width="22" height="22" alt="" />{PROFILE.name}</a
+		>
 		<div class="internal-links">
 			{NAV.map((item) => <HeaderLink href={localize(item.href, lang)}>{item.label}</HeaderLink>)}
 		</div>
@@ -80,6 +82,13 @@ const altLabel = lang === 'ko' ? languages.en : languages.ko;
 		text-decoration: none;
 		white-space: nowrap;
 		margin-right: auto;
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
+	}
+	.brand-mark {
+		display: block;
+		flex: none;
 	}
 	.internal-links {
 		display: flex;
