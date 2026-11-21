@@ -1,6 +1,6 @@
 ---
 // 이력서식 프로젝트 항목: 제목 + 기간 | 역할 + 한 줄 설명 + 성과 불릿 + 기술(쉼표 나열) + 링크.
-// 화면 캡처가 있으면 오른쪽에 작은 썸네일. 홈(#projects)과 /projects 가 같이 쓴다.
+// 화면 캡처가 있으면 왼쪽에 크게(눈이 먼저 가는 곳이라 글보다 앞에). 홈(#projects)과 /projects 가 같이 쓴다.
 import type { CollectionEntry } from 'astro:content';
 import { type Lang, highlightHtml, localize, useTranslations } from '../i18n';
 
@@ -26,6 +26,13 @@ const ext = d.links.live ? { label: 'Live', url: d.links.live } : d.links.repo ?
 ---
 
 <article class="entry">
+	{
+		d.cover && (
+			<a class="entry-thumb" href={href} tabindex="-1" aria-hidden="true">
+				<img src={d.cover} alt="" width="800" height="500" loading="lazy" decoding="async" />
+			</a>
+		)
+	}
 	<div class="entry-text">
 		<h3><a href={href}>{name}</a></h3>
 		<p class="entry-meta num">{period} <span class="sep">|</span> {pick(d.role, d.roleEn)}</p>
@@ -46,13 +53,6 @@ const ext = d.links.live ? { label: 'Live', url: d.links.live } : d.links.repo ?
 			<a href={href}>{t('viewDetail')}</a>
 		</p>
 	</div>
-	{
-		d.cover && (
-			<a class="entry-thumb" href={href} tabindex="-1" aria-hidden="true">
-				<img src={d.cover} alt="" width="800" height="500" loading="lazy" decoding="async" />
-			</a>
-		)
-	}
 </article>
 
 <style>
@@ -126,11 +126,10 @@ const ext = d.links.live ? { label: 'Live', url: d.links.live } : d.links.repo ?
 	.entry-links a:hover {
 		color: var(--accent);
 	}
-	/* 작은 화면 캡처: 1px 테두리, 로고 이미지도 잘리지 않게 contain */
+	/* 화면 캡처: 본문 폭의 44%, 1px 테두리, 로고 이미지도 잘리지 않게 contain */
 	.entry-thumb {
-		flex: 0 0 200px;
-		order: 2;
-		margin-top: 0.3rem;
+		flex: 0 0 44%;
+		margin-top: 0.25rem;
 		aspect-ratio: 16 / 10;
 		background: var(--surface);
 		border: 1px solid var(--line);
@@ -144,22 +143,15 @@ const ext = d.links.live ? { label: 'Live', url: d.links.live } : d.links.repo ?
 		height: 100%;
 		object-fit: contain;
 	}
-	@media (max-width: 1100px) and (min-width: 900px) {
-		.entry-thumb {
-			flex-basis: 168px;
-		}
-	}
-	/* 좁은 화면: 썸네일이 글 위로 */
+	/* 좁은 화면: 캡처가 글 위로, 전체 폭 */
 	@media (max-width: 599px) {
 		.entry {
 			flex-direction: column;
 			gap: 0.9rem;
 		}
 		.entry-thumb {
-			order: -1;
 			flex: none;
 			width: 100%;
-			max-width: 22rem;
 			margin-top: 0;
 		}
 	}
