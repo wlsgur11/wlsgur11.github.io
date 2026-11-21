@@ -1,0 +1,64 @@
+---
+title: 'PNU AIPMS - 학과 프로젝트 운영 플랫폼'
+titleEn: 'PNU AIPMS - Project operations platform for university programs'
+description: '캡스톤, 교내 해커톤, 학습공동체처럼 규칙이 제각각인 학과 프로젝트를 프로그램 개설부터 주제 지원, 팀 확정, 보고서, 결과물 아카이브까지 한 곳에서 잇는 플랫폼입니다. 2026년 8월부터 운영 서버와 장애 대응을 맡고 있습니다.'
+descriptionEn: 'A platform that runs university project programs with very different rules, from opening a program to topic applications, team formation, reports, and an archive of results. I have run its production server and incident response since August 2026.'
+role: '운영, 개발 (팀 프로젝트)'
+roleEn: 'Operations and development (team project)'
+period: '2026.08 - 진행 중'
+logo: '/images/logos/pnu.png'
+badge: '실서비스 운영'
+badgeEn: 'In production'
+summary:
+  - '캡스톤, 해커톤, 학습공동체 등 학과 프로젝트의 전체 흐름을 한 곳에서 잇는 플랫폼입니다(aipms.pusan.ac.kr).'
+  - '제7회 창의융합AI해커톤 인기상 투표를 이 서비스로 진행했습니다. 이용자 510명이 27시간 동안 578표를 넣었고 결과가 그대로 시상에 쓰였습니다.'
+  - '8월에 합류해 운영 서버 배포, 도메인, 메일, 백업, 장애 대응을 맡고, 투표 동시성 결함과 운영 환경에서만 나는 장애를 고쳤습니다.'
+summaryEn:
+  - 'One place for the whole flow of university project programs such as capstones, hackathons, and study groups (aipms.pusan.ac.kr).'
+  - 'Ran the popular-vote award of the 7th Creative Convergence AI Hackathon: 510 users cast 578 votes over 27 hours, and the result went straight to the awards.'
+  - 'Joined in August to run deployment, domain, mail, backups, and incident response, and fixed vote concurrency bugs and production-only failures.'
+stack:
+  - Next.js 16
+  - React 19
+  - TypeScript
+  - PostgreSQL
+  - Prisma
+  - Better Auth
+  - MinIO
+  - Docker
+  - Caddy
+  - Vitest
+links:
+  live: 'https://aipms.pusan.ac.kr'
+  repo: 'https://github.com/2026-PNU-AI-StudyGroup/2026-pnuai-studygroup-01'
+featured: true
+group: 'major'
+order: 3
+draft: false
+---
+
+## 개요
+
+학과 프로젝트는 한 종류가 아닙니다. 캡스톤 디자인, 교내 해커톤, AI 부스터, 학습공동체가 각자 다른 일정과 규칙으로 동시에 돌아갑니다. 공고는 메일로, 지원서는 구글 폼으로, 팀 명단은 스프레드시트로, 보고서는 메신저로 흩어져 있었고, 프로그램이 끝나면 결과물은 개인 컴퓨터에 남았습니다.
+
+**PNU AIPMS**는 이 흐름을 한 곳으로 모은 플랫폼입니다. 프로그램마다 등록, 모집, 수행 기간과 보고서 요건, 투표 정책을 설정으로 정하고, 주제 공개부터 지원, 팀 확정, 할 일, 보고서 승인, 결과물 아카이브까지 같은 작업 공간에서 이어집니다. 부산대학교 계정이 없는 외부 자문위원도 초대 링크로 배정된 팀을 심사합니다.
+
+- **운영 주소**: [aipms.pusan.ac.kr](https://aipms.pusan.ac.kr) (2026년 8월 17일 운영 시작)
+- **스택**: Next.js 16, React 19, TypeScript, PostgreSQL, Prisma, Better Auth(학교 Google 계정), MinIO, Docker Compose, Caddy, Vitest
+- **실사용**: 제7회 창의융합AI해커톤 인기상 투표, 이용자 510명, 27시간 동안 578표
+
+## 내 역할
+
+팀 프로젝트입니다. 모듈 구조, 인증, 업로드 무결성 같은 기반은 팀원 양준영이 먼저 세웠고, 나는 2026년 8월에 합류했습니다. 합류한 뒤로는 교내 서버 배포, 도메인 연결, 메일 발송, 백업, 장애 대응을 맡아 왔고, 해커톤 투표처럼 실제 행사에 쓰이는 기능의 결함을 행사 전에 찾아 고치는 일을 주로 했습니다. 커밋 수로는 팀에서 가장 많지만, 설계의 뼈대는 팀원 몫이라 그 부분은 내 성과로 적지 않습니다.
+
+## 운영하며 고친 것
+
+- **투표가 사라지는 lost update**: 현재 표 집합을 트랜잭션 밖에서 읽고 통째로 덮어써서, 탭 두 개로 동시에 투표하면 한 표가 사라졌습니다. 표 하나만 뒤집도록 바꾸고 행 잠금(`FOR UPDATE`)을 걸었는데, 이번엔 늦게 온 토글이 앞의 표를 취소하는 문제가 나왔습니다. 화면이 "넣어라/빼라"를 그대로 보내는 멱등 명령으로 바꿔 두 문제를 함께 없앴습니다. 144명이 신청한 행사 직전이었습니다.
+- **운영에서만 이미지가 전부 깨짐**: 원인이 세 겹이었습니다. 업로드 주소가 도커 내부 주소로 만들어졌고, `next/image` 최적화 서버는 로그인 쿠키 없이 원본을 요청했고, 마지막으로 관리자 조건 `{}`가 Prisma `OR` 안에서 거짓으로 처리됐습니다. 브라우저와 저장소 직결을 앱 중계로 바꾸고, 조회 조건을 사유별로 나눴습니다.
+- **구글 로그인을 두 번 해야 하는 문제**: 컨테이너의 DNS가 호스트 스텁 리졸버를 거쳐 학내 DNS로 가는 체인에서 가끔 이름 풀이에 실패했습니다. 컨테이너에 학내 DNS를 직접 지정하고 IPv4를 먼저 쓰게 했습니다.
+- **메일 한 통이 나가기까지**: 빈 환경변수 검증, 토큰 권한, 교직원 계정의 Gmail 비활성까지 다섯 겹의 실패를 하나씩 걷어내고 발송 대기열을 정상화했습니다.
+
+## 설계에서 내린 판단
+
+- **AI는 화면 번역에만 씁니다.** 지원 심사, 팀 확정, 보고서 승인처럼 사람이 책임져야 하는 결정은 모델에 넘기지 않기로 팀에서 정했습니다. 사용자 콘텐츠 자동 번역은 붙여 봤지만 번역이 원문보다 어려워 기본값을 껐습니다.
+- **Redis는 아직 넣지 않았습니다.** 세션, 메일 대기열, 잠금, 요청 제한을 이미 PostgreSQL이 맡고 있었고(`FOR UPDATE SKIP LOCKED` 대기열, 같은 트랜잭션 안의 outbox), 지금 규모에서는 Redis가 늘리는 운영 부담이 얻는 것보다 컸습니다. 앱 서버를 두 대 이상으로 늘리거나 커넥션 풀 대기가 보이면 다시 검토하기로 했습니다.
