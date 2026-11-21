@@ -1,5 +1,5 @@
 /*
-  기반: Bear Blog 기본 CSS (MIT). 2026-11 리디자인 v2 "리크루터 우선": 큰 숫자 카드가 주인공.
+  기반: Bear Blog 기본 CSS (MIT). 2026-11 리디자인 v3 "웹 이력서": 종이 바탕 + 먹색 글, 강조색은 hover 와 작은 표식에만.
   https://github.com/HermanMartinus/bearblog/blob/master/LICENSE.md
  */
 
@@ -31,28 +31,21 @@
 	--accent: #c2410c;
 	--accent-dark: #9a3412;
 	--accent-rgb: 194, 65, 12;
-	--black: 24, 24, 27; /* 제목 #18181b */
-	--gray: 113, 113, 122; /* muted #71717a */
-	--gray-light: 231, 231, 233; /* line-soft #e7e7e9 */
-	--gray-dark: 63, 63, 70; /* 본문 #3f3f46 */
-	--bg: #fafafa;
-	--page-bg: #fafafa;
-	--surface: #f1f1f0;
-	--line: #d4d4d8;
-	--line-soft: #e7e7e9;
+	--black: 28, 27, 24; /* 먹색 제목 #1c1b18 */
+	--gray: 110, 107, 100; /* 메타 #6e6b64 */
+	--gray-light: 233, 231, 225;
+	--gray-dark: 55, 53, 49; /* 본문 #373531 */
+	--bg: #fbfaf7;
+	--page-bg: #fbfaf7; /* 종이 */
+	--surface: #f2f0ea;
+	--line: #d8d5cd;
+	--line-soft: #e8e5de;
 	--code-bg: #18181b; /* Shiki github-dark 토큰색이 읽히는 어두운 면 */
 	--font-sans: 'Pretendard Variable', Pretendard, system-ui, -apple-system, 'Segoe UI',
 		'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
 	--font-display: 'Paperlogy', var(--font-sans);
 	--font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', SFMono-Regular, Menlo, Consolas,
-		monospace;
-	/* 잉크 블록: 홈 히어로 + 숫자 띠에만 쓰는 고정색. 테마와 상관없이 같다. */
-	--ink: #0b1222;
-	--ink-2: #131c30; /* 잉크 위 hover 면 */
-	--ink-text: #f8fafc;
-	--ink-muted: #a3b0c4;
-	--ink-line: rgba(248, 250, 252, 0.14);
-	--ink-accent: #fb923c;
+		monospace; /* 코드에만 */
 	--radius: 0;
 	--radius-sm: 0;
 	--wrap: 1080px;
@@ -108,8 +101,8 @@ body {
 	overflow-wrap: break-word;
 	word-break: keep-all;
 	color: rgb(var(--gray-dark));
-	font-size: 17px;
-	line-height: 1.75;
+	font-size: 16px;
+	line-height: 1.7;
 	-webkit-font-smoothing: antialiased;
 }
 main {
@@ -132,14 +125,13 @@ h6 {
 	line-height: 1.25;
 }
 h1 {
-	font-size: 2.5rem;
-	font-weight: 800;
+	font-size: 2rem;
 }
 h2 {
-	font-size: 1.75rem;
+	font-size: 1.5rem;
 }
 h3 {
-	font-size: 1.3rem;
+	font-size: 1.2rem;
 }
 h4 {
 	font-size: 1.1rem;
@@ -152,7 +144,9 @@ b {
 	font-weight: 700;
 }
 a {
-	color: var(--accent);
+	color: rgb(var(--black));
+	text-underline-offset: 3px;
+	text-decoration-thickness: 1px;
 }
 a:hover {
 	color: var(--accent);
@@ -179,7 +173,8 @@ img {
 code,
 kbd,
 pre,
-time {
+time,
+.num {
 	font-variant-numeric: tabular-nums;
 }
 code {
@@ -246,11 +241,10 @@ th {
 	margin: 0;
 	list-style: none;
 }
-/* 정사각 모노톤 칩. 블로그 태그, 기술 스택 공용 */
+/* 정사각 칩. 블로그 태그에만 쓴다 */
 .tag {
 	display: inline-block;
-	font-family: var(--font-mono);
-	font-size: 0.72rem;
+	font-size: 0.75rem;
 	line-height: 1.5;
 	padding: 0.2em 0.6em;
 	border: 1px solid var(--line);
@@ -264,9 +258,14 @@ button.tag:hover {
 	border-color: var(--accent);
 	color: var(--accent);
 }
-.meta {
-	color: rgb(var(--gray));
-	font-size: 0.85em;
+/* 이력서식 섹션 제목: 작고 단단하게 + 아래 hairline. 부제 문장, eyebrow 없음 */
+.sec-title {
+	font-size: 1.1rem;
+	font-weight: 700;
+	letter-spacing: -0.01em;
+	margin: 0 0 1.4rem;
+	padding-bottom: 0.55rem;
+	border-bottom: 1px solid var(--line);
 }
 
 /* ---- 테마 토글 시 색 전환 (transform/opacity 는 건드리지 않음: GSAP 몫) ---- */
@@ -290,7 +289,7 @@ button.tag:hover {
 
 /* ---- 아티클(블로그/프로젝트) 본문 ---- */
 .prose {
-	font-size: 1rem;
+	font-size: 1.0625rem;
 	line-height: 1.75;
 	color: rgb(var(--gray-dark));
 }
@@ -298,8 +297,7 @@ button.tag:hover {
 	margin-top: 0;
 }
 .prose h1 {
-	font-size: 2.1rem;
-	font-weight: 800;
+	font-size: 1.9rem;
 	line-height: 1.25;
 	margin: 0 0 0.4em;
 }
@@ -389,9 +387,7 @@ button.tag:hover {
 }
 .prose a {
 	text-decoration: underline;
-	text-underline-offset: 3px;
-	text-decoration-thickness: 1px;
-	text-decoration-color: rgba(var(--accent-rgb), 0.45);
+	text-decoration-color: rgba(var(--accent-rgb), 0.5);
 }
 .prose a:hover {
 	text-decoration-color: var(--accent);
@@ -400,7 +396,7 @@ button.tag:hover {
 	color: rgb(var(--black));
 }
 
-/* 페이지 전환은 즉시. 등장 모션은 src/scripts/motion.ts (GSAP) 가 맡는다. */
+/* 페이지 전환은 즉시. 진입 때 살짝 나타나는 모션은 src/scripts/motion.ts (GSAP) 가 맡는다. */
 ::view-transition-old(root),
 ::view-transition-new(root) {
 	animation: none;

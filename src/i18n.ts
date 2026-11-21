@@ -52,6 +52,17 @@ export function localize(path: string, lang: Lang): string {
 	return '/en' + (path === '/' ? '' : path);
 }
 
+// 프로젝트 대표 수치를 문장 속에 굵게: "누적 가입 학생 <strong>932명</strong> (누적 제출 51,070건, 대회 14회)".
+// unit 은 한국어에서만 붙인다(영문은 label 이 명사를 맡는다). 값은 frontmatter 에서만 오므로 HTML 로 넣어도 된다.
+type Highlight = { value: string; unit?: string; label: string; labelEn?: string; sub?: string; subEn?: string };
+export function highlightHtml(h: Highlight | undefined, lang: Lang): string {
+	if (!h) return '';
+	const en = lang === 'en';
+	const label = en && h.labelEn ? h.labelEn : h.label;
+	const sub = en && h.subEn ? h.subEn : h.sub;
+	return `${label}${en ? ':' : ''} <strong>${h.value}${en ? '' : (h.unit ?? '')}</strong>${sub ? ` (${sub})` : ''}`;
+}
+
 // 현재 경로의 반대 언어 경로 (언어 토글용)
 export function togglePath(pathname: string): string {
 	if (pathname.startsWith('/en')) {

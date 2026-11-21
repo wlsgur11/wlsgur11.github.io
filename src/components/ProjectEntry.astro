@@ -1,0 +1,166 @@
+---
+// 이력서식 프로젝트 항목: 제목 + 기간 | 역할 + 한 줄 설명 + 성과 불릿 + 기술(쉼표 나열) + 링크.
+// 화면 캡처가 있으면 오른쪽에 작은 썸네일. 홈(#projects)과 /projects 가 같이 쓴다.
+import type { CollectionEntry } from 'astro:content';
+import { type Lang, highlightHtml, localize, useTranslations } from '../i18n';
+
+interface Props {
+	p: CollectionEntry<'projects'>;
+	lang: Lang;
+}
+const { p, lang } = Astro.props;
+const t = useTranslations(lang);
+const en = lang === 'en';
+const pick = (ko: string, e?: string) => (en && e ? e : ko);
+const d = p.data;
+const href = localize(`/projects/${p.id}/`, lang);
+// 제목 'Code Place - 부산대 온라인 저지 플랫폼' 을 이름과 한 줄 설명으로 나눈다
+const [name, ...rest] = pick(d.title, d.titleEn).split(' - ');
+const line = rest.join(' - ');
+const period = en ? d.period.replace('진행 중', 'present') : d.period;
+// summary[0] 은 한 줄 설명과 겹쳐서 뺀다. 대표 수치 문장 + 나머지 2개.
+const summary = en && d.summaryEn.length ? d.summaryEn : d.summary;
+const hl = highlightHtml(d.highlight, lang);
+const points = summary.slice(1, 3);
+const ext = d.links.live ? { label: 'Live', url: d.links.live } : d.links.repo ? { label: 'GitHub', url: d.links.repo } : null;
+---
+
+<article class="entry">
+	<div class="entry-text">
+		<h3><a href={href}>{name}</a></h3>
+		<p class="entry-meta num">{period} <span class="sep">|</span> {pick(d.role, d.roleEn)}</p>
+		{line && <p class="entry-line">{line}</p>}
+		<ul class="entry-pts">
+			{hl && <li set:html={hl} />}
+			{points.map((b) => <li>{b}</li>)}
+		</ul>
+		<p class="entry-stack">{d.stack.join(', ')}</p>
+		<p class="entry-links">
+			{
+				ext && (
+					<a href={ext.url} target="_blank" rel="noopener">
+						{ext.label} ↗
+					</a>
+				)
+			}
+			<a href={href}>{t('viewDetail')}</a>
+		</p>
+	</div>
+	{
+		d.cover && (
+			<a class="entry-thumb" href={href} tabindex="-1" aria-hidden="true">
+				<img src={d.cover} alt="" width="800" height="500" loading="lazy" decoding="async" />
+			</a>
+		)
+	}
+</article>
+
+<style>
+	.entry {
+		display: flex;
+		align-items: flex-start;
+		gap: 1.5rem;
+	}
+	.entry + .entry {
+		margin-top: 2.5rem;
+	}
+	.entry-text {
+		flex: 1;
+		min-width: 0;
+	}
+	h3 {
+		font-family: var(--font-sans);
+		font-size: 1.1rem;
+		font-weight: 700;
+		letter-spacing: -0.01em;
+		margin: 0;
+	}
+	h3 a {
+		text-decoration: none;
+	}
+	.entry-meta {
+		margin: 0.15rem 0 0;
+		font-size: 0.86rem;
+		color: rgb(var(--gray));
+	}
+	.sep {
+		color: var(--line);
+	}
+	.entry-line {
+		margin: 0.4rem 0 0;
+		font-size: 0.95rem;
+		color: rgb(var(--black));
+	}
+	.entry-pts {
+		margin: 0.5rem 0 0;
+		padding-left: 1.1em;
+	}
+	.entry-pts li {
+		font-size: 0.93rem;
+		line-height: 1.65;
+		margin-bottom: 0.2rem;
+	}
+	.entry-pts li::marker {
+		color: rgb(var(--gray));
+	}
+	.entry-pts :global(strong) {
+		color: rgb(var(--black));
+	}
+	.entry-stack {
+		margin: 0.55rem 0 0;
+		font-size: 0.84rem;
+		line-height: 1.55;
+		color: rgb(var(--gray));
+	}
+	.entry-links {
+		display: flex;
+		gap: 1.25rem;
+		margin: 0.5rem 0 0;
+		font-size: 0.86rem;
+		font-weight: 600;
+	}
+	.entry-links a {
+		text-decoration: none;
+		color: rgb(var(--gray-dark));
+	}
+	.entry-links a:hover {
+		color: var(--accent);
+	}
+	/* 작은 화면 캡처: 1px 테두리, 로고 이미지도 잘리지 않게 contain */
+	.entry-thumb {
+		flex: 0 0 200px;
+		order: 2;
+		margin-top: 0.3rem;
+		aspect-ratio: 16 / 10;
+		background: var(--surface);
+		border: 1px solid var(--line);
+	}
+	.entry-thumb:hover {
+		border-color: rgb(var(--gray));
+	}
+	.entry-thumb img {
+		display: block;
+		width: 100%;
+		height: 100%;
+		object-fit: contain;
+	}
+	@media (max-width: 1100px) and (min-width: 900px) {
+		.entry-thumb {
+			flex-basis: 168px;
+		}
+	}
+	/* 좁은 화면: 썸네일이 글 위로 */
+	@media (max-width: 599px) {
+		.entry {
+			flex-direction: column;
+			gap: 0.9rem;
+		}
+		.entry-thumb {
+			order: -1;
+			flex: none;
+			width: 100%;
+			max-width: 22rem;
+			margin-top: 0;
+		}
+	}
+</style>

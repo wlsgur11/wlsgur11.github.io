@@ -38,7 +38,7 @@ const countLabel = (n: number) =>
 	</head>
 	<body>
 		<Header />
-		<main>
+		<main data-enter>
 			<header class="page-head">
 				<h1>{t('writing')}</h1>
 				<p class="post-count" data-base={countLabel(posts.length)}>{countLabel(posts.length)}</p>
@@ -59,7 +59,7 @@ const countLabel = (n: number) =>
 			<ul class="post-list">
 				{
 					posts.map((post) => (
-						<li data-tags={post.data.tags.join(' ')} data-reveal>
+						<li data-tags={post.data.tags.join(' ')}>
 							<FormattedDate date={post.data.pubDate} />
 							<div class="post-main">
 								<a class="post-link" href={localize(`/blog/${post.id}/`, lang)}>
@@ -93,8 +93,6 @@ const countLabel = (n: number) =>
 </html>
 
 <script>
-	import { ScrollTrigger } from 'gsap/ScrollTrigger';
-
 	// 뷰 전환 뒤에도 현재 DOM 을 보도록 매번 새로 찾는다.
 	function applyFilter(tag: string) {
 		let shown = 0;
@@ -111,8 +109,6 @@ const countLabel = (n: number) =>
 		if (countEl) {
 			countEl.textContent = tag ? `${tag} | ${shown}` : (countEl.dataset.base ?? '');
 		}
-		// 행 위치가 바뀌었으니 등장 트리거 위치를 다시 계산 (안 하면 보이는 행이 숨은 채 남을 수 있음)
-		ScrollTrigger.refresh();
 	}
 
 	document.addEventListener('click', (e) => {
@@ -131,13 +127,11 @@ const countLabel = (n: number) =>
 		padding-top: 1.5rem;
 	}
 	.page-head h1 {
-		font-size: 2.6rem;
 		margin-bottom: 0.2rem;
 	}
 	.post-count,
 	.notice {
-		font-family: var(--font-mono);
-		font-size: 0.8rem;
+		font-size: 0.86rem;
 		color: rgb(var(--gray));
 		margin: 0;
 	}
@@ -157,8 +151,8 @@ const countLabel = (n: number) =>
 		scroll-margin-top: calc(var(--header-h) + 1rem);
 	}
 	.tag-chip {
-		font-family: var(--font-mono);
-		font-size: 0.75rem;
+		font-family: inherit;
+		font-size: 0.78rem;
 		line-height: 1.5;
 		padding: 0.25em 0.65em;
 		border: 1px solid var(--line);
@@ -201,8 +195,7 @@ const countLabel = (n: number) =>
 		display: none;
 	}
 	.post-list > li > :global(time) {
-		font-family: var(--font-mono);
-		font-size: 0.8rem;
+		font-size: 0.86rem;
 		color: rgb(var(--gray));
 		white-space: nowrap;
 	}
@@ -232,8 +225,7 @@ const countLabel = (n: number) =>
 	.post-project {
 		display: inline-block;
 		margin-top: 0.5rem;
-		font-family: var(--font-mono);
-		font-size: 0.75rem;
+		font-size: 0.82rem;
 		color: rgb(var(--gray));
 		text-decoration: none;
 	}
@@ -265,9 +257,6 @@ const countLabel = (n: number) =>
 		}
 	}
 	@media (max-width: 600px) {
-		.page-head h1 {
-			font-size: 2.1rem;
-		}
 		.post-list > li {
 			grid-template-columns: 1fr;
 			gap: 0.4rem;

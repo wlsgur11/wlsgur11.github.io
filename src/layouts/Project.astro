@@ -3,7 +3,7 @@ import type { CollectionEntry } from 'astro:content';
 import BaseHead from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
-import { type Lang, useTranslations } from '../i18n';
+import { type Lang, highlightHtml, useTranslations } from '../i18n';
 import { tabTitle } from '../consts';
 
 type Props = CollectionEntry<'projects'>['data'] & { lang?: Lang };
@@ -18,13 +18,18 @@ const {
 	period,
 	stack,
 	links,
-	logo,
 	cover,
 	highlight,
+	summary,
+	summaryEn,
 	lang = 'ko',
 } = Astro.props;
 const t = useTranslations(lang);
-const pick = (ko: string, en?: string) => (lang === 'en' && en ? en : ko);
+const en = lang === 'en';
+const pick = (ko: string, e?: string) => (en && e ? e : ko);
+// 요약 불릿: 대표 수치 문장 + summary[1..] (summary[0] 은 위 설명 문단과 겹친다)
+const hl = highlightHtml(highlight, lang);
+const points = (en && summaryEn.length ? summaryEn : summary).slice(1);
 ---
 
 <html lang={lang}>
@@ -33,39 +38,25 @@ const pick = (ko: string, en?: string) => (lang === 'en' && en ? en : ko);
 	</head>
 	<body>
 		<Header />
-		<main>
+		<main data-enter>
 			<article class="project">
 				<header class="project-head">
-					{cover && (
-						<figure class="proj-cover">
-							<img src={cover} alt="" width="800" height="500" />
-						</figure>
-					)}
-					{!cover && logo && (
-						<span class="proj-logo">
-							<img src={logo} alt="" width="56" height="56" />
-						</span>
-					)}
-					<p class="meta-line">{pick(role, roleEn)} <span class="sep">|</span> {period}</p>
+					<p class="meta-line num">
+						{en ? period.replace('진행 중', 'present') : period} <span class="sep">|</span> {pick(role, roleEn)}
+					</p>
 					<h1>{pick(title, titleEn)}</h1>
 					<p class="lead">{pick(description, descriptionEn)}</p>
 					{
-						highlight && (
-							<div class="proj-stat">
-								<span class="ps-fig">
-									<span class="ps-num">{highlight.value}</span>
-									{lang !== 'en' && highlight.unit && <span class="ps-unit">{highlight.unit}</span>}
-								</span>
-								<span class="ps-txt">
-									<span class="ps-label">{pick(highlight.label, highlight.labelEn)}</span>
-									{highlight.sub && <span class="ps-sub">{pick(highlight.sub, highlight.subEn)}</span>}
-								</span>
-							</div>
+						(hl || points.length > 0) && (
+							<ul class="points">
+								{hl && <li set:html={hl} />}
+								{points.map((b) => (
+									<li>{b}</li>
+								))}
+							</ul>
 						)
 					}
-					<ul class="tags">
-						{stack.map((s) => <li class="tag">{s}</li>)}
-					</ul>
+					<p class="stack">{stack.join(', ')}</p>
 					{
 						(links.repo || links.live) && (
 							<p class="links">
@@ -82,8 +73,15 @@ const pick = (ko: string, en?: string) => (lang === 'en' && en ? en : ko);
 							</p>
 						)
 					}
-					{lang === 'en' && t('koreanNotice') && <p class="notice">{t('koreanNotice')}</p>}
+					{en && t('koreanNotice') && <p class="notice">{t('koreanNotice')}</p>}
 				</header>
+				{
+					cover && (
+						<figure class="proj-cover">
+							<img src={cover} alt="" width="800" height="500" />
+						</figure>
+					)
+				}
 				<div class="prose">
 					<slot />
 				</div>
@@ -99,29 +97,66 @@ const pick = (ko: string, en?: string) => (lang === 'en' && en ? en : ko);
 		margin: 0 auto;
 	}
 	.project-head {
-		padding: 1.5rem 0 1.75rem;
-		margin-bottom: 2.25rem;
-		border-bottom: 1px solid var(--line);
+		padding: 1rem 0 0;
 	}
-	.proj-logo {
-		display: grid;
-		place-items: center;
-		width: 72px;
-		height: 72px;
-		margin-bottom: 1.25rem;
-		background: var(--surface);
-		border: 1px solid var(--line-soft);
+	.meta-line {
+		font-size: 0.86rem;
+		color: rgb(var(--gray));
+		margin: 0 0 0.5rem;
 	}
-	.proj-logo img {
-		width: 48px;
-		height: 48px;
-		padding: 4px;
-		object-fit: contain;
-		background: #fff;
+	.sep {
+		color: var(--line);
 	}
-	/* 화면 캡처: 16:10, 캡처가 아닌 로고 이미지도 잘리지 않게 contain */
+	.project-head h1 {
+		font-size: clamp(1.7rem, 1.35rem + 1.4vw, 2.1rem);
+		line-height: 1.3;
+		margin: 0 0 0.8rem;
+		text-wrap: balance;
+	}
+	.lead {
+		font-size: 1.05rem;
+		margin: 0 0 1rem;
+	}
+	.points {
+		margin: 0 0 1rem;
+		padding-left: 1.1em;
+	}
+	.points li {
+		margin-bottom: 0.3rem;
+	}
+	.points li::marker {
+		color: rgb(var(--gray));
+	}
+	.points :global(strong) {
+		color: rgb(var(--black));
+	}
+	.stack {
+		margin: 0;
+		font-size: 0.88rem;
+		color: rgb(var(--gray));
+	}
+	.links {
+		display: flex;
+		gap: 1.5rem;
+		margin: 0.75rem 0 0;
+		font-size: 0.9rem;
+		font-weight: 600;
+	}
+	.links a {
+		color: rgb(var(--gray-dark));
+		text-decoration: none;
+	}
+	.links a:hover {
+		color: var(--accent);
+	}
+	.notice {
+		font-size: 0.85rem;
+		color: rgb(var(--gray));
+		margin: 1rem 0 0;
+	}
+	/* 화면 캡처 하나: 본문 앞, 1px 테두리. 로고 이미지도 잘리지 않게 contain */
 	.proj-cover {
-		margin: 0 0 1.75rem;
+		margin: 2rem 0 0;
 		aspect-ratio: 16 / 10;
 		background: var(--surface);
 		border: 1px solid var(--line);
@@ -132,91 +167,9 @@ const pick = (ko: string, en?: string) => (lang === 'en' && en ? en : ko);
 		height: 100%;
 		object-fit: contain;
 	}
-	/* 큰 숫자 띠 (홈 카드와 같은 문법) */
-	.proj-stat {
-		display: flex;
-		flex-wrap: wrap;
-		align-items: center;
-		gap: 0.5rem 1.25rem;
-		margin: 0 0 1.4rem;
-		padding: 1rem 1.2rem;
-		background: var(--surface);
-		border-left: 3px solid var(--accent);
-	}
-	.ps-fig {
-		display: flex;
-		align-items: baseline;
-		gap: 0.25rem;
-		white-space: nowrap;
-	}
-	.ps-num {
-		font-family: var(--font-mono);
-		font-weight: 700;
-		font-size: 2.5rem;
-		line-height: 1;
-		letter-spacing: -0.03em;
-		color: var(--accent);
-		font-variant-numeric: tabular-nums;
-	}
-	.ps-unit {
-		font-size: 1.1rem;
-		font-weight: 700;
-		color: rgb(var(--black));
-	}
-	.ps-txt {
-		display: flex;
-		flex-direction: column;
-		line-height: 1.45;
-	}
-	.ps-label {
-		font-weight: 700;
-		color: rgb(var(--black));
-	}
-	.ps-sub {
-		font-size: 0.88rem;
-		color: rgb(var(--gray-dark));
-	}
-	.meta-line {
-		font-family: var(--font-mono);
-		font-size: 0.78rem;
-		color: rgb(var(--gray));
-		margin: 0 0 0.6rem;
-	}
-	.sep {
-		color: var(--line);
-	}
-	.project-head h1 {
-		font-size: clamp(1.9rem, 1.3rem + 2vw, 2.5rem);
-		font-weight: 800;
-		line-height: 1.28;
-		margin: 0 0 0.8rem;
-		text-wrap: balance;
-	}
-	.lead {
-		font-size: 1.1rem;
-		color: rgb(var(--gray-dark));
-		margin: 0 0 1.25rem;
-	}
-	.links {
-		display: flex;
-		gap: 1.5rem;
-		margin: 1.25rem 0 0;
-		font-family: var(--font-mono);
-		font-size: 0.85rem;
-	}
-	.links a {
-		text-decoration: none;
-		font-weight: 500;
-	}
-	.links a:hover {
-		text-decoration: underline;
-	}
-	.notice {
-		display: inline-block;
-		font-size: 0.85rem;
-		color: rgb(var(--gray-dark));
-		margin: 1.1rem 0 0;
-		padding: 0.45rem 0.8rem;
-		border: 1px solid var(--line);
+	.prose {
+		margin-top: 2.25rem;
+		padding-top: 2rem;
+		border-top: 1px solid var(--line);
 	}
 </style>
