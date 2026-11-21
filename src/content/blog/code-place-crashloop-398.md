@@ -1,6 +1,6 @@
 ---
-title: '운영 파드가 398번 재시작한 이유 - liveness probe와 이미지 릴리즈 스큐'
-titleEn: 'Why a production pod restarted 398 times - a liveness probe vs image release skew'
+title: '헬스 체크 Probe와 이미지 릴리스 스큐에 의한 반복 재시작: Kubernetes 운영 파드 398회 재시작 사례 분석'
+titleEn: 'Repeated Restarts from Health Probes and Image Release Skew: A Case Study of 398 Restarts of a Production Kubernetes Pod'
 description: '멀쩡히 살아 있는데 재시작 398회. kubectl logs → describe → replicaset → git → exec로 계층을 좁혀, 헬스체크 경로를 그 경로가 없는 이미지에 먼저 배포한 릴리즈 스큐를 찾아냈다. 스큐를 만든 건 이미지 빌드만 건너뛴 CI였다.'
 descriptionEn: 'Restarting 398 times while the app booted fine. Narrowing from kubectl logs → describe → replicaset → git → exec to find a health-check path deployed before the image that served it, and the CI run that skipped the image build but still shipped the manifest.'
 pubDate: 2026-06-11

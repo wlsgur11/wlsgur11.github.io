@@ -95,7 +95,7 @@ draft: false
 
 GitHub Contents API에는 파일 잠금 기능이 없습니다. 서버도 두지 않기로 했기 때문에, 저장소 자체를 분산 락 매니저로 활용했습니다. `.locks/{문서ID}.lock.json` 파일을 커밋해 잠금을 표현하고, 5분마다 heartbeat로 갱신, 15분간 갱신이 없으면 죽은 락으로 보고 자동 인수해 크래시를 복구합니다. 락 관련 커밋에는 `[skip ci]`를 붙이고 워크플로에도 `paths-ignore: ['.locks/**']`를 걸어, 조율용 트래픽이 사이트 배포를 일으키지 않도록 컨트롤 플레인과 데이터 플레인을 분리했습니다.
 
-→ 자세히: [git 커밋으로 만든 서버 없는 분산 편집 잠금(Soft Lock)](/blog/pnu-modu-soft-lock/)
+→ 자세히: [Git 커밋 기반 서버리스 분산 편집 잠금(Soft Lock)의 설계와 구현](/blog/pnu-modu-soft-lock/)
 
 ### `:::` 디렉티브 DSL
 
@@ -163,7 +163,7 @@ strategy: StrategySection,
 
 저장 전에 결과물을 정확히 확인할 수 있어야 했지만, MDX는 빌드가 필요해 브라우저에서 즉시 렌더할 수 없습니다. 그래서 프리뷰를 별도 Docusaurus 라우트로 만들고 iframe + `postMessage`로 에디터와 연결했습니다. 프로덕션과 동일한 컴포넌트 트리를 `react-markdown`으로 실시간 렌더해 미리보기가 곧 배포물이 되게 했고, 프리뷰의 블록을 클릭하면 에디터의 해당 줄로 점프하고 더블클릭하면 그 자리에서 인라인 편집이 되도록 했습니다. 왼쪽 텍스트와 오른쪽 렌더 화면이 서로를 가리키고 고치는 이 **양방향 편집이, 비전공자가 마크다운을 의식하지 않게 만드는 이 프로젝트의 핵심 기능**입니다.
 
-→ 자세히: [마크다운 에디터와 미리보기를 양방향으로 잇기 - data-source-line과 postMessage](/blog/pnu-modu-bidirectional-wysiwyg/)
+→ 자세히: [마크다운 편집기와 렌더링 미리보기의 양방향 위치 동기화: data-source-line과 postMessage 기반 설계](/blog/pnu-modu-bidirectional-wysiwyg/)
 
 ### A4 PDF / 인쇄 시스템
 
@@ -179,8 +179,8 @@ strategy: StrategySection,
 
 각 사건은 따라 하며 재현할 수 있게 정리하고 있습니다.
 
-- **[마크다운 에디터와 미리보기를 양방향으로 잇기 - data-source-line과 postMessage](/blog/pnu-modu-bidirectional-wysiwyg/)** - 이 프로젝트의 핵심. `data-source-line` 매핑과 `postMessage`로 렌더 화면과 원본을 양방향으로 잇고, 마크다운 문법을 잃지 않고 알맹이만 갈아끼운 과정.
-- **[git 커밋으로 만든 서버 없는 분산 편집 잠금(Soft Lock)](/blog/pnu-modu-soft-lock/)** - Contents API에 락이 없어, `.locks` 커밋과 heartbeat/TTL로 동시 편집 충돌을 푼 과정.
+- **[마크다운 편집기와 렌더링 미리보기의 양방향 위치 동기화: data-source-line과 postMessage 기반 설계](/blog/pnu-modu-bidirectional-wysiwyg/)** - 이 프로젝트의 핵심. `data-source-line` 매핑과 `postMessage`로 렌더 화면과 원본을 양방향으로 잇고, 마크다운 문법을 잃지 않고 알맹이만 갈아끼운 과정.
+- **[Git 커밋 기반 서버리스 분산 편집 잠금(Soft Lock)의 설계와 구현](/blog/pnu-modu-soft-lock/)** - Contents API에 락이 없어, `.locks` 커밋과 heartbeat/TTL로 동시 편집 충돌을 푼 과정.
 
 > DSL 파이프라인(`:::` 디렉티브), 인쇄 CSS(A4 PDF), 캐시 우회 읽기 등 나머지 케이스스터디는 이어서 작성 중입니다.
 

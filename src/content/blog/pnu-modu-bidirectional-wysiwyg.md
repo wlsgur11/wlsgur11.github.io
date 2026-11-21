@@ -1,6 +1,6 @@
 ---
-title: '마크다운 에디터와 미리보기를 양방향으로 잇기 - data-source-line과 postMessage'
-titleEn: 'A two-way Markdown WYSIWYG - data-source-line and postMessage'
+title: '마크다운 편집기와 렌더링 미리보기의 양방향 위치 동기화: data-source-line과 postMessage 기반 설계'
+titleEn: 'Bidirectional Position Synchronization between a Markdown Editor and Its Rendered Preview: A Design Based on data-source-line and postMessage'
 description: '비전공자가 마크다운 문법을 몰라도 쓰게 하려면, 왼쪽에 쓴 글이 오른쪽에 바로 보이고 오른쪽을 보고도 고칠 수 있어야 했다. 위지윅을 양방향으로 만들며 부딪힌 벽과 해결 과정.'
 descriptionEn: 'To let non-developers write without learning Markdown, the left editor and the right preview had to edit each other both ways. The walls I hit building a bidirectional WYSIWYG, and how I got past them.'
 pubDate: 2026-05-19

@@ -1,6 +1,6 @@
 ---
-title: 'Ollama에서 vLLM으로 - AI 조교 서빙을 동접 30명까지 끌어올리기'
-titleEn: 'From Ollama to vLLM - scaling an AI tutor to 30 concurrent users'
+title: '로컬 LLM 기반 AI 조교의 서빙 최적화: Ollama에서 vLLM으로의 전환과 동시 접속 부하 분석'
+titleEn: 'Serving Optimization for a Local-LLM AI Tutor: Migrating from Ollama to vLLM and Analyzing Concurrent Load'
 description: 'codellama에서 Qwen3.6까지, Ollama에서 vLLM까지. Locust 부하 테스트로 매 단계를 실측하며 로컬 LLM AI 조교를 3초 안에 답하는 서비스로 만든 과정과, 그 사이 내린 모델 선택의 이유.'
 descriptionEn: 'From codellama to Qwen3.6, from Ollama to vLLM. Measuring every step with Locust to make a local-LLM AI tutor answer within 3 seconds - and the model decisions along the way.'
 pubDate: 2026-04-05
@@ -167,7 +167,7 @@ codellama의 출력 품질이 아쉬웠으니, 코드에 특화된 모델을 써
 
 문제는 VRAM이다. 35B 가중치를 5090의 32GB에 올려야 했다. 그래서 NVFP4(4비트 부동소수점 양자화)를 쓴다. `nvidia/Qwen3.6-35B-A3B-NVFP4`는 NVFP4 모델이라 RTX 5090 같은 Blackwell GPU의 FP4 지원을 전제로 한다. 4비트로 눌러 담아야 35B가 32GB 안에 들어온다.
 
-Qwen3.6으로 바꾼 뒤의 부하 실측은 이 글에 넣지 않았다. 실서비스 배포본에 실제 힌트 페이로드를 걸어 다시 잰 결과는 [AI 조교 부하 테스트를 다시](/blog/code-place-ai-tutor-prefix-cache/)에 따로 적었다.
+Qwen3.6으로 바꾼 뒤의 부하 실측은 이 글에 넣지 않았다. 실서비스 배포본에 실제 힌트 페이로드를 걸어 다시 잰 결과는 [실서비스 페이로드 기반 AI 조교 재평가](/blog/code-place-ai-tutor-prefix-cache/)에 따로 적었다.
 
 ## 최종 서빙 설정 (vLLM v0.24.0)
 
@@ -184,7 +184,7 @@ vllm serve nvidia/Qwen3.6-35B-A3B-NVFP4 \
   --enable-chunked-prefill
 ```
 
-처음 이 글을 쓸 때는 저장소 매니페스트에 적힌 `--max-model-len 4096`을 그대로 옮겼다. 그런데 실제 배포본은 32768로 돌고 있었다. 힌트 요청 컨텍스트가 실측 약 3천 토큰이라 4096은 빠듯하다. 저장소와 배포가 어긋나 있던 이 값은 [도메인 하나가 만료됐고, 미뤄둔 것들이 전부 튀어나왔다](/blog/code-place-domain-expiry-and-drift/)에서 저장소 쪽을 32768로 고쳐 맞췄다.
+처음 이 글을 쓸 때는 저장소 매니페스트에 적힌 `--max-model-len 4096`을 그대로 옮겼다. 그런데 실제 배포본은 32768로 돌고 있었다. 힌트 요청 컨텍스트가 실측 약 3천 토큰이라 4096은 빠듯하다. 저장소와 배포가 어긋나 있던 이 값은 [도메인 만료를 계기로 드러난 저장소와 클러스터 간 구성 드리프트 분석](/blog/code-place-domain-expiry-and-drift/)에서 저장소 쪽을 32768로 고쳐 맞췄다.
 
 - `--kv-cache-dtype fp8 --calculate-kv-scales` - KV 캐시를 8비트로 저장해 VRAM을 아끼고, 스케일을 계산해 정확도 손실을 줄인다.
 - `--enable-prefix-caching` - 공통 시스템 프롬프트의 KV를 재사용.

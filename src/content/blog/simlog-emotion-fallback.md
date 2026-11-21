@@ -1,6 +1,6 @@
 ---
-title: 'GPT는 언젠가 실패한다 - 감정 분석에 폴백을 깐 이유'
-titleEn: 'The LLM will fail eventually - why I put a fallback under emotion analysis'
+title: 'LLM 기반 감정 분석의 실패 대응 설계: 응답 파싱 다단화와 키워드 폴백'
+titleEn: 'Failure-tolerant Design for LLM-based Emotion Analysis: Multi-stage Response Parsing and Keyword Fallback'
 description: 'GPT-4o mini로 일기 감정을 분석하는 게 앱의 정중앙 기능이었다. 그런데 클라이언트가 안 뜨고, JSON을 달라 해도 JSON이 아닌 게 왔다. LLM 응답을 신뢰할 인프라로 취급하지 않기로 한 기록.'
 descriptionEn: 'Emotion analysis with GPT-4o mini was the core of the app. But the client failed to init, and asking for JSON did not guarantee JSON. How I stopped treating an LLM response as reliable infrastructure.'
 pubDate: 2025-08-14

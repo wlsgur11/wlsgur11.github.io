@@ -1,6 +1,6 @@
 ---
-title: 'WAL 폭주로 디스크가 찼다 - CNPG/Longhorn 클러스터 복구기'
-titleEn: 'A WAL runaway filled the disk - recovering a CNPG/Longhorn cluster'
+title: 'Replication Slot에 의한 WAL 누적과 PostgreSQL 클러스터 장애: CNPG/Longhorn 환경의 복구와 데이터 유실 분석'
+titleEn: 'WAL Accumulation through Replication Slots and PostgreSQL Cluster Failure: Recovery and Data Loss in a CNPG/Longhorn Environment'
 description: 'WAL이 디스크를 채워 PostgreSQL이 뜨지 않았다. 원인은 저용량 노드의 죽은 standby가 replication slot으로 WAL을 붙잡은 것, 방아쇠는 내가 한 강제 재부팅. 클러스터는 계층별로 나눠 복구했지만 백업이 없어 2주치 데이터를 되돌리지 못했고, 한 강의는 재시험을 치렀다.'
 descriptionEn: 'WAL filled the disk and PostgreSQL would not start. A dead standby had pinned WAL through its replication slot, and my forced reboot pulled the trigger. The cluster came back through a layered recovery, but with no backups two weeks of data stayed lost and one course had to retake an exam.'
 pubDate: 2026-04-27
@@ -116,4 +116,4 @@ replication slot은 standby를 지키려고 WAL을 붙잡지만, standby가 영�
 
 CNPG도 Longhorn도 많은 걸 자동화하지만, 복구할 때는 "리소스가 존재한다"와 "오퍼레이터가 정상 후보로 재채택한다"를 나눠 봐야 했다. 오퍼레이터가 내놓는 상태 메시지는 원인보다 결과인 경우가 많았다.
 
-같은 클러스터에서 겪은 다른 장애는 [운영 파드가 398번 재시작한 이유](/blog/code-place-crashloop-398/)에, 9월에 DB 복제본 하나가 타임라인 분기로 하루 넘게 죽어 있던 일은 [도메인 하나가 만료됐고, 미뤄둔 것들이 전부 튀어나왔다](/blog/code-place-domain-expiry-and-drift/)에 따로 적어 뒀다.
+같은 클러스터에서 겪은 다른 장애는 [헬스 체크 Probe와 이미지 릴리스 스큐에 의한 반복 재시작](/blog/code-place-crashloop-398/)에, 9월에 DB 복제본 하나가 타임라인 분기로 하루 넘게 죽어 있던 일은 [도메인 만료를 계기로 드러난 저장소와 클러스터 간 구성 드리프트 분석](/blog/code-place-domain-expiry-and-drift/)에 따로 적어 뒀다.

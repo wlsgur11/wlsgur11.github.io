@@ -1,6 +1,6 @@
 ---
-title: '로그인만 안 됐다 - DNS는 되는데 나가지 못한 컨테이너'
-titleEn: 'Only login was broken - a container that resolved DNS but could not get out'
+title: 'DNS 해석은 성공하나 외부 연결에 실패하는 컨테이너의 Egress 장애 분석: Docker 네트워크와 NAT 규칙을 중심으로'
+titleEn: 'Egress Failure in a Container with Working DNS Resolution: An Analysis Focused on Docker Networking and NAT Rules'
 description: '구글 로그인만 "server configuration" 에러로 막혔다. 원인은 콜백 등록이 아니라 컨테이너가 밖으로 못 나가는 것이었고, DNS는 되는데 연결만 안 되는 상태였다. env - prisma - ufw - MTU - docker0 대 compose 브리지로 계층을 좁혀 NAT 유실을 찾고, 결국 clean 재부팅으로 엉킨 iptables 상태를 정리한 기록.'
 descriptionEn: 'Only Google login failed with a server-configuration error. The cause was not callback registration but a container that could not reach the internet - it resolved DNS but could not connect. Narrowing through env, prisma, ufw, MTU, and docker0 vs the compose bridge to find a lost NAT rule, then clearing tangled iptables state with a clean reboot.'
 pubDate: 2026-07-17
@@ -169,4 +169,4 @@ accounts 200 | token 400
 
 반성할 점도 있다. ufw, 도커, 수동 룰, 반복 재시작으로 iptables를 여러 방식으로 건드린 뒤에 한 호스트는 되고 다른 호스트는 timeout 나는 부분 실패가 남았다. 그 조작들과 관계가 있다고 보지만, 재부팅으로 덮으면서 원인은 모른 채 끝났다. 그리고 `up -d db`처럼 단일 서비스만 다시 띄우면 app이 옛 네트워크에 남을 수 있어서, 네트워크가 걸린 변경은 `up -d`로 전체를 올리기로 했다.
 
-앞선 온프레미스 이전 기록은 [학생 데이터를 교내로](/blog/pnuaicms-cloud-to-onprem/)에, 같은 서버의 PSU 고장 복구는 그 글의 [이전 뒤 첫 하드웨어 장애](/blog/pnuaicms-cloud-to-onprem/#이전-뒤-첫-하드웨어-장애) 단락에 적어 뒀다.
+앞선 온프레미스 이전 기록은 [클라우드에서 교내 온프레미스 환경으로의 학생 데이터 이전](/blog/pnuaicms-cloud-to-onprem/)에, 같은 서버의 PSU 고장 복구는 그 글의 [이전 뒤 첫 하드웨어 장애](/blog/pnuaicms-cloud-to-onprem/#이전-뒤-첫-하드웨어-장애) 단락에 적어 뒀다.

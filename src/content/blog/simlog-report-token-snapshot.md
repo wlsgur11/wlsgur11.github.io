@@ -1,6 +1,6 @@
 ---
-title: '링크 하나가 곧 열쇠였다 - 7일 일기 요약을 안전하게 공유하기'
-titleEn: 'The link itself was the key - sharing a 7-day journal summary safely'
+title: '링크 기반 공유의 접근 제어 설계: 해시 토큰과 시점 스냅샷을 이용한 일기 요약 공유'
+titleEn: 'Access Control for Link-based Sharing: Sharing Journal Summaries with Hashed Tokens and Point-in-time Snapshots'
 description: '부정 감정이 오래 이어진 사용자의 7일 일기를 상담사에게 넘겨야 했다. 상담사는 앱 계정이 없으니 링크만으로 열려야 했고, 그래서 링크가 곧 자격증명이 됐다. 토큰을 해시로만 저장하고 스냅샷으로 굳힌 이야기.'
 descriptionEn: 'I had to hand a struggling user’s 7-day journal to a counselor who has no app account - so the link itself became the credential. Storing only a token hash and freezing the data into a snapshot.'
 pubDate: 2025-08-11

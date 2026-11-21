@@ -1,6 +1,6 @@
 ---
-title: 'AI 조교 부하 테스트를 다시 - prefix cache가 만든 속도, 그리고 부하 속에서 잰 품질'
-titleEn: 'Re-load-testing the AI tutor - the speed prefix cache buys, and measuring quality under load'
+title: '실서비스 페이로드 기반 AI 조교 재평가: Prefix Cache의 지연 시간 효과와 부하 조건의 응답 품질'
+titleEn: 'Re-evaluating an AI Tutor with Production Payloads: Latency Effects of Prefix Caching and Response Quality under Load'
 description: '로컬이 아닌 실서비스 배포본에, 실제 힌트 페이로드 그대로. 모델을 Qwen3.6로 바꾼 뒤 다시 부하를 걸며 prefix cache가 TTFT의 대부분을 만든다는 걸 캐시 유무 비교로 확인하고, 형식 준수율까지 자동으로 쟀다.'
 descriptionEn: 'Against the deployed prod vLLM, with the real hint payload. After swapping to Qwen3.6 I load-tested again, isolated how much of TTFT prefix cache buys by turning it on and off, and scored format compliance automatically.'
 pubDate: 2026-08-14
@@ -13,7 +13,7 @@ draft: false
 
 ## 왜 또 부하 테스트인가
 
-[Code Place](/projects/code-place/) AI 조교는 지난 [Ollama에서 vLLM으로](/blog/code-place-ai-tutor-load-test/) 글에서 동접 30명 평균 2.9초까지 끌어올려 놨다. 그 뒤로 모델이 두 번 더 바뀌었다. Qwen2.5-Coder-7B-Instruct(dense 7B)에서 Qwen3.5-9B를 거쳐 Qwen3.6-35B-A3B-NVFP4로. 전체 35B짜리 MoE인데 토큰마다 활성화되는 파라미터는 약 3B고, NVFP4 4bit 양자화로 35B 가중치를 RTX 5090(Blackwell, FP4를 하드웨어로 지원)에 얹었다.
+[Code Place](/projects/code-place/) AI 조교는 지난 [로컬 LLM 기반 AI 조교의 서빙 최적화](/blog/code-place-ai-tutor-load-test/) 글에서 동접 30명 평균 2.9초까지 끌어올려 놨다. 그 뒤로 모델이 두 번 더 바뀌었다. Qwen2.5-Coder-7B-Instruct(dense 7B)에서 Qwen3.5-9B를 거쳐 Qwen3.6-35B-A3B-NVFP4로. 전체 35B짜리 MoE인데 토큰마다 활성화되는 파라미터는 약 3B고, NVFP4 4bit 양자화로 35B 가중치를 RTX 5090(Blackwell, FP4를 하드웨어로 지원)에 얹었다.
 
 모델을 바꿨으면 다시 재야 한다. 그런데 지난 테스트에는 마음에 걸리는 게 둘 있었다.
 

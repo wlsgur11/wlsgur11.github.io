@@ -159,9 +159,9 @@ Caddy ─HTTPS▶ aicms.pusan.ac.kr
 
 이 프로젝트에서 어려웠던 건 화면이 아니라 그 뒤였습니다. 비표준 엑셀을 안정적으로 읽는 것, 흩어진 데이터를 서로 참조하는 그래프로 잇는 것, 그리고 클라우드가 대신 해 주던 운영 조건을 직접 세우는 것. 각 사건은 따라 하며 재현할 수 있게 블로그로 정리했습니다.
 
-- **[멀쩡한 코드를 고쳐서 깨뜨렸다 - 정규식 xlsx 파서의 self-closing 셀](/blog/pnuaicms-xlsx-self-closing-cell/)** - 정규식 기반 xlsx 리더가 self-closing 빈 셀을 여는 태그로 오인해 옆 칸 값을 흡수하던 오프셋. "off-by-one"으로 착각해 고친 커밋이 오히려 회귀를 만든 과정을 DB 조회와 두 파서 비교로 좁혀 되돌린 기록.
-- **[Vercel/Supabase에서 온프레미스로 - 학생 데이터를 교내 서버로 이전하기](/blog/pnuaicms-cloud-to-onprem/)** - DB 비밀번호의 `@`가 libpq 파싱을 막고, 인증서 실패의 원인이 서버가 아니라 캠퍼스 방화벽이었으며, self-hosted Auth.js의 `AUTH_TRUST_HOST`와 엉뚱한 구글 프로젝트에 있던 OAuth 클라이언트까지 되짚은 이전기. 이전 뒤 PSU 고장으로 서버가 꺼졌을 때 복구 전에 데이터 손실 범위부터 따지고, 백업이 전부 같은 디스크에 있었다는 걸 알게 된 일은 같은 글의 [이전 뒤 첫 하드웨어 장애](/blog/pnuaicms-cloud-to-onprem/#이전-뒤-첫-하드웨어-장애) 단락에 덧붙였습니다.
-- **[로그인만 안 됐다 - DNS는 되는데 나가지 못한 컨테이너](/blog/pnuaicms-docker-egress-login/)** - 구글 로그인만 "server configuration" 에러로 막힌 원인이 콜백 등록이 아니라 컨테이너 egress 유실(DNS는 되는데 연결 안 됨)이었던 장애. env, prisma, ufw, MTU, docker0 대 compose 브리지로 좁혀 NAT 유실을 찾고, 엉킨 iptables는 clean 재부팅으로 정리했다.
+- **[정규식 기반 XLSX 파서의 Self-closing 셀 처리 결함과 회귀 분석](/blog/pnuaicms-xlsx-self-closing-cell/)** - 정규식 기반 xlsx 리더가 self-closing 빈 셀을 여는 태그로 오인해 옆 칸 값을 흡수하던 오프셋. "off-by-one"으로 착각해 고친 커밋이 오히려 회귀를 만든 과정을 DB 조회와 두 파서 비교로 좁혀 되돌린 기록.
+- **[클라우드(Vercel/Supabase)에서 교내 온프레미스 환경으로의 학생 데이터 이전: 절차, 장애 요인, 검증](/blog/pnuaicms-cloud-to-onprem/)** - DB 비밀번호의 `@`가 libpq 파싱을 막고, 인증서 실패의 원인이 서버가 아니라 캠퍼스 방화벽이었으며, self-hosted Auth.js의 `AUTH_TRUST_HOST`와 엉뚱한 구글 프로젝트에 있던 OAuth 클라이언트까지 되짚은 이전기. 이전 뒤 PSU 고장으로 서버가 꺼졌을 때 복구 전에 데이터 손실 범위부터 따지고, 백업이 전부 같은 디스크에 있었다는 걸 알게 된 일은 같은 글의 [이전 뒤 첫 하드웨어 장애](/blog/pnuaicms-cloud-to-onprem/#이전-뒤-첫-하드웨어-장애) 단락에 덧붙였습니다.
+- **[DNS 해석은 성공하나 외부 연결에 실패하는 컨테이너의 Egress 장애 분석: Docker 네트워크와 NAT 규칙을 중심으로](/blog/pnuaicms-docker-egress-login/)** - 구글 로그인만 "server configuration" 에러로 막힌 원인이 콜백 등록이 아니라 컨테이너 egress 유실(DNS는 되는데 연결 안 됨)이었던 장애. env, prisma, ufw, MTU, docker0 대 compose 브리지로 좁혀 NAT 유실을 찾고, 엉킨 iptables는 clean 재부팅으로 정리했다.
 
 ## 배운 점
 

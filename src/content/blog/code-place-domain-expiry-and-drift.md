@@ -1,6 +1,6 @@
 ---
-title: '도메인 하나가 만료됐고, 미뤄둔 것들이 전부 튀어나왔다'
-titleEn: 'One expired domain, and everything I had put off came out at once'
+title: '도메인 만료를 계기로 드러난 저장소와 클러스터 간 구성 드리프트 분석'
+titleEn: 'Configuration Drift between Repository and Cluster, Exposed by a Domain Expiry'
 description: '릴리즈를 하려다 두 달치 브랜치 충돌을 만났고, 그 와중에 도메인이 만료돼 CI와 인증 서버가 함께 멈췄다. 이틀에 걸쳐 도메인을 이전하고, 저장소와 서버가 어긋나 있던 자리들을 하나씩 맞춘 기록.'
 descriptionEn: 'A release attempt ran into two months of branch conflicts, then the domain expired and took CI and the auth server down with it. Two days of migrating the domain and reconciling every place where the repo and the running cluster had drifted apart.'
 pubDate: 2026-09-03
@@ -358,4 +358,4 @@ Git 충돌은 덩어리 수에 압도되기 쉬운데, 읽기 전에 어느 쪽�
 
 남은 과제는 따로 적어뒀다. postgres 리소스 제한 기준을 dev와 prod 같이 정하는 것, Harbor에 읽기 전용 robot 계정을 만들어 pull 계정을 분리하는 것, `#761`이나 `#762`처럼 저장소에만 있고 클러스터에 반영 안 된 helm 설정을 맞추는 것. 릴리즈 후 백머지를 자동화하는 워크플로도 초안까지는 만들었는데 이번엔 넣지 않기로 했다.
 
-이전에 쓴 [WAL 폭주로 디스크가 찼다](/blog/code-place-cnpg-wal-data-loss/)와 [운영 파드가 398번 재시작한 이유](/blog/code-place-crashloop-398/)도 결국 같은 계열이다. 코드만 봐서는 안 보이고, 실제로 돌아가는 것과 적혀 있는 것을 나란히 놓고 봐야 보이는 문제들.
+이전에 쓴 [Replication Slot에 의한 WAL 누적과 PostgreSQL 클러스터 장애](/blog/code-place-cnpg-wal-data-loss/)와 [헬스 체크 Probe와 이미지 릴리스 스큐에 의한 반복 재시작](/blog/code-place-crashloop-398/)도 결국 같은 계열이다. 코드만 봐서는 안 보이고, 실제로 돌아가는 것과 적혀 있는 것을 나란히 놓고 봐야 보이는 문제들.

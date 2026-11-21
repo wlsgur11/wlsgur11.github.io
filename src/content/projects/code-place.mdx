@@ -91,11 +91,11 @@ draft: false
 
 각 사건은 따라 하며 재현할 수 있게 블로그 글로 정리했습니다.
 
-- **[Ollama에서 vLLM으로 - AI 조교 서빙을 동접 30명까지 끌어올리기](/blog/code-place-ai-tutor-load-test/)** - Ollama에서 vLLM까지, Locust 실측으로 서빙을 최적화한 전 과정과 모델 선택.
+- **[로컬 LLM 기반 AI 조교의 서빙 최적화: Ollama에서 vLLM으로의 전환과 동시 접속 부하 분석](/blog/code-place-ai-tutor-load-test/)** - Ollama에서 vLLM까지, Locust 실측으로 서빙을 최적화한 전 과정과 모델 선택.
 - **[AI 조교 부하 테스트를 다시 - prefix cache가 만든 속도, 부하 속 품질](/blog/code-place-ai-tutor-prefix-cache/)** - 모델 교체 후 실서비스 배포본을 실제 힌트 페이로드로 재검증. 캐시를 껐다 켜 TTFT 착시를 걷어내고 형식 준수율까지 자동 측정.
-- **[도메인 하나가 만료됐고, 미뤄둔 것들이 전부 튀어나왔다](/blog/code-place-domain-expiry-and-drift/)** - 두 달치 브랜치 충돌 해소, 만료된 도메인의 전면 이전, 릴리즈 무중단 배포, DB 복제본 복구까지. 저장소와 실제 클러스터가 어긋난 자리를 전부 맞춘 이틀.
-- **[WAL 폭주로 디스크가 찼다 - CNPG/Longhorn 클러스터 복구기](/blog/code-place-cnpg-wal-data-loss/)** - 죽은 standby의 replication slot이 WAL로 디스크를 채운 장애를 계층별로 복구.
-- **[운영 파드가 398번 재시작한 이유 - liveness probe와 이미지 릴리즈 스큐](/blog/code-place-crashloop-398/)** - probe와 이미지의 릴리즈 스큐를 산술로 검증하며 근본 원인까지.
+- **[도메인 만료를 계기로 드러난 저장소와 클러스터 간 구성 드리프트 분석](/blog/code-place-domain-expiry-and-drift/)** - 두 달치 브랜치 충돌 해소, 만료된 도메인의 전면 이전, 릴리즈 무중단 배포, DB 복제본 복구까지. 저장소와 실제 클러스터가 어긋난 자리를 전부 맞춘 이틀.
+- **[Replication Slot에 의한 WAL 누적과 PostgreSQL 클러스터 장애: CNPG/Longhorn 환경의 복구와 데이터 유실 분석](/blog/code-place-cnpg-wal-data-loss/)** - 죽은 standby의 replication slot이 WAL로 디스크를 채운 장애를 계층별로 복구.
+- **[헬스 체크 Probe와 이미지 릴리스 스큐에 의한 반복 재시작: Kubernetes 운영 파드 398회 재시작 사례 분석](/blog/code-place-crashloop-398/)** - probe와 이미지의 릴리즈 스큐를 산술로 검증하며 근본 원인까지.
 
 ## 배운 점
 

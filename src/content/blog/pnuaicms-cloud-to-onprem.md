@@ -1,6 +1,6 @@
 ---
-title: 'Vercel/Supabase에서 온프레미스로 - 학생 데이터를 교내 서버로 이전하기'
-titleEn: 'From Vercel/Supabase to on-prem - migrating student data to a campus server'
+title: '클라우드(Vercel/Supabase)에서 교내 온프레미스 환경으로의 학생 데이터 이전: 절차, 장애 요인, 검증'
+titleEn: 'Migrating Student Data from Cloud (Vercel/Supabase) to an On-premises Campus Server: Procedure, Failure Factors, and Verification'
 description: '실서비스 CMS를 클라우드(Vercel + Supabase)에서 교내 물리 서버로 옮겼다. DB 덤프의 @ 비밀번호 함정, 인증서가 안 나오던 진짜 이유(서버가 아니라 캠퍼스 방화벽), self-hosted Auth.js의 UntrustedHost, 엉뚱한 구글 프로젝트에 있던 OAuth 클라이언트까지 - 이전 과정에서 걸린 함정들의 기록.'
 descriptionEn: 'Moved a production CMS off the cloud (Vercel + Supabase) onto an on-campus server. The @ in the DB password, why the TLS cert would not issue (the campus firewall, not the server), self-hosted Auth.js UntrustedHost, and an OAuth client living in the wrong Google project.'
 pubDate: 2026-06-30
@@ -112,4 +112,4 @@ DB 전환은 행 수 대조가 끝난 뒤에 했다. 서버의 `.env`를 `.env.s
 
 복구는 깔끔했지만, 이 일로 백업이 전부 같은 디스크에 있었다는 게 드러났다. 디스크가 죽었다면 매일 덤프도 같이 사라졌을 것이라, 최신 덤프와 환경 설정을 디스크 바깥에 한 벌 더 두는 걸 남은 일로 정했다.
 
-이 이전 뒤에 겪은 대시보드 파싱 회귀는 [멀쩡한 코드를 내가 고쳐서 깨뜨렸다](/blog/pnuaicms-xlsx-self-closing-cell/)에 따로 적었다.
+이 이전 뒤에 겪은 대시보드 파싱 회귀는 [정규식 기반 XLSX 파서의 Self-closing 셀 처리 결함과 회귀 분석](/blog/pnuaicms-xlsx-self-closing-cell/)에 따로 적었다.

@@ -1,6 +1,6 @@
 ---
-title: 'git 커밋으로 만든 서버 없는 분산 편집 잠금(Soft Lock)'
-titleEn: 'A serverless distributed edit lock built from git commits'
+title: 'Git 커밋 기반 서버리스 분산 편집 잠금(Soft Lock)의 설계와 구현'
+titleEn: 'Design and Implementation of a Serverless Distributed Edit Lock (Soft Lock) Based on Git Commits'
 description: 'GitHub Contents API에는 파일 잠금이 없다. 백엔드도 DB도 없이 여러 명이 같은 브로슈어를 편집하다 서로 덮어쓰는 문제를, .locks 커밋과 heartbeat로 풀어낸 기록.'
 descriptionEn: 'The GitHub Contents API has no file locking. Here is how I stopped concurrent editors from clobbering each other - no backend, no DB, just .locks commits and a heartbeat.'
 pubDate: 2026-05-16

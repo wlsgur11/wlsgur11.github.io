@@ -1,6 +1,6 @@
 ---
-title: '멀쩡한 코드를 고쳐서 깨뜨렸다 - 정규식 xlsx 파서의 self-closing 셀'
-titleEn: 'I broke working code by fixing it - self-closing cells in a regex xlsx parser'
+title: '정규식 기반 XLSX 파서의 Self-closing 셀 처리 결함과 회귀 분석'
+titleEn: 'Self-closing Cell Handling in a Regex-based XLSX Parser: A Defect and Regression Analysis'
 description: '대시보드에서 목표선이 전부 사라졌다. 범인은 며칠 전 내가 off-by-one 버그로 착각해 고친 커밋이었다. 정규식으로 xlsx를 파싱하던 리더가 self-closing 빈 셀을 여는 태그로 오인해 옆 칸 값을 흡수하고 있었고, 원래 코드는 그 동작에 맞아 있었다.'
 descriptionEn: 'The dashboard target lines vanished. The culprit was a commit I had made days earlier, "fixing" an off-by-one that was not one. Our regex xlsx reader absorbed a neighbor cell value through a self-closing empty tag, and the original code had been correct for exactly that reason.'
 pubDate: 2026-07-17
