@@ -1,0 +1,66 @@
+---
+title: 'AI역량지원시스템 - 학생 역량 관리 시스템'
+titleEn: 'AI Competency Support System - Student competency management'
+description: 'SW중심대학사업단과 부트캠프 사업단이 함께 쓰는 부산대 학생 역량 관리 시스템입니다. 2026년 8월부터 부트캠프 수강 신청, 이수 신청 기능 개발과 운영 장애 대응에 참여하고 있습니다.'
+descriptionEn: 'A student competency management system shared by the SW-Centered University program and the AI bootcamp program at Pusan National University. Since August 2026 I have built bootcamp enrollment and completion features and handled production incidents.'
+role: '부트캠프 기능 개발, 운영 대응 (개발 참여)'
+roleEn: 'Contributor: bootcamp features and production support'
+period: '2026.08 - 진행 중'
+logo: '/images/logos/pnu.png'
+cover: '/images/covers/swcss.webp'
+highlight:
+  value: '212'
+  unit: '건'
+  label: '부트캠프 수강 신청'
+  labelEn: 'Bootcamp enrollments'
+  sub: '이수 신청 64건, 이수증 발급 43건, 2026.10.31 기준'
+  subEn: '64 completion applications, 43 certificates, as of Oct 31, 2026'
+badge: '개발 참여'
+badgeEn: 'Contributor'
+summary:
+  - 'SW중심대학사업단과 부트캠프 사업단이 함께 쓰는 학생 역량 관리 시스템입니다(swcss.pusan.ac.kr). 회원 419명, 마일스톤 실적 승인 8,099건(2026.10.31 기준).'
+  - '부트캠프 수강 신청과 이수 신청을 맡아, 이수 심사의 서류 요청과 보완 흐름(학생 알림 포함), 수강 신청 페이지 개편과 메인 포스터 관리, 몰입형 과목 선택과 공고 노출 토글을 Spring Boot 서비스와 Next.js 화면 양쪽에서 구현했습니다.'
+  - '배포 뒤 과목 카탈로그 이관이 운영 DB에만 있던 6행에서 실패해 bootcamp-service가 기동할 때마다 죽던 장애를, 행을 지우는 대신 코드를 고치고 운영 행을 재현한 회귀 테스트를 붙여 복구했습니다.'
+summaryEn:
+  - 'A student competency management system shared by the SW-Centered University program and the AI bootcamp program (swcss.pusan.ac.kr): 419 members and 8,099 approved activity records as of Oct 31, 2026.'
+  - 'Built bootcamp enrollment and completion features across the Spring Boot service and the Next.js front end: a document request and resubmission flow with student notifications, a redesigned enrollment page with an admin-managed main poster, immersive course selection, and a visibility toggle for notices.'
+  - 'Recovered production after a course catalog migration crashed bootcamp-service on every start because of 6 rows that existed only in production; fixed the code instead of deleting the rows and added a regression test that reproduces them.'
+stack:
+  - Spring Boot 3
+  - Java
+  - Next.js 14
+  - TypeScript
+  - MySQL
+  - K3s
+  - Jest
+links:
+  live: 'https://swcss.pusan.ac.kr'
+featured: true
+group: 'major'
+order: 4
+draft: false
+---
+
+## 개요
+
+**AI역량지원시스템**은 부산대 SW중심대학사업단과 AI분야 첨단산업 인재양성 부트캠프 사업단이 함께 쓰는 학생 역량 관리 시스템입니다. 학생은 마일스톤 활동 실적을 제출하고, 부트캠프는 수강 신청부터 이수 신청, 이수증 발급까지 한곳에서 처리합니다. 관리자는 실적과 이수 신청을 온라인으로 심사합니다.
+
+- **서비스 주소**: [swcss.pusan.ac.kr](https://swcss.pusan.ac.kr)
+- **구조**: Next.js 14 프론트, 게이트웨이 뒤의 Spring Boot 3 기능별 서비스, MySQL, K3s
+- **규모(2026.10.31 기준)**: 회원 419명, 마일스톤 실적 승인 8,099건, 부트캠프 수강 신청 212건, 이수증 발급 43건
+- **역할**: 2026년 8월부터 부트캠프 기능 개발과 운영 장애 대응에 참여하고 있습니다. 시스템의 설계와 대부분의 개발은 기존 개발자가 했습니다.
+
+## 내가 맡은 일
+
+부트캠프 수강 신청, 이수 신청 화면과 그 뒤의 Spring Boot 부트캠프 서비스를 맡았습니다. 사업단에서 들어오는 수정 요청을 받아 상태 흐름과 API, 화면까지 한 번에 옮기는 일이 대부분이었습니다.
+
+- **이수 심사의 서류 요청과 보완**: 사전 신청 건은 관리자가 바로 승인하지 않고 [서류 요청]을 보내면, 학생이 서류를 보완 제출해 최종 심사로 넘어가도록 새 상태(`DOCUMENT_REQUESTED`)와 학생 알림을 추가했습니다. 상태를 문자열 컬럼에 저장하는 기존 방식을 그대로 써서 스키마 변경 없이 넣었습니다. 신청 기간이 지나면 사전 신청을 취소할 수 없던 버그도 함께 고쳤습니다.
+- **수강 신청 페이지 개편**: 3열 카드 목록, 질문마다 붙는 설명란, 신청 시작 전의 "접수대기" 상태(계산으로만 정해지는 상태라 관리자 상태 변경 API에서 거부), 관리자가 직접 바꾸는 메인 포스터(공개 조회와 관리자 변경 API, 단일 행 테이블)를 만들었습니다.
+- **과목 선택과 공고 관리**: 몰입형 과목 선택, 고급형 전용 인정 배치, 학생에게 공고를 숨기는 노출 토글, 이수 완료 과목의 수강 연도와 학기 입력을 넣었고, 이수증 PDF가 A4 한 쪽을 넘던 문제와 서류 ZIP의 한글 파일명 오류를 고쳤습니다.
+- **마일스톤 평가 기준 개편 참여**: 부트캠프 취업 가산과 창업 가산을 나누고, 기업 취업과 사업자등록증에 공통 300점 한도를 걸었습니다.
+
+## 운영에만 있던 6행
+
+과목 카탈로그를 통합하는 배포 뒤, 운영의 bootcamp-service가 기동할 때마다 카탈로그 이관에서 실패해 CrashLoopBackOff에 빠졌고 부트캠프 API가 전부 503을 돌려줬습니다. 개발 서버에서는 문제없이 통과한 배포였습니다.
+
+원인은 운영 DB에만 있던 이수 인정 과목 6행이었습니다. 이 행들이 몰입형 과목과 매칭되는데, 이관 코드가 몰입형 과목에 초급 단계 배치를 만들어 "과목 분류와 단계가 일치하지 않는다"는 검증에 걸렸습니다. 6행을 지우면 서비스는 바로 뜨지만 데이터를 코드에 맞추는 셈이라, 매칭된 과목이 몰입형이면 기존 배치 단계를 다시 쓰도록 이관 코드를 고쳤습니다. 운영 행을 그대로 재현한 회귀 테스트를 붙여 같은 데이터로 다시 깨지지 않게 했습니다.

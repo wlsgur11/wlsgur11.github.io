@@ -55,8 +55,8 @@ const sections = [
 const secLabel = (id: string) => L(sections.find((s) => s.id === id)!.label);
 
 const summary = {
-	ko: '부산대 교내 실서비스 4개(Code Place, PNUAICMS, AIPMS, Pickle)를 개발하거나 운영합니다. Code Place는 누적 가입 학생 <strong>932명</strong>, 누적 제출 <strong>51,070건</strong>이고, 직접 만든 로컬 LLM AI 조교는 동접 30명에서 평균 <strong>2.89초</strong>로 응답합니다(외부 AI API 비용 0원). 멀티 노드 K3s 클러스터를 운영하며 겪은 장애는 근본 원인까지 따라가 글로 남깁니다.',
-	en: 'I develop or operate four live services at Pusan National University (Code Place, PNUAICMS, AIPMS, Pickle). Code Place has <strong>932</strong> registered students and <strong>51,070</strong> submissions, and the local-LLM AI tutor I built answers in <strong>2.89 s</strong> on average with 30 concurrent users, at zero external AI API cost. I run a multi-node K3s cluster and write up production incidents down to their root cause.',
+	ko: '부산대 교내 실서비스 5개(Code Place, AIPMS, PNUAICMS, AI역량지원시스템, Pickle)를 개발하거나 운영합니다. Code Place는 누적 가입 학생 <strong>932명</strong>, 누적 제출 <strong>51,070건</strong>이고, 직접 만든 로컬 LLM AI 조교는 동접 30명에서 평균 <strong>2.89초</strong>로 응답합니다(외부 AI API 비용 0원). 멀티 노드 K3s 클러스터를 운영하며 겪은 장애는 근본 원인까지 따라가 글로 남깁니다.',
+	en: 'I develop or operate five live services at Pusan National University (Code Place, AIPMS, PNUAICMS, AI Competency Support System, Pickle). Code Place has <strong>932</strong> registered students and <strong>51,070</strong> submissions, and the local-LLM AI tutor I built answers in <strong>2.89 s</strong> on average with 30 concurrent users, at zero external AI API cost. I run a multi-node K3s cluster and write up production incidents down to their root cause.',
 };
 
 // 불릿의 <strong> 은 여기서 직접 쓴 문자열에만 있다(set:html).
@@ -71,14 +71,16 @@ const experience = [
 		points: {
 			ko: [
 				'Code Place: 3인 개발팀을 리딩하며 멀티 노드 K3s 인프라와 백엔드를 맡고, 로컬 LLM 기반 AI 조교를 기획, 개발했습니다.',
-				'PNUAICMS: AI기업 산학협력 관리 시스템을 단독 개발해 운영합니다(관리 기업 <strong>208개</strong>, 학생 <strong>1,002명</strong>).',
 				'AIPMS: 팀원과 둘이 개발해 8월에 열었고, 9월부터 혼자 운영합니다(가입자 <strong>498명</strong>).',
+				'PNUAICMS: AI기업 산학협력 관리 시스템을 단독 개발해 운영합니다(관리 기업 <strong>208개</strong>, 학생 <strong>1,002명</strong>).',
+				'AI역량지원시스템: Spring Boot 부트캠프 서비스와 화면에서 수강 신청, 이수 심사 기능 개발에 참여하고 운영 장애를 복구했습니다(부트캠프 수강 신청 <strong>212건</strong>).',
 				'Pickle: 교내 클라우드와 LLM 서비스의 기관 관리자로 승인 기준, 용량 산정, 장애 대응을 맡습니다.',
 			],
 			en: [
 				'Code Place: lead a 3-person team, own the backend and the multi-node K3s infrastructure, and designed and built a local-LLM AI teaching assistant.',
-				'PNUAICMS: built and operate the AI-industry partnership management system on my own (<strong>208</strong> partner companies, <strong>1,002</strong> students).',
 				'AIPMS: co-built with a teammate and launched in August; I have run it alone since September (<strong>498</strong> registered users).',
+				'PNUAICMS: built and operate the AI-industry partnership management system on my own (<strong>208</strong> partner companies, <strong>1,002</strong> students).',
+				'AI Competency Support System: contributed bootcamp enrollment and completion-review features to the Spring Boot service and front end, and recovered a production incident (<strong>212</strong> bootcamp enrollments).',
 				'Pickle: organization admin for the campus cloud and LLM service, covering approval policy, capacity planning, and incident response.',
 			],
 		},
