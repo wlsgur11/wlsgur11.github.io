@@ -55,8 +55,8 @@ const sections = [
 const secLabel = (id: string) => L(sections.find((s) => s.id === id)!.label);
 
 const summary = {
-	ko: '부산대 교내 실서비스 5개(Code Place, AIPMS, PNUAICMS, AI역량지원시스템, Pickle)를 개발하거나 운영합니다. Code Place는 누적 가입 학생 <strong>932명</strong>, 누적 제출 <strong>51,070건</strong>이고, 직접 만든 로컬 LLM AI 조교는 동접 30명에서 평균 <strong>2.89초</strong>로 응답합니다(외부 AI API 비용 0원). 멀티 노드 K3s 클러스터를 운영하며 겪은 장애는 근본 원인까지 따라가 글로 남깁니다.',
-	en: 'I develop or operate five live services at Pusan National University (Code Place, AIPMS, PNUAICMS, AI Competency Support System, Pickle). Code Place has <strong>932</strong> registered students and <strong>51,070</strong> submissions, and the local-LLM AI tutor I built answers in <strong>2.89 s</strong> on average with 30 concurrent users, at zero external AI API cost. I run a multi-node K3s cluster and write up production incidents down to their root cause.',
+	ko: '부산대 교내 실서비스 5개(Code Place, AIPMS, PNUAICMS, AI역량지원시스템, Pickle)를 개발하거나 운영합니다. Code Place는 누적 가입 학생 <strong>932명</strong>, 누적 제출 <strong>51,070건</strong>이고, 오픈 모델(Qwen)을 교내 GPU 서버에 vLLM으로 올려 만든 AI 조교는 동접 30명에서 평균 <strong>2.89초</strong>로 응답합니다(외부 AI API 비용 0원). 멀티 노드 K3s 클러스터를 운영하며 겪은 장애는 근본 원인까지 따라가 글로 남깁니다.',
+	en: 'I develop or operate five live services at Pusan National University (Code Place, AIPMS, PNUAICMS, AI Competency Support System, Pickle). Code Place has <strong>932</strong> registered students and <strong>51,070</strong> submissions, and the AI tutor I built by serving an open-weight model (Qwen) with vLLM on campus GPU servers answers in <strong>2.89 s</strong> on average with 30 concurrent users, at zero external AI API cost. I run a multi-node K3s cluster and write up production incidents down to their root cause.',
 };
 
 // 불릿의 <strong> 은 여기서 직접 쓴 문자열에만 있다(set:html).
