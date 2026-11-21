@@ -19,6 +19,8 @@ const {
 	stack,
 	links,
 	logo,
+	cover,
+	highlight,
 	lang = 'ko',
 } = Astro.props;
 const t = useTranslations(lang);
@@ -34,7 +36,12 @@ const pick = (ko: string, en?: string) => (lang === 'en' && en ? en : ko);
 		<main>
 			<article class="project">
 				<header class="project-head">
-					{logo && (
+					{cover && (
+						<figure class="proj-cover">
+							<img src={cover} alt="" width="800" height="500" />
+						</figure>
+					)}
+					{!cover && logo && (
 						<span class="proj-logo">
 							<img src={logo} alt="" width="56" height="56" />
 						</span>
@@ -42,6 +49,20 @@ const pick = (ko: string, en?: string) => (lang === 'en' && en ? en : ko);
 					<p class="meta-line">{pick(role, roleEn)} <span class="sep">|</span> {period}</p>
 					<h1>{pick(title, titleEn)}</h1>
 					<p class="lead">{pick(description, descriptionEn)}</p>
+					{
+						highlight && (
+							<div class="proj-stat">
+								<span class="ps-fig">
+									<span class="ps-num">{highlight.value}</span>
+									{lang !== 'en' && highlight.unit && <span class="ps-unit">{highlight.unit}</span>}
+								</span>
+								<span class="ps-txt">
+									<span class="ps-label">{pick(highlight.label, highlight.labelEn)}</span>
+									{highlight.sub && <span class="ps-sub">{pick(highlight.sub, highlight.subEn)}</span>}
+								</span>
+							</div>
+						)
+					}
 					<ul class="tags">
 						{stack.map((s) => <li class="tag">{s}</li>)}
 					</ul>
@@ -97,6 +118,63 @@ const pick = (ko: string, en?: string) => (lang === 'en' && en ? en : ko);
 		padding: 4px;
 		object-fit: contain;
 		background: #fff;
+	}
+	/* 화면 캡처: 16:10, 캡처가 아닌 로고 이미지도 잘리지 않게 contain */
+	.proj-cover {
+		margin: 0 0 1.75rem;
+		aspect-ratio: 16 / 10;
+		background: var(--surface);
+		border: 1px solid var(--line);
+	}
+	.proj-cover img {
+		display: block;
+		width: 100%;
+		height: 100%;
+		object-fit: contain;
+	}
+	/* 큰 숫자 띠 (홈 카드와 같은 문법) */
+	.proj-stat {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 0.5rem 1.25rem;
+		margin: 0 0 1.4rem;
+		padding: 1rem 1.2rem;
+		background: var(--surface);
+		border-left: 3px solid var(--accent);
+	}
+	.ps-fig {
+		display: flex;
+		align-items: baseline;
+		gap: 0.25rem;
+		white-space: nowrap;
+	}
+	.ps-num {
+		font-family: var(--font-mono);
+		font-weight: 700;
+		font-size: 2.5rem;
+		line-height: 1;
+		letter-spacing: -0.03em;
+		color: var(--accent);
+		font-variant-numeric: tabular-nums;
+	}
+	.ps-unit {
+		font-size: 1.1rem;
+		font-weight: 700;
+		color: rgb(var(--black));
+	}
+	.ps-txt {
+		display: flex;
+		flex-direction: column;
+		line-height: 1.45;
+	}
+	.ps-label {
+		font-weight: 700;
+		color: rgb(var(--black));
+	}
+	.ps-sub {
+		font-size: 0.88rem;
+		color: rgb(var(--gray-dark));
 	}
 	.meta-line {
 		font-family: var(--font-mono);

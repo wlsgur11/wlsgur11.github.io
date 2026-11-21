@@ -25,15 +25,20 @@ function init() {
 			gsap.from(hero, { autoAlpha: 0, y: 18, duration: 0.7, ease: 'power3.out', stagger: 0.09 });
 		}
 
-		// 2. 측정값 띠: 화면에 들어올 때 0 에서 실제 값까지 한 번 카운트업 (측정 서사).
+		// 2. 숫자 띠: 화면에 들어올 때 0 에서 실제 값까지 한 번 카운트업 (측정 서사).
 		//    마크업에는 최종값이 그대로 있고, 끝나거나 되돌리면 원래 텍스트로 복원한다.
+		//    data-count 는 표시값 그대로("51,070") 둔다. 세는 중에도 천 단위 쉼표를 붙인다.
 		const nums = gsap.utils.toArray<HTMLElement>('[data-count]');
 		const finals = nums.map((el) => el.textContent ?? '');
 		nums.forEach((el, i) => {
-			const raw = el.dataset.count ?? '';
+			const raw = (el.dataset.count ?? '').replace(/,/g, '');
 			const end = Number.parseFloat(raw);
 			if (!Number.isFinite(end)) return;
 			const decimals = (raw.split('.')[1] ?? '').length;
+			const fmt = new Intl.NumberFormat('en-US', {
+				minimumFractionDigits: decimals,
+				maximumFractionDigits: decimals,
+			});
 			const o = { v: 0 };
 			gsap.to(o, {
 				v: end,
@@ -41,7 +46,7 @@ function init() {
 				ease: 'power2.out',
 				scrollTrigger: { trigger: el.closest('[data-band]') ?? el, start: 'top bottom', once: true },
 				onUpdate: () => {
-					el.textContent = o.v.toFixed(decimals);
+					el.textContent = fmt.format(o.v);
 				},
 				onComplete: () => {
 					el.textContent = finals[i];

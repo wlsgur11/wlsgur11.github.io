@@ -3,6 +3,7 @@ import { getCollection } from 'astro:content';
 import BaseHead from './BaseHead.astro';
 import Footer from './Footer.astro';
 import Header from './Header.astro';
+import ProjectCard from './ProjectCard.astro';
 import { tabTitle } from '../consts';
 import { type Lang, localize, useTranslations } from '../i18n';
 
@@ -17,10 +18,8 @@ const projects = (await getCollection('projects', (p) => !p.data.draft)).sort(
 	(a, b) => a.data.order - b.data.order,
 );
 const byGroup = (g: string) => projects.filter((p) => p.data.group === g);
-const groups = [
-	{ title: t('majorProjects'), variant: 'row', items: byGroup('major') },
-	{ title: t('moreProjects'), variant: 'cover', items: byGroup('more') },
-].filter((g) => g.items.length > 0);
+const major = byGroup('major');
+const more = byGroup('more');
 
 const githubPath =
 	'M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z';
@@ -40,41 +39,44 @@ const githubPath =
 			</header>
 
 			{
-				groups.map((g) => (
+				major.length > 0 && (
 					<section class="group">
-						<h2 class="group-title">{g.title}</h2>
+						<h2 class="group-title">{t('majorProjects')}</h2>
+						<div class="major">
+							{major.map((p) => (
+								<ProjectCard p={p} lang={lang} bullets />
+							))}
+						</div>
+					</section>
+				)
+			}
+
+			{
+				more.length > 0 && (
+					<section class="group">
+						<h2 class="group-title">{t('moreProjects')}</h2>
 						<div class="plist">
-							{g.items.map((p) => {
+							{more.map((p) => {
 								const href = localize(`/projects/${p.id}/`, lang);
 								const bullets =
 									lang === 'en' && p.data.summaryEn.length ? p.data.summaryEn : p.data.summary;
 								return (
-									<article class={`pcard pcard--${g.variant}`} data-reveal>
-										{g.variant === 'cover' ? (
-											<a class="pcard-media" href={href} aria-label={p.data.title}>
-												<div class="thumb">
-													{p.data.cover ? (
-														<img src={p.data.cover} alt="" />
-													) : (
-														<div class="thumb-fallback">
-															{p.data.logo ? (
-																<img class="thumb-logo" src={p.data.logo} alt="" />
-															) : (
-																<span class="mono">{p.data.title.slice(0, 2)}</span>
-															)}
-														</div>
-													)}
-												</div>
-											</a>
-										) : (
-											<a class="pcard-logo" href={href} aria-label={p.data.title}>
-												{p.data.logo ? (
-													<img src={p.data.logo} alt="" />
+									<article class="pcard pcard--cover" data-reveal>
+										<a class="pcard-media" href={href} aria-label={p.data.title}>
+											<div class="thumb">
+												{p.data.cover ? (
+													<img src={p.data.cover} alt="" />
 												) : (
-													<span class="mono">{p.data.title.slice(0, 2)}</span>
+													<div class="thumb-fallback">
+														{p.data.logo ? (
+															<img class="thumb-logo" src={p.data.logo} alt="" />
+														) : (
+															<span class="mono">{p.data.title.slice(0, 2)}</span>
+														)}
+													</div>
 												)}
-											</a>
-										)}
+											</div>
+										</a>
 										<div class="pcard-body">
 											<div class="top">
 												<a class="title-link" href={href}>
@@ -107,7 +109,7 @@ const githubPath =
 							})}
 						</div>
 					</section>
-				))
+				)
 			}
 		</main>
 		<Footer />
@@ -148,6 +150,13 @@ const githubPath =
 		grid-column: 1 / -1;
 	}
 
+	/* 주요 프로젝트: 홈과 같은 ProjectCard, 2x2 */
+	.major {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 1.25rem;
+	}
+
 	/* 카드 바깥(article)과 안쪽 요소 클래스는 겹치지 않게: pcard-* / thumb */
 	.pcard {
 		border: 1px solid var(--line);
@@ -157,28 +166,6 @@ const githubPath =
 		border-color: var(--accent);
 	}
 
-	/* row: 로고 + 본문 */
-	.pcard--row {
-		gap: 1.25rem;
-		padding: 1.5rem;
-	}
-	.pcard-logo {
-		flex: none;
-		display: grid;
-		place-items: center;
-		width: 72px;
-		height: 72px;
-		background: var(--surface);
-		border: 1px solid var(--line-soft);
-		text-decoration: none;
-	}
-	.pcard-logo img {
-		width: 48px;
-		height: 48px;
-		padding: 4px;
-		object-fit: contain;
-		background: #fff;
-	}
 	.mono {
 		font-family: var(--font-mono);
 		font-weight: 700;
@@ -330,11 +317,9 @@ const githubPath =
 		.page-head h1 {
 			font-size: 2.1rem;
 		}
-		.plist {
+		.plist,
+		.major {
 			grid-template-columns: 1fr;
-		}
-		.pcard--row {
-			flex-direction: column;
 		}
 		.pcard:first-child:nth-last-child(odd).pcard--cover {
 			flex-direction: column;

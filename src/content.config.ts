@@ -32,6 +32,17 @@ const projects = defineCollection({
 			period: z.string(),
 			logo: z.string().optional(),
 			cover: z.string().optional(),
+			// 카드와 상세 상단의 큰 숫자 하나. unit 은 한국어 화면에서만 붙인다(영문은 label 이 명사를 맡는다).
+			highlight: z
+				.object({
+					value: z.string(),
+					unit: z.string().optional(),
+					label: z.string(),
+					labelEn: z.string().optional(),
+					sub: z.string().optional(),
+					subEn: z.string().optional(),
+				})
+				.optional(),
 			badge: z.string().optional(),
 			badgeEn: z.string().optional(),
 			summary: z.array(z.string()).default([]),
