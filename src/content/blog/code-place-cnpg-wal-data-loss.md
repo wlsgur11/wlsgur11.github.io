@@ -61,6 +61,12 @@ FROM pg_replication_slots;
 
 `active=false`인데 `retained`가 수십 GB인 slot이 저용량 3번 노드의 죽은 standby 것이었다. WAL은 데이터와 같은 볼륨을 썼기 때문에, 이 WAL 더미가 그대로 DB 볼륨을 잠식했다. standby를 지키려고 만든 slot이, 그 standby가 죽은 뒤에는 primary의 디스크를 채우는 쪽으로 작동한 것이다.
 
+이 관계를 기계로 옮기면 아래 그림과 같다. 위 상자가 primary, 양옆 상자가 standby 두 대다. primary는 WAL 세그먼트를 동전처럼 하나씩 떨어뜨리고, 튜브 맨 아래 세그먼트는 두 standby의 slot 날이 모두 빠져야 접시로 떨어져 지워진다. standby 2(이 사고에선 3번 노드의 standby)가 멈추면 그 날이 들어온 채로 남아 세그먼트가 쌓이고, 튜브가 다 차면 primary가 멈춘다. 오른쪽 자에 걸린 고리는 뒤의 재발 방지에서 다룰 `max_slot_wal_keep_size`다. 그림을 누르면 고리를 상한 높이에 걸거나 풀 수 있고, 걸어 두면 그 높이에서 slot 2가 무효화되면서 WAL이 다시 지워진다.
+
+<iframe src="/figures/wal-slot.html" scrolling="no" title="replication slot이 WAL을 붙잡는 과정을 보여 주는 인터랙티브 그림" loading="lazy" style="display:block;width:100%;height:560px;border:0;margin:1.6em 0 0.6em"></iframe>
+
+*동전 하나가 기본 크기(16 MB) WAL 세그먼트 하나다. 튜브 높이와 상한 위치는 볼륨에 남은 자리를 줄여 그린 모형이라 실제 사고 때의 용량과는 다르다.*
+
 ## 방아쇠는 내 재부팅이었다
 
 slot이 WAL을 붙잡고 있던 건 원인이고, 터뜨린 건 따로 있었다. AI 조교를 만들고 테스트하려면 1번 노드(RTX 5090)에 NVIDIA 드라이버를 새로 깔아야 했고, 그러려면 재부팅이 필요했다. 재부팅은 내가 했다. 그런데 종료가 5분이 넘도록 끝나지 않아 강제로 껐다.
