@@ -13,7 +13,7 @@ export const PROFILE = {
 	role: 'Backend / Infra Engineer',
 	tagline:
 		'실서비스를 직접 굴리며 배웁니다. 증상이 아니라 근본 원인을, 감이 아니라 실측으로.',
-	email: 'octopus121@naver.com',
+	email: 'jk2742000@gmail.com',
 	github: 'https://github.com/wlsgur11',
 	githubHandle: 'wlsgur11',
 	linkedin: 'https://www.linkedin.com/in/wlsgur11/',
