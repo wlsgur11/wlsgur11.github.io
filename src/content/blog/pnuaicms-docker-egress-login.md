@@ -130,12 +130,6 @@ sudo iptables -t nat -S POSTROUTING | grep masq
 
 compose 브리지의 outbound NAT(masquerade)가 빠져 있어서, 컨테이너 패킷이 사설 IP 그대로 나갔다가 응답을 못 받고 있었다. docker0는 rule이 살아 있어 됐고, compose 브리지만 유실됐던 것이다. 왜 빠졌는지는 확인하지 못했다. 그동안의 `up -d db`(단일 서비스), ufw reload, 반복된 도커 재시작이 겹치며 iptables 상태가 어긋났다고 보고 있지만, 재현해 본 적은 없는 추정이다.
 
-이 상태를 기계로 옮겨 그려 봤다. 왼쪽 상자 두 개가 컨테이너, 가운데 도장대가 호스트의 NAT, 오른쪽 상자가 구글이다. 뒤 레일이 기본 브리지 docker0, 앞 레일이 compose 브리지다. 나가는 연결은 도장대에서 호스트 주소를 찍어(masquerade) 보내야 답장이 돌아오는데, 앞 레일은 그 도장이 빠져 있어서 편지가 나가도 답이 오지 않았다. 앞 컨테이너 위 작은 상자는 도커 내장 리졸버(127.0.0.11)다. 이름 묻기는 이쪽이 도장대를 거치지 않고 따로 처리해서 DNS는 됐다. 그림을 누르면 앞 레일의 masquerade 규칙을 넣고 뺄 수 있다.
-
-<iframe src="/figures/docker-egress-nat.html" scrolling="no" title="compose 브리지의 masquerade 규칙이 빠졌을 때 DNS는 되고 연결만 안 되는 과정을 보여 주는 인터랙티브 그림" loading="lazy" style="display:block;width:100%;height:560px;border:0;margin:1.6em 0 0.6em"></iframe>
-
-*레일, 속도, 기다리는 시간은 모형이다. 74.125.138.84, ETIMEDOUT, 200, docker0에서의 연결 성공은 이 글의 실제 출력에서 가져왔다. DNS 선은 내장 리졸버가 처리해서 컨테이너의 egress와 따로 된다는 설명을 단순하게 그린 것이다.*
-
 ## 그래도 절반만 나았다
 
 egress가 돌아온 줄 알았는데 로그인은 계속 `fetch failed`였다. 구글의 두 호스트를 각각 찔러 봤다.

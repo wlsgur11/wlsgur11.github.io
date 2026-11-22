@@ -73,12 +73,6 @@ probe(매니페스트)를 그 경로를 제공하는 이미지보다 먼저 배�
 
 새 매니페스트가 probe를 추가했는데 배포된 이미지엔 엔드포인트가 없으니, probe는 항상 404를 받고 startup이 실패해 10분마다 재시작됐다. 새 RS가 Ready가 되지 못하니 롤아웃은 `maxUnavailable` 보호에 걸려 멈췄고, probe가 없는 옛 RS가 트래픽을 받아 서비스는 유지됐다(NotReady 파드는 Service 엔드포인트에서 빠진다).
 
-이 고리를 시험대로 옮기면 아래 그림과 같다. 뒤 기둥의 탐침이 startup probe이고, 10초(period)마다 가운데 파드 상자에 꽂힌 이미지 카트리지의 `/api/health` 자리를 누른다. 3.0.0 카트리지에는 그 자리가 비어 있어 404가 나고, 오른쪽 다이얼이 한 칸 돈다. 60칸(failureThreshold)을 다 돌면 600초가 지난 것이고, 카트리지가 튀어 올라 컨테이너가 재시작되며 왼쪽 계수기가 하나 오른다. 다이얼은 0부터 다시 돌고, 이미지가 그대로인 한 이 고리는 끝나지 않는다. 그림을 누르면 `/api/health`가 있는 3.1.2로 바꿔 끼울 수 있고, 그러면 첫 검사에서 204를 받아 고리가 멈춘다.
-
-<iframe src="/figures/crashloop-probe.html" scrolling="no" title="startup probe가 없는 경로를 두드려 10분마다 컨테이너를 재시작시키는 과정을 보여 주는 인터랙티브 그림" loading="lazy" style="display:block;width:100%;height:560px;border:0;margin:1.6em 0 0.6em"></iframe>
-
-*period 10초, failureThreshold 60, 404와 204, 이미지 버전은 이 글의 실제 값이다. 시간은 빨리 감았고 처음 몇 번의 검사만 천천히 보여 준다. 계수기는 0부터 세므로 실제 398회까지 가지는 않는다.*
-
 ### 왜 이미지만 따라오지 못했나
 
 이상한 점이 하나 남았다. probe와 `/api/health` 라우트는 팀원이 6월 4일 develop에 같은 커밋으로 넣은 것이었다. 같은 커밋에 들어 있던 둘이 운영에서는 갈라져 있었다.
