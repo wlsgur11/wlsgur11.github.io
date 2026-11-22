@@ -16,6 +16,8 @@ export const PROFILE = {
 	email: 'octopus121@naver.com',
 	github: 'https://github.com/wlsgur11',
 	githubHandle: 'wlsgur11',
+	linkedin: 'https://www.linkedin.com/in/wlsgur11/',
+	linkedinHandle: 'wlsgur11',
 	instagram: 'https://www.instagram.com/wlsgur_11/',
 	instagramHandle: 'wlsgur_11',
 };
